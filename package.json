@@ -1,0 +1,40 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@emotion/cache": "latest",
+    "@emotion/react": "latest",
+    "@emotion/styled": "latest",
+    "@mui/icons-material": "latest",
+    "@mui/material": "latest",
+    "clsx": "^2.0.0",
+    "date-fns": "^2.30.0",
+    "fs": "^0.0.1-security",
+    "gray-matter": "^4.0.3",
+    "next": "latest",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-native": "^0.72.6",
+    "react-native-web": "^0.19.9",
+    "remark": "^15.0.1",
+    "remark-html": "^16.0.1",
+    "yaml": "^2.3.3"
+  },
+  "browser": {
+    "fs": false,
+    "os": false,
+    "path": false
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "20.8.8",
+    "@types/react": "18.2.31",
+    "typescript": "5.2.2"
+  }
+}
