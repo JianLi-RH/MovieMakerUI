@@ -73,7 +73,7 @@ export default function Activity({ activity }) {
             <TableCell sx={{ minWidth: 100 }} component="th" scope="row">
               描述
             </TableCell>
-            <TableCell align="right" colSpan={2}>
+            <TableCell colSpan={2}>
               {activity["描述"]}
             </TableCell>
           </TableRow>

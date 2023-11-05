@@ -13,7 +13,7 @@ export default function Layout({scenarios}) {
   return (
     <ThemeRegistry>
       <Header></Header>
-      <Menu></Menu>
+      <Menu scenarios={scenarios}></Menu>
       <Box
         component="main"
         sx={{

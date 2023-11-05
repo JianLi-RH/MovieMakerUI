@@ -1,4 +1,6 @@
 import * as React from "react";
+import { useState } from "react";
+import { useReducer } from "react";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
@@ -24,12 +26,16 @@ import {
   AutoAwesomeMotion,
   Slideshow,
   Help,
+  Settings,
 } from "@mui/icons-material";
 
 import GlobalConifg from "../pages/app.config";
 const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
 
-export default function Menu() {
+export default function Menu({ scenarios }) {
+  const [originScenarios, setOriginScenarios] = useState(scenarios);
+  const [ranid, setRanid] = useState(scenarios.length);
+
   const [opencj, setOpencj] = React.useState(true);
   const handleCJClick = () => {
     setOpencj(!opencj);
@@ -44,6 +50,31 @@ export default function Menu() {
   const handleDZClick = () => {
     setOpendz(!opendz);
   };
+
+  const [tasks, dispatch] = useReducer(scenarioReducer, scenarios);
+
+  function addScenario() {
+    dispatch({
+      type: "added",
+      sc: {
+        背景: "",
+        名字: "defaule" + ranid,
+        焦点: "",
+        背景音乐: null,
+        比例: 1,
+        角色: [],
+        活动: [],
+      },
+    });
+    setRanid(ranid + 1);
+  }
+
+  function deleteScenario(scName) {
+    dispatch({
+      type: "deleted",
+      sc: scName,
+    });
+  }
 
   return (
     <Drawer
@@ -76,13 +107,13 @@ export default function Menu() {
         </ListItemButton>
         <Collapse in={opencj} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItemButton sx={{ pl: 4 }}>
+            <ListItemButton sx={{ pl: 4 }} onClick={addScenario}>
               <ListItemIcon>
                 <Add />
               </ListItemIcon>
               <ListItemText primary="添加场景" />
             </ListItemButton>
-            <ListItemButton sx={{ pl: 4 }}>
+            <ListItemButton sx={{ pl: 4 }} onClick={deleteScenario}>
               <ListItemIcon>
                 <Delete />
               </ListItemIcon>
@@ -168,6 +199,12 @@ export default function Menu() {
             </ListItemButton>
           </List>
         </Collapse>
+        <ListItemButton>
+          <ListItemIcon>
+            <Settings />
+          </ListItemIcon>
+          <ListItemText primary="配置" />
+        </ListItemButton>
       </List>
       <Divider sx={{ mt: "auto" }} />
       <List>
@@ -176,10 +213,33 @@ export default function Menu() {
             <ListItemIcon>
               <Help />
             </ListItemIcon>
-            <ListItemText primary="帮助" ></ListItemText>
+            <ListItemText primary="帮助"></ListItemText>
           </ListItemButton>
         </ListItem>
       </List>
     </Drawer>
   );
+}
+
+function scenarioReducer(tasks, action) {
+  switch (action.type) {
+    case "added": {
+      return [...tasks, action.sc];
+    }
+    case "changed": {
+      return tasks.map((t) => {
+        if (t["名字"] === action.task["名字"]) {
+          return action.task;
+        } else {
+          return t;
+        }
+      });
+    }
+    case "deleted": {
+      return tasks.filter((t) => t["名字"] !== action["名字"]);
+    }
+    default: {
+      throw Error("未知操作：" + action.type);
+    }
+  }
 }

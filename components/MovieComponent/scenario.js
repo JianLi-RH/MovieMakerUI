@@ -1,5 +1,8 @@
 import * as React from "react";
 import { styled } from "@mui/material/styles";
+import CircularProgress from '@mui/material/CircularProgress';
+import Stack from '@mui/material/Stack';
+import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
@@ -27,6 +30,11 @@ export default function Scenario({ scenario }) {
     setActivityState(newActivityState);
     setSelectedActivity(index);
   };
+
+  const [circle, setCircle] = React.useState('none');
+  const makeVideo = (scenario) => {
+    setCircle(circle == 'none' ? 'flex' : 'none')
+  }
 
   return (
     <Box key={scenario["名字"]} sx={{ bgcolor: "#cfe8fc", flexGrow: 1 }}>
@@ -66,6 +74,10 @@ export default function Scenario({ scenario }) {
           <Divider></Divider>
         </List>
       ))}
+      <Stack spacing={2} direction="row">
+        <Button variant="outlined" onClick={() => makeVideo(scenario["名字"])}>生成视频</Button>
+        <CircularProgress sx={{ display: circle }} />
+      </Stack>
     </Box>
   );
 }
