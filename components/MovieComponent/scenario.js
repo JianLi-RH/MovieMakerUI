@@ -1,7 +1,7 @@
 import * as React from "react";
 import { styled } from "@mui/material/styles";
-import CircularProgress from '@mui/material/CircularProgress';
-import Stack from '@mui/material/Stack';
+import CircularProgress from "@mui/material/CircularProgress";
+import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
@@ -22,7 +22,7 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function Scenario({ scenario }) {
   const [selectedActivity, setSelectedActivity] = React.useState(-1);
   const [activityState, setActivityState] = React.useState(
-    Array(scenario["活动"].length).fill(false)
+    Array(scenario["活动"] ? scenario["活动"].length : 0).fill(false)
   );
   const handleActivityClick = (index) => {
     const newActivityState = activityState.slice();
@@ -31,10 +31,10 @@ export default function Scenario({ scenario }) {
     setSelectedActivity(index);
   };
 
-  const [circle, setCircle] = React.useState('none');
+  const [circle, setCircle] = React.useState("none");
   const makeVideo = (scenario) => {
-    setCircle(circle == 'none' ? 'flex' : 'none')
-  }
+    setCircle(circle == "none" ? "flex" : "none");
+  };
 
   return (
     <Box key={scenario["名字"]} sx={{ bgcolor: "#cfe8fc", flexGrow: 1 }}>
@@ -56,7 +56,7 @@ export default function Scenario({ scenario }) {
         </Grid>
       </Grid>
 
-      {scenario["活动"].map((activity, i) => (
+      {scenario["活动"] && scenario["活动"].map((activity, i) => (
         <List
           key={activity["名字"] + i}
           sx={{ borderColor: selectedActivity == i ? "#FF0000" : "#000" }}
@@ -75,7 +75,9 @@ export default function Scenario({ scenario }) {
         </List>
       ))}
       <Stack spacing={2} direction="row">
-        <Button variant="outlined" onClick={() => makeVideo(scenario["名字"])}>生成视频</Button>
+        <Button variant="outlined" onClick={() => makeVideo(scenario["名字"])}>
+          生成视频
+        </Button>
         <CircularProgress sx={{ display: circle }} />
       </Stack>
     </Box>
