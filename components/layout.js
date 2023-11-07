@@ -8,11 +8,10 @@ import Box from "@mui/material/Box";
 import ThemeRegistry from "./ThemeRegistry/ThemeRegistry";
 import GlobalConifg from "../pages/app.config";
 const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
+const writeYamlFile = require("write-yaml-file");
 
 export default function Layout({ scenarios }) {
-  // const [originScenarios, setOriginScenarios] = React.useState(scenarios);
   const [tasks, dispatch] = useReducer(tasksReducer, scenarios);
-  console.log("layout", scenarios);
 
   function handleAddTask() {
     dispatch({
@@ -20,10 +19,10 @@ export default function Layout({ scenarios }) {
     });
   }
 
-  function handleChangeTask(task) {
+  function handleChangeTask(scenario) {
     dispatch({
       type: "changed",
-      task: task,
+      scenario: scenario,
     });
   }
 
@@ -31,6 +30,12 @@ export default function Layout({ scenarios }) {
     dispatch({
       type: "deleted",
       name: name,
+    });
+  }
+
+  function handleSaveTask() {
+    dispatch({
+      type: "save",
     });
   }
 
@@ -53,6 +58,7 @@ export default function Layout({ scenarios }) {
           onAddTask={handleAddTask}
           onChangeTask={handleChangeTask}
           onDeleteTask={handleDeleteTask}
+          onSaveTask={handleSaveTask}
         ></Workspace>
       </Box>
     </ThemeRegistry>
@@ -60,6 +66,7 @@ export default function Layout({ scenarios }) {
 }
 
 function tasksReducer(tasks, action) {
+  // 这里tasks就是scenarios
   switch (action.type) {
     case "added": {
       let sc = {
@@ -75,8 +82,8 @@ function tasksReducer(tasks, action) {
     }
     case "changed": {
       return tasks.map((t) => {
-        if (t["名字"] === action.task["名字"]) {
-          return action.task;
+        if (t["名字"] === action.scenario["名字"]) {
+          return action.scenario;
         } else {
           return t;
         }
@@ -84,6 +91,13 @@ function tasksReducer(tasks, action) {
     }
     case "deleted": {
       return tasks.filter((t) => t["名字"] !== action.name);
+    }
+    case "save": {
+      // writeYamlFile("foo.yaml", tasks).then(() => {
+      //   console.log("done");
+      // });
+      console.log("save done");
+      return
     }
     default: {
       throw Error("未知 action: " + action.type);

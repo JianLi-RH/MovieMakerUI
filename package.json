@@ -23,6 +23,7 @@
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
     "use-immer": "^0.9.0",
+    "write-yaml-file": "^5.0.0",
     "yaml": "^2.3.3"
   },
   "browser": {
