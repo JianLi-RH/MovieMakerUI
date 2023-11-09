@@ -12,21 +12,19 @@ export default function Workspace({
   onAddTask,
   onChangeTask,
   onDeleteTask,
-  onSaveTask,
 }) {
   return (
     <Container>
       {scenarios.map((scenario, i) => (
         <Scenario
-          key={scenario["名字"]}
+          key={scenario["名字"] + i}
+          index={i}
           scenario={scenario}
           onChangeTask={onChangeTask}
           onDeleteTask={onDeleteTask}
-          onSaveTask={onSaveTask}
         ></Scenario>
       ))}
       <Box
-        key="addScenario"
         sx={{
           width: 1,
           marginRight: 0.5,

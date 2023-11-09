@@ -19,9 +19,10 @@ export default function Layout({ scenarios }) {
     });
   }
 
-  function handleChangeTask(scenario) {
+  function handleChangeTask(index, scenario) {
     dispatch({
       type: "changed",
+      index: index,
       scenario: scenario,
     });
   }
@@ -30,12 +31,6 @@ export default function Layout({ scenarios }) {
     dispatch({
       type: "deleted",
       name: name,
-    });
-  }
-
-  function handleSaveTask() {
-    dispatch({
-      type: "save",
     });
   }
 
@@ -58,7 +53,6 @@ export default function Layout({ scenarios }) {
           onAddTask={handleAddTask}
           onChangeTask={handleChangeTask}
           onDeleteTask={handleDeleteTask}
-          onSaveTask={handleSaveTask}
         ></Workspace>
       </Box>
     </ThemeRegistry>
@@ -81,8 +75,8 @@ function tasksReducer(tasks, action) {
       return [...tasks, sc];
     }
     case "changed": {
-      return tasks.map((t) => {
-        if (t["名字"] === action.scenario["名字"]) {
+      return tasks.map((t, i) => {
+        if (i == action.index) {
           return action.scenario;
         } else {
           return t;
@@ -91,13 +85,6 @@ function tasksReducer(tasks, action) {
     }
     case "deleted": {
       return tasks.filter((t) => t["名字"] !== action.name);
-    }
-    case "save": {
-      // writeYamlFile("foo.yaml", tasks).then(() => {
-      //   console.log("done");
-      // });
-      console.log("save done");
-      return
     }
     default: {
       throw Error("未知 action: " + action.type);

@@ -48,13 +48,12 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 export default function Scenario({
+  index,
   scenario,
   onChangeTask,
   onDeleteTask,
-  onSaveTask,
 }) {
-  let sc = {};
-  Object.assign(scenario, sc);
+  const [sc, setSC] = React.useState(scenario);
 
   const [selectedActivity, setSelectedActivity] = React.useState(-1);
   const [activityState, setActivityState] = React.useState(
@@ -78,15 +77,18 @@ export default function Scenario({
   };
 
   function handleChange(e, path) {
-    sc[path] = e.target.value;
+    e.preventDefault();
+    let _sc = {}
+    Object.assign(_sc, sc);
+    _sc[path] = e.target.value;
+    setSC(_sc)
   }
-  function handleSaveScenarioClick() {
-    onSaveTask()
+  function handleSaveScenarioClick(index) {
+    onChangeTask(index, sc);
   }
 
   return (
     <Box
-      key={scenario["名字"]}
       sx={{
         width: 1,
         marginRight: 0.5,
@@ -95,7 +97,7 @@ export default function Scenario({
         flexGrow: 1,
       }}
     >
-      <List key={scenario["名字"]}>
+      <List>
         <ListItemButton>
           <Delete
             sx={{ width: 40 }}
@@ -117,7 +119,7 @@ export default function Scenario({
                 sx={{ width: 40 }}
                 onClick={(e) => {
                   e.preventDefault();
-                  handleSaveScenarioClick();
+                  handleSaveScenarioClick(index);
                 }}
               ></Save>
               <TextField
@@ -190,7 +192,10 @@ export default function Scenario({
                       startIcon={<CloudUpload />}
                     >
                       背景
-                      <VisuallyHiddenInput type="file" onChange={(e) => handleChange(e, "背景")} />
+                      <VisuallyHiddenInput
+                        type="file"
+                        onChange={(e) => handleChange(e, "背景")}
+                      />
                     </Button>
                     <Box
                       component="img"
@@ -224,6 +229,7 @@ export default function Scenario({
             scenario["活动"].map((activity, i) => (
               <List
                 key={activity["名字"] + i}
+                index={i}
                 sx={{
                   borderColor: selectedActivity == i ? "#FF0000" : "#000",
                   bgcolor: "#ebe8ac",

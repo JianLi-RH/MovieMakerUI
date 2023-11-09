@@ -40,7 +40,7 @@ function SubTitle(props) {
       </TableHead>
       <TableBody>
         {row.map((subtitleRow, i) => (
-          <TableRow key={i}>
+          <TableRow key={subtitleRow[2] + i}>
             <TableCell component="th" scope="row">
               {subtitleRow[0]}
             </TableCell>
@@ -110,7 +110,7 @@ export default function Activity({ activity }) {
       </Table>
       {activity["动作"] &&
         activity["动作"].map((action, i) => (
-          <List key={action["名称"] + i}>
+          <List key={action["名称"] + i} index={i}>
             <ListItemButton onClick={() => handleActionClick(i)}>
               <ListItemText primary={action["名称"]} />
               {actionState[i] ? <ExpandLess /> : <ExpandMore />}
