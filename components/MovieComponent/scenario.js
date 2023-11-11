@@ -50,14 +50,14 @@ const VisuallyHiddenInput = styled("input")({
 export default function Scenario({
   index,
   scenario,
-  onChangeTask,
   onDeleteTask,
+  onSave,
 }) {
   const [sc, setSC] = React.useState(scenario);
 
   const [selectedActivity, setSelectedActivity] = React.useState(-1);
   const [activityState, setActivityState] = React.useState(
-    Array(scenario["活动"] ? scenario["活动"].length : 0).fill(false)
+    Array(sc["活动"] ? sc["活动"].length : 0).fill(false)
   );
   const handleActivityClick = (index) => {
     const newActivityState = activityState.slice();
@@ -84,7 +84,8 @@ export default function Scenario({
     setSC(_sc)
   }
   function handleSaveScenarioClick(index) {
-    onChangeTask(index, sc);
+    onSave(index, sc)
+    setScenarioEditState(false);
   }
 
   return (
@@ -103,7 +104,7 @@ export default function Scenario({
             sx={{ width: 40 }}
             onClick={(e) => {
               e.preventDefault();
-              onDeleteTask(scenario["名字"]);
+              onDeleteTask(sc["名字"]);
             }}
           ></Delete>
           {scenarioEditState ? (
@@ -112,6 +113,7 @@ export default function Scenario({
                 sx={{ width: 40 }}
                 onClick={(e) => {
                   e.preventDefault();
+                  setSC(scenario)
                   setScenarioEditState(false);
                 }}
               ></Cancel>
@@ -127,9 +129,9 @@ export default function Scenario({
                 label="场景名"
                 variant="outlined"
                 onChange={(e) => handleChange(e, "名字")}
-                defaultValue={scenario["名字"]}
+                defaultValue={sc["名字"]}
               >
-                {scenario["名字"]}
+                {sc["名字"]}
               </TextField>
             </>
           ) : (
@@ -144,7 +146,7 @@ export default function Scenario({
               ></Edit>
               <ListItemText
                 sx={{ textAlign: "center" }}
-                primary={scenario["名字"]}
+                primary={sc["名字"]}
                 onClick={(e) => {
                   e.preventDefault();
                   setScenarioState(!scenarioState);
@@ -169,9 +171,9 @@ export default function Scenario({
                     label="焦点"
                     variant="outlined"
                     onChange={(e) => handleChange(e, "焦点")}
-                    defaultValue={scenario["焦点"]}
+                    defaultValue={sc["焦点"]}
                   >
-                    {scenario["焦点"]}
+                    {sc["焦点"]}
                   </TextField>
                   <Divider></Divider>
                   <TextField
@@ -179,9 +181,9 @@ export default function Scenario({
                     label="比例"
                     variant="outlined"
                     onChange={(e) => handleChange(e, "比例")}
-                    defaultValue={scenario["比例"]}
+                    defaultValue={sc["比例"]}
                   >
-                    {scenario["比例"]}
+                    {sc["比例"]}
                   </TextField>
                 </Grid>
                 <Grid xs={6}>
@@ -201,7 +203,7 @@ export default function Scenario({
                       component="img"
                       sx={{ width: "200px" }}
                       alt="背景"
-                      src={scenario["背景"]}
+                      src={sc["背景"]}
                     />
                   </Item>
                 </Grid>
@@ -209,24 +211,24 @@ export default function Scenario({
             ) : (
               <>
                 <Grid xs={6} spacing={2}>
-                  <Item>{scenario["焦点"]}</Item>
+                  <Item>{sc["焦点"]}</Item>
                   <Divider></Divider>
-                  <Item>{scenario["比例"]}</Item>
+                  <Item>{sc["比例"]}</Item>
                 </Grid>
                 <Grid xs={6}>
                   <Box
                     component="img"
                     sx={{ width: "200px" }}
                     alt="The house from the offer."
-                    src={scenario["背景"]}
+                    src={sc["背景"]}
                   />
                 </Grid>
               </>
             )}
           </Grid>
 
-          {scenario["活动"] &&
-            scenario["活动"].map((activity, i) => (
+          {sc["活动"] &&
+            sc["活动"].map((activity, i) => (
               <List
                 key={activity["名字"] + i}
                 index={i}
@@ -251,7 +253,7 @@ export default function Scenario({
           <Stack spacing={2} direction="row">
             <Button
               variant="outlined"
-              onClick={() => makeVideo(scenario["名字"])}
+              onClick={() => makeVideo(sc["名字"])}
             >
               生成视频
             </Button>

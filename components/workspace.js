@@ -10,8 +10,8 @@ import GlobalConifg from "../pages/app.config";
 export default function Workspace({
   scenarios,
   onAddTask,
-  onChangeTask,
   onDeleteTask,
+  onSave,
 }) {
   return (
     <Container>
@@ -20,8 +20,8 @@ export default function Workspace({
           key={scenario["名字"] + i}
           index={i}
           scenario={scenario}
-          onChangeTask={onChangeTask}
           onDeleteTask={onDeleteTask}
+          onSave={onSave}
         ></Scenario>
       ))}
       <Box

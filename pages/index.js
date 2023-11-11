@@ -12,7 +12,6 @@ export async function getStaticProps() {
 }
 
 export default function Home({ origin_script }) {
-  const [script, setScript] = useState(origin_script.script["场景"]);
-  console.log("index", script);
-  return <Layout scenarios={script}></Layout>;
+  // console.log("index", script);
+  return <Layout scenarios={origin_script.script["场景"]}></Layout>;
 }

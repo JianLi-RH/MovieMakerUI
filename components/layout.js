@@ -8,7 +8,8 @@ import Box from "@mui/material/Box";
 import ThemeRegistry from "./ThemeRegistry/ThemeRegistry";
 import GlobalConifg from "../pages/app.config";
 const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
-const writeYamlFile = require("write-yaml-file");
+
+import { saveScript } from "lib/config.js";
 
 export default function Layout({ scenarios }) {
   const [tasks, dispatch] = useReducer(tasksReducer, scenarios);
@@ -17,14 +18,8 @@ export default function Layout({ scenarios }) {
     dispatch({
       type: "added",
     });
-  }
 
-  function handleChangeTask(index, scenario) {
-    dispatch({
-      type: "changed",
-      index: index,
-      scenario: scenario,
-    });
+    save(tasks)
   }
 
   function handleDeleteTask(name) {
@@ -32,6 +27,15 @@ export default function Layout({ scenarios }) {
       type: "deleted",
       name: name,
     });
+
+    save(tasks)
+  }
+
+  async function handleSaveSc(index, scenario) {
+    let final_sc = tasks;
+    final_sc[index] = scenario;
+    console.log("new sc: ", final_sc)
+    await saveScript('foo', final_sc)
   }
 
   return (
@@ -51,8 +55,8 @@ export default function Layout({ scenarios }) {
         <Workspace
           scenarios={tasks}
           onAddTask={handleAddTask}
-          onChangeTask={handleChangeTask}
           onDeleteTask={handleDeleteTask}
+          onSave={handleSaveSc}
         ></Workspace>
       </Box>
     </ThemeRegistry>
@@ -73,15 +77,6 @@ function tasksReducer(tasks, action) {
         活动: null,
       };
       return [...tasks, sc];
-    }
-    case "changed": {
-      return tasks.map((t, i) => {
-        if (i == action.index) {
-          return action.scenario;
-        } else {
-          return t;
-        }
-      });
     }
     case "deleted": {
       return tasks.filter((t) => t["名字"] !== action.name);
