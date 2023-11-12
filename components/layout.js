@@ -9,17 +9,30 @@ import ThemeRegistry from "./ThemeRegistry/ThemeRegistry";
 import GlobalConifg from "../pages/app.config";
 const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
 
-import { saveScript } from "lib/config.js";
-
-export default function Layout({ scenarios }) {
+export default function Layout({ scenarios, script_path }) {
   const [tasks, dispatch] = useReducer(tasksReducer, scenarios);
+
+  const callAPI = async (final_sc) => {
+    try {
+      const res = await fetch(`/api/script`, {
+        method: "POST",
+        body: JSON.stringify({ script: { 场景: final_sc }, path: script_path }),
+      });
+
+      const data = await res.json();
+      console.log("data:", data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   function handleAddTask() {
     dispatch({
       type: "added",
     });
 
-    save(tasks)
+    console.log(tasks);
+    callAPI(tasks);
   }
 
   function handleDeleteTask(name) {
@@ -27,15 +40,14 @@ export default function Layout({ scenarios }) {
       type: "deleted",
       name: name,
     });
-
-    save(tasks)
+    console.log(tasks);
+    callAPI(tasks);
   }
 
   async function handleSaveSc(index, scenario) {
     let final_sc = tasks;
     final_sc[index] = scenario;
-    console.log("new sc: ", final_sc)
-    await saveScript('foo', final_sc)
+    callAPI(final_sc);
   }
 
   return (

@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useState } from "react";
 
 import Layout from "../components/layout.js";
 import { getVideoScript } from "lib/config.js";
@@ -13,5 +12,5 @@ export async function getStaticProps() {
 
 export default function Home({ origin_script }) {
   // console.log("index", script);
-  return <Layout scenarios={origin_script.script["场景"]}></Layout>;
+  return <Layout scenarios={origin_script.script["场景"]} script_path="武松打虎"></Layout>;
 }
