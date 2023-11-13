@@ -57,71 +57,80 @@ function SubTitle(props) {
 }
 
 export default function Activity({ activity }) {
-  const [actionState, setActionState] = React.useState(
-    Array(activity["动作"] ? activity["动作"].length : 0).fill(false)
-  );
-  const handleActionClick = (index) => {
-    const newActionState = actionState.slice();
-    newActionState[index] = !newActionState[index];
-    setActionState(newActionState);
-  };
+  const [activityState, setActivityState] = React.useState(false);
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableBody>
-          <TableRow sx={{ "& > *": { border: 1, borderBottom: "unset" } }}>
-            <TableCell sx={{ minWidth: 100 }} component="th" scope="row">
-              描述
-            </TableCell>
-            <TableCell colSpan={2}>
-              {activity["描述"]}
-            </TableCell>
-          </TableRow>
-          <TableRow sx={{ "& > *": { border: 1, borderBottom: "unset" } }}>
-            <TableCell>背景音乐</TableCell>
-            <TableCell align="right" colSpan={6}>
-              {activity["背景音乐"]}
-            </TableCell>
-          </TableRow>
-          <TableRow sx={{ "& > *": { border: 1, borderBottom: "unset" } }}>
-            <TableCell>字幕</TableCell>
-            <TableCell sx={{ borderRight: "unset" }}>
-              <SubTitle row={activity["字幕"]}></SubTitle>
-            </TableCell>
-            <TableCell sx={{ borderLeft: "unset" }}>
-              <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                <InputLabel id="demo-simple-select-label">字幕样式</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={activity.subtitle_mode}
-                  label="字幕样式"
-                >
-                  <MenuItem value="normal">normal</MenuItem>
-                  <MenuItem value="bottom">bottom</MenuItem>
-                  <MenuItem value="top">top</MenuItem>
-                  <MenuItem value="middle">middle</MenuItem>
-                  <MenuItem value="list">list</MenuItem>
-                </Select>
-              </FormControl>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-      {activity["动作"] &&
-        activity["动作"].map((action, i) => (
-          <List key={action["名称"] + i} index={i}>
-            <ListItemButton onClick={() => handleActionClick(i)}>
-              <ListItemText primary={action["名称"]} />
-              {actionState[i] ? <ExpandLess /> : <ExpandMore />}
-            </ListItemButton>
-            <Collapse in={actionState[i]} timeout="auto" unmountOnExit>
-              return ( if (action["名字"] == "显示")
-              {<Display action={action}></Display>} else if(action["名字"] ==
-              "消失"){<Disappear action={action}></Disappear>})
-            </Collapse>
-          </List>
-        ))}
-    </TableContainer>
+    <List
+      sx={{
+        width: 1,
+        my: 1,
+        bgcolor: '#3270be'
+      }}
+    >
+      <ListItemButton onClick={() => setActivityState(!activityState)}>
+        <ListItemText
+          sx={{ textAlign: "center", fontSize: "0.875rem" }}
+          primary={activity["名字"]}
+        />
+        {activityState ? <ExpandLess /> : <ExpandMore />}
+      </ListItemButton>
+      <Collapse in={activityState} timeout="auto" unmountOnExit>
+        {/* <TableContainer component={Paper}> */}
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableBody>
+              <TableRow sx={{ "& > *": { border: 1, borderBottom: "unset" } }}>
+                <TableCell sx={{ minWidth: 100 }} component="th" scope="row">
+                  描述
+                </TableCell>
+                <TableCell colSpan={2}>{activity["描述"]}</TableCell>
+              </TableRow>
+              <TableRow sx={{ "& > *": { border: 1, borderBottom: "unset" } }}>
+                <TableCell>背景音乐</TableCell>
+                <TableCell align="right" colSpan={6}>
+                  {activity["背景音乐"]}
+                </TableCell>
+              </TableRow>
+              <TableRow sx={{ "& > *": { border: 1, borderBottom: "unset" } }}>
+                <TableCell>字幕</TableCell>
+                <TableCell sx={{ borderRight: "unset" }}>
+                  <SubTitle row={activity["字幕"]}></SubTitle>
+                </TableCell>
+                <TableCell sx={{ borderLeft: "unset" }}>
+                  <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                    <InputLabel id="demo-simple-select-label">
+                      字幕样式
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={activity.subtitle_mode || "normal"}
+                      label="字幕样式"
+                    >
+                      <MenuItem value="normal">normal</MenuItem>
+                      <MenuItem value="bottom">bottom</MenuItem>
+                      <MenuItem value="top">top</MenuItem>
+                      <MenuItem value="middle">middle</MenuItem>
+                      <MenuItem value="list">list</MenuItem>
+                    </Select>
+                  </FormControl>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+          {activity["动作"] &&
+            activity["动作"].map((action, i) => (
+              <List key={action["名称"] + i} index={i}>
+                <ListItemButton onClick={() => handleActionClick(i)}>
+                  <ListItemText primary={action["名称"]} />
+                </ListItemButton>
+                <Collapse in={false} timeout="auto" unmountOnExit>
+                  return ( if (action["名字"] == "显示")
+                  {<Display action={action}></Display>} else if(action["名字"]
+                  == "消失"){<Disappear action={action}></Disappear>})
+                </Collapse>
+              </List>
+            ))}
+        {/* </TableContainer> */}
+      </Collapse>
+    </List>
   );
 }

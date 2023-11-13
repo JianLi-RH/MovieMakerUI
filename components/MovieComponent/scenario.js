@@ -47,23 +47,8 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-export default function Scenario({
-  index,
-  scenario,
-  onDeleteTask,
-  onSave,
-}) {
+export default function Scenario({ index, scenario, onDeleteTask, onSave }) {
   const [sc, setSC] = React.useState(scenario);
-
-  const [selectedActivity, setSelectedActivity] = React.useState(-1);
-  const [activityState, setActivityState] = React.useState(
-    Array(sc["活动"] ? sc["活动"].length : 0).fill(false)
-  );
-  const handleActivityClick = (index) => {
-    const newActivityState = activityState.slice();
-    newActivityState[index] = !newActivityState[index];
-    setActivityState(newActivityState);
-  };
 
   // 场景是否展开
   const [scenarioState, setScenarioState] = React.useState(false);
@@ -78,13 +63,13 @@ export default function Scenario({
 
   function handleChange(e, path) {
     e.preventDefault();
-    let _sc = {}
+    let _sc = {};
     Object.assign(_sc, sc);
     _sc[path] = e.target.value;
-    setSC(_sc)
+    setSC(_sc);
   }
   function handleSaveScenarioClick(index) {
-    onSave(index, sc)
+    onSave(index, sc);
     setScenarioEditState(false);
   }
 
@@ -94,12 +79,11 @@ export default function Scenario({
         width: 1,
         marginRight: 0.5,
         my: 1,
-        bgcolor: "#cfe8fc",
         flexGrow: 1,
       }}
     >
       <List>
-        <ListItemButton>
+        <ListItemButton sx={{ bgcolor: "#cfe8fc", border: 1 }}>
           <Delete
             sx={{ width: 40 }}
             onClick={(e) => {
@@ -113,7 +97,7 @@ export default function Scenario({
                 sx={{ width: 40 }}
                 onClick={(e) => {
                   e.preventDefault();
-                  setSC(scenario)
+                  setSC(scenario);
                   setScenarioEditState(false);
                 }}
               ></Cancel>
@@ -160,7 +144,7 @@ export default function Scenario({
           <Grid
             container
             sx={{
-              bgcolor: "#FFF",
+              bgcolor: "#cfe8fc",
             }}
           >
             {scenarioEditState ? (
@@ -210,12 +194,12 @@ export default function Scenario({
               </>
             ) : (
               <>
-                <Grid xs={6} spacing={2}>
-                  <Item>{sc["焦点"]}</Item>
+                <Grid xs={2}>
+                  <Box>{sc["焦点"]}</Box>
                   <Divider></Divider>
-                  <Item>{sc["比例"]}</Item>
+                  <Box>{sc["比例"]}</Box>
                 </Grid>
-                <Grid xs={6}>
+                <Grid xs={10}>
                   <Box
                     component="img"
                     sx={{ width: "200px" }}
@@ -226,39 +210,22 @@ export default function Scenario({
               </>
             )}
           </Grid>
-
-          {sc["活动"] &&
-            sc["活动"].map((activity, i) => (
-              <List
-                key={activity["名字"] + i}
-                index={i}
-                sx={{
-                  borderColor: selectedActivity == i ? "#FF0000" : "#000",
-                  bgcolor: "#ebe8ac",
-                }}
-              >
-                <ListItemButton onClick={() => handleActivityClick(i)}>
-                  <ListItemText
-                    sx={{ textAlign: "center", fontSize: "0.875rem" }}
-                    primary={activity["名字"]}
-                  />
-                  {activityState[i] ? <ExpandLess /> : <ExpandMore />}
-                </ListItemButton>
-                <Collapse in={activityState[i]} timeout="auto" unmountOnExit>
-                  <Activity activity={activity}></Activity>
-                </Collapse>
-                <Divider></Divider>
-              </List>
-            ))}
-          <Stack spacing={2} direction="row">
-            <Button
-              variant="outlined"
-              onClick={() => makeVideo(sc["名字"])}
-            >
+          <Box
+            sx={{
+              border: 1,
+            }}
+          >
+            {sc["活动"] &&
+              sc["活动"].map((activity, i) => (
+                <Activity key={i} activity={activity}></Activity>
+              ))}
+          </Box>
+          <Box>
+            <Button variant="outlined" onClick={() => makeVideo(sc["名字"])}>
               生成视频
             </Button>
             <CircularProgress sx={{ display: circle }} />
-          </Stack>
+          </Box>
         </Collapse>
       </List>
     </Box>

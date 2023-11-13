@@ -28,7 +28,7 @@ export default function Workspace({
         sx={{
           width: 1,
           marginRight: 0.5,
-          my: 5,
+          my: 1,
         }}
       >
         <List>
