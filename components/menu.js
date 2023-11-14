@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useEffect, useState } from "react";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
@@ -8,12 +9,16 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Link from "next/link";
 
-import { Help, Settings } from "@mui/icons-material";
+import { Help, Settings, UploadFile, VideoFile } from "@mui/icons-material";
 
 import GlobalConifg from "../pages/app.config";
+import Script from "next/script";
+import CustomizedDialogs from "../components/scriptdialog";
 const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
 
 export default function Menu() {
+  const [openstate, setOpenstate] = useState(false);
+
   return (
     <Drawer
       sx={{
@@ -30,8 +35,34 @@ export default function Menu() {
       variant="permanent"
       anchor="left"
     >
+      <CustomizedDialogs
+        open={openstate}
+        close={() => setOpenstate(false)}
+      ></CustomizedDialogs>
+      <List
+        sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+        component="nav"
+        aria-labelledby="nested-list-subheader"
+      >
+        <ListItem key="script" disablePadding>
+          <ListItemButton>
+            <ListItemIcon>
+              <VideoFile />
+            </ListItemIcon>
+            <ListItemText primary="配置" />
+          </ListItemButton>
+        </ListItem>
+      </List>
       <Divider sx={{ mt: "auto" }} />
       <List>
+        <ListItem key="script" disablePadding>
+          <ListItemButton onClick={() => setOpenstate(true)}>
+            <ListItemIcon>
+              <UploadFile></UploadFile>
+            </ListItemIcon>
+            <ListItemText primary="上传脚本" />
+          </ListItemButton>
+        </ListItem>
         <ListItem key="setting" disablePadding>
           <ListItemButton>
             <ListItemIcon>

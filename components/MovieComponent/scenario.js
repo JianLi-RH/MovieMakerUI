@@ -61,11 +61,11 @@ export default function Scenario({ index, scenario, onDeleteTask, onSave }) {
     setCircle(circle == "none" ? "flex" : "none");
   };
 
-  function handleChange(e, path) {
+  function handleChange(e) {
     e.preventDefault();
     let _sc = {};
     Object.assign(_sc, sc);
-    _sc[path] = e.target.value;
+    _sc[e.target.name] = e.target.value;
     setSC(_sc);
   }
   function handleSaveScenarioClick(index) {
@@ -112,7 +112,8 @@ export default function Scenario({ index, scenario, onDeleteTask, onSave }) {
                 id="outlined-basic"
                 label="场景名"
                 variant="outlined"
-                onChange={(e) => handleChange(e, "名字")}
+                name="名字"
+                onChange={(e) => handleChange(e)}
                 defaultValue={sc["名字"]}
               >
                 {sc["名字"]}
@@ -154,7 +155,8 @@ export default function Scenario({ index, scenario, onDeleteTask, onSave }) {
                     id="outlined-basic"
                     label="焦点"
                     variant="outlined"
-                    onChange={(e) => handleChange(e, "焦点")}
+                    name="焦点"
+                    onChange={handleChange}
                     defaultValue={sc["焦点"]}
                   >
                     {sc["焦点"]}
@@ -164,7 +166,8 @@ export default function Scenario({ index, scenario, onDeleteTask, onSave }) {
                     id="outlined-basic"
                     label="比例"
                     variant="outlined"
-                    onChange={(e) => handleChange(e, "比例")}
+                    name="比例"
+                    onChange={handleChange}
                     defaultValue={sc["比例"]}
                   >
                     {sc["比例"]}
@@ -180,7 +183,8 @@ export default function Scenario({ index, scenario, onDeleteTask, onSave }) {
                       背景
                       <VisuallyHiddenInput
                         type="file"
-                        onChange={(e) => handleChange(e, "背景")}
+                        name="背景"
+                        onChange={handleChange}
                       />
                     </Button>
                     <Box
