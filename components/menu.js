@@ -19,7 +19,12 @@ const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
 
 export default function Menu({ scripts, selectScript }) {
   const [openstate, setOpenstate] = useState(false);
+  const [selectedIndex, setSelectedIndex] = React.useState(1);
   const [login, setLogin] = useState(false);
+
+  const handleListItemClick = (event, index) => {
+    setSelectedIndex(index);
+  };
 
   return (
     <Drawer
@@ -41,7 +46,7 @@ export default function Menu({ scripts, selectScript }) {
         open={openstate}
         close={() => setOpenstate(false)}
       ></CustomizedDialogs>
-      <List sx={{height: '10px'}}>
+      <List sx={{ height: "10px" }}>
         <ListItem>
           <LoginForm />
         </ListItem>
@@ -54,46 +59,41 @@ export default function Menu({ scripts, selectScript }) {
       >
         {scripts &&
           scripts.map((script, i) => (
-            <ListItem
+            <ListItemButton
               key={i}
-              disablePadding
-              onClick={() => selectScript(script.id)}
+              selected={selectedIndex === i}
+              onClick={(event) => {
+                handleListItemClick(event, i);
+                selectScript(script.id);
+              }}
             >
-              <ListItemButton>
-                <ListItemIcon>
-                  <VideoFile />
-                </ListItemIcon>
-                <ListItemText primary={script.id} />
-              </ListItemButton>
-            </ListItem>
+              <ListItemIcon>
+                <VideoFile />
+              </ListItemIcon>
+              <ListItemText primary={script.id} />
+            </ListItemButton>
           ))}
       </List>
       <Divider sx={{ mt: "auto" }} />
       <List>
-        <ListItem key="script" disablePadding>
-          <ListItemButton onClick={() => setOpenstate(true)}>
-            <ListItemIcon>
-              <UploadFile></UploadFile>
-            </ListItemIcon>
-            <ListItemText primary="上传脚本" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem key="setting" disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              <Settings />
-            </ListItemIcon>
-            <ListItemText primary="配置" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem key="help" disablePadding>
-          <ListItemButton component={Link} to="/help" target="_blank">
-            <ListItemIcon>
-              <Help />
-            </ListItemIcon>
-            <ListItemText primary="帮助"></ListItemText>
-          </ListItemButton>
-        </ListItem>
+        <ListItemButton onClick={() => setOpenstate(true)}>
+          <ListItemIcon>
+            <UploadFile></UploadFile>
+          </ListItemIcon>
+          <ListItemText primary="上传脚本" />
+        </ListItemButton>
+        <ListItemButton>
+          <ListItemIcon>
+            <Settings />
+          </ListItemIcon>
+          <ListItemText primary="配置" />
+        </ListItemButton>
+        <ListItemButton component={Link} to="/help" target="_blank">
+          <ListItemIcon>
+            <Help />
+          </ListItemIcon>
+          <ListItemText primary="帮助"></ListItemText>
+        </ListItemButton>
       </List>
     </Drawer>
   );

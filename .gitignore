@@ -4,6 +4,7 @@ resources
 node_modules
 scripts/flow/*/.flowconfig
 .flowconfig
+script
 *~
 *.pyc
 .grunt

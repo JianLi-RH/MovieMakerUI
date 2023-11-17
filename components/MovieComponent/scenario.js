@@ -88,7 +88,7 @@ export default function Scenario({ index, scenario, onDeleteTask, onSave }) {
             sx={{ width: 40 }}
             onClick={(e) => {
               e.preventDefault();
-              onDeleteTask(sc["名字"]);
+              onDeleteTask(index);
             }}
           ></Delete>
           {scenarioEditState ? (

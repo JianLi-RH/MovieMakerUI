@@ -32,16 +32,12 @@ export async function getStaticProps() {
   };
 }
 
-export function getScript(scriptName) {}
-
 export default function Home({ all_script }) {
   const [script, dispatch] = useReducer(tasksReducer, null);
-  const [selectedScript, setSelectedScript] = useState(null);
 
   const getScript = (script) => {
     fetch("/api/file?file=" + script)
       .then((response) => {
-        setSelectedScript(script);
         return response.text();
       })
       .then((data) => {
@@ -59,10 +55,10 @@ export default function Home({ all_script }) {
     });
   }
 
-  function handleDeleteTask(name) {
+  function handleDeleteTask(index) {
     dispatch({
       type: "deleted",
-      name: name,
+      index: index,
     });
   }
 
@@ -78,7 +74,6 @@ export default function Home({ all_script }) {
       {(script && (
         <Workspace
           scenarios={script}
-          selectedScript={selectedScript}
           handleAddTask={handleAddTask}
           handleDeleteTask={handleDeleteTask}
           handleSaveSc={handleSaveSc}
@@ -112,7 +107,7 @@ function tasksReducer(tasks, action) {
       return [...script, sc];
     }
     case "deleted": {
-      return script.filter((t) => t["名字"] !== action.name);
+      return script.filter((t, i) => i !== action.index);
     }
     case "set": {
       return action.script;
