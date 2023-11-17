@@ -14,10 +14,12 @@ import { Help, Settings, UploadFile, VideoFile } from "@mui/icons-material";
 import GlobalConifg from "../pages/app.config";
 import Script from "next/script";
 import CustomizedDialogs from "../components/scriptdialog";
+import LoginForm from "../components/login-form";
 const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
 
-export default function Menu() {
+export default function Menu({ scripts, selectScript }) {
   const [openstate, setOpenstate] = useState(false);
+  const [login, setLogin] = useState(false);
 
   return (
     <Drawer
@@ -39,19 +41,32 @@ export default function Menu() {
         open={openstate}
         close={() => setOpenstate(false)}
       ></CustomizedDialogs>
+      <List sx={{height: '10px'}}>
+        <ListItem>
+          <LoginForm />
+        </ListItem>
+      </List>
+      <Divider sx={{ mt: "auto" }} />
       <List
         sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
         component="nav"
         aria-labelledby="nested-list-subheader"
       >
-        <ListItem key="script" disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              <VideoFile />
-            </ListItemIcon>
-            <ListItemText primary="配置" />
-          </ListItemButton>
-        </ListItem>
+        {scripts &&
+          scripts.map((script, i) => (
+            <ListItem
+              key={i}
+              disablePadding
+              onClick={() => selectScript(script.id)}
+            >
+              <ListItemButton>
+                <ListItemIcon>
+                  <VideoFile />
+                </ListItemIcon>
+                <ListItemText primary={script.id} />
+              </ListItemButton>
+            </ListItem>
+          ))}
       </List>
       <Divider sx={{ mt: "auto" }} />
       <List>

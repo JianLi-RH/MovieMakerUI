@@ -1,59 +1,17 @@
 import * as React from "react";
-import { useReducer } from "react";
 import Header from "./header";
 import Menu from "./menu";
-import Workspace from "./workspace";
 
 import Box from "@mui/material/Box";
 import ThemeRegistry from "./ThemeRegistry/ThemeRegistry";
 import GlobalConifg from "../pages/app.config";
 const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
 
-export default function Layout({ scenarios, script_path }) {
-  const [tasks, dispatch] = useReducer(tasksReducer, scenarios);
-
-  const callAPI = async (final_sc) => {
-    try {
-      const res = await fetch(`/api/script`, {
-        method: "POST",
-        body: JSON.stringify({ script: { 场景: final_sc }, path: script_path }),
-      });
-
-      const data = await res.json();
-      console.log("data:", data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  function handleAddTask() {
-    dispatch({
-      type: "added",
-    });
-
-    console.log(tasks);
-    callAPI(tasks);
-  }
-
-  function handleDeleteTask(name) {
-    dispatch({
-      type: "deleted",
-      name: name,
-    });
-    console.log(tasks);
-    callAPI(tasks);
-  }
-
-  async function handleSaveSc(index, scenario) {
-    let final_sc = tasks;
-    final_sc[index] = scenario;
-    callAPI(final_sc);
-  }
-
+export default function Layout({ scripts, selectScript, children }) {
   return (
     <ThemeRegistry>
       <Header></Header>
-      <Menu></Menu>
+      <Menu scripts={scripts} selectScript={selectScript}></Menu>
       <Box
         component="main"
         sx={{
@@ -64,37 +22,8 @@ export default function Layout({ scenarios, script_path }) {
           p: 3,
         }}
       >
-        <Workspace
-          scenarios={tasks}
-          onAddTask={handleAddTask}
-          onDeleteTask={handleDeleteTask}
-          onSave={handleSaveSc}
-        ></Workspace>
+        {children}
       </Box>
     </ThemeRegistry>
   );
-}
-
-function tasksReducer(tasks, action) {
-  // 这里tasks就是scenarios
-  switch (action.type) {
-    case "added": {
-      let sc = {
-        背景: "",
-        名字: "default" + tasks.length,
-        焦点: "中心",
-        背景音乐: null,
-        比例: 1,
-        角色: null,
-        活动: null,
-      };
-      return [...tasks, sc];
-    }
-    case "deleted": {
-      return tasks.filter((t) => t["名字"] !== action.name);
-    }
-    default: {
-      throw Error("未知 action: " + action.type);
-    }
-  }
 }

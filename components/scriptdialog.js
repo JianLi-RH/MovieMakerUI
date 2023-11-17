@@ -10,6 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import Alert from "@mui/material/Alert";
 import Link from "next/link";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -40,7 +41,7 @@ export default function CustomizedDialogs(props) {
   const uploadToClient = (event) => {
     if (event.target.files && event.target.files[0]) {
       const i = event.target.files[0];
-      console.log(event.target.files[0])
+      console.log(event.target.files[0]);
       if (i.name.endsWith(".yaml") || i.name.endsWith(".yml")) {
         setScript(i);
       } else {
@@ -51,10 +52,13 @@ export default function CustomizedDialogs(props) {
   const uploadToServer = async (event) => {
     const body = new FormData();
     body.append("file", script);
-    body.append("path", 'script')
-    const response = await fetch("/api/file", {
+    body.append("path", "script");
+    await fetch("/api/file", {
       method: "POST",
       body,
+    }).then((response) => {
+      props.close();
+      return response.text();
     });
   };
   return (
@@ -88,21 +92,19 @@ export default function CustomizedDialogs(props) {
         </Typography>
       </DialogContent>
       <DialogActions>
+        <Button component="label" variant="contained">
+          选择脚本
+          <VisuallyHiddenInput type="file" onChange={uploadToClient} />
+        </Button>
         <Button
           component="label"
           variant="contained"
-          startIcon={<CloudUploadIcon />}
-        >
-          上传
-          <VisuallyHiddenInput type="file" onChange={uploadToClient} />
-        </Button>
-        <button
-          className="btn btn-primary"
           type="submit"
+          startIcon={<CloudUploadIcon />}
           onClick={uploadToServer}
         >
-          Send to server
-        </button>
+          上传
+        </Button>
       </DialogActions>
     </BootstrapDialog>
   );

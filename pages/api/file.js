@@ -1,10 +1,24 @@
 import formidable, { errors as formidableErrors } from "formidable";
 import fs from "fs";
+import { resolve } from "path";
 
 export const config = {
   api: {
     bodyParser: false,
   },
+};
+
+const get = async (req, res) => {
+  const script = fs.readFile(
+    `script/${req.query["file"]}.yaml`,
+    "utf-8",
+    (err, data) => {
+      if (err) throw err;
+      // console.log("data: ", data.toString())
+      res.status(200).send(data.toString());
+    }
+  );
+  return res;
 };
 
 const post = async (req, res) => {
@@ -16,8 +30,6 @@ const post = async (req, res) => {
 };
 
 const saveFile = async (file, fields) => {
-  console.log(file);
-  console.log(fields);
   fs.copyFile(
     file.filepath,
     `./${fields.path}/${file.originalFilename}`,
@@ -31,7 +43,8 @@ const saveFile = async (file, fields) => {
 };
 
 export default (req, res) => {
-  // 上传文件时，表单需要两个参数： file和path, path是文件存放的目标路径
+  // 上传文件时(POST)，表单需要两个参数： file和path, path是文件存放的目标路径
+  // 下载文件时(get)， 表单需要一个参数：file
   req.method === "POST"
     ? post(req, res)
     : req.method === "PUT"
@@ -39,6 +52,6 @@ export default (req, res) => {
     : req.method === "DELETE"
     ? console.log("DELETE")
     : req.method === "GET"
-    ? console.log("GET")
+    ? get(req, res)
     : res.status(404).send("");
 };

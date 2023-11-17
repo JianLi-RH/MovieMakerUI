@@ -9,36 +9,40 @@ import GlobalConifg from "../pages/app.config";
 
 export default function Workspace({
   scenarios,
-  onAddTask,
-  onDeleteTask,
-  onSave,
+  selectedScript,
+  handleAddTask,
+  handleDeleteTask,
+  handleSaveSc,
 }) {
   return (
     <Container>
-      {scenarios.map((scenario, i) => (
-        <Scenario
-          key={scenario["名字"] + i}
-          index={i}
-          scenario={scenario}
-          onDeleteTask={onDeleteTask}
-          onSave={onSave}
-        ></Scenario>
-      ))}
-      <Box
-        sx={{
-          width: 1,
-          marginRight: 0.5,
-          my: 1,
-        }}
-      >
-        <List>
-          <ListItemButton onClick={onAddTask}>
-            <ListItemText sx={{ textAlign: "center" }}>
-              <AddCircle></AddCircle>
-            </ListItemText>
-          </ListItemButton>
-        </List>
-      </Box>
+      {scenarios &&
+        scenarios.map((scenario, i) => (
+          <Scenario
+            key={scenario["名字"] + i}
+            index={i}
+            scenario={scenario}
+            onDeleteTask={handleDeleteTask}
+            onSave={handleSaveSc}
+          ></Scenario>
+        ))}
+      {selectedScript && (
+        <Box
+          sx={{
+            width: 1,
+            marginRight: 0.5,
+            my: 1,
+          }}
+        >
+          <List>
+            <ListItemButton onClick={handleAddTask}>
+              <ListItemText sx={{ textAlign: "center" }}>
+                <AddCircle></AddCircle>
+              </ListItemText>
+            </ListItemButton>
+          </List>
+        </Box>
+      )}
     </Container>
   );
 }
