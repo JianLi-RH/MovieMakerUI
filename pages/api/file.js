@@ -35,7 +35,6 @@ const post = async (req, res) => {
   //上传脚本文件
   const form = formidable({});
   form.parse(req, async function (err, fields, files) {
-    console.log(fields);
     if (fields.length > 2) {
       // 客户端显示已经有3个视频了
       return res.send({
@@ -55,6 +54,20 @@ const post = async (req, res) => {
     await saveFile(files.file[0], fields);
     return res.send({ code: 200, status: "success", msg: "文件上传成功" });
   });
+};
+
+const remove = async (req, res) => {
+  if (req.query["file"] != undefined) {
+    let filepath = `./script/${req.query["file"]}.yaml`;
+    console.log(filepath)
+    fs.unlink(filepath, (err) => {
+      if (err) {
+        res.send({ code: 500, status: "fail", msg: err });
+      } else {
+        res.send({ code: 200, status: "success", msg: "脚本删除成功" });
+      }
+    });
+  }
 };
 
 const saveFile = async (file, fields) => {
@@ -78,7 +91,7 @@ export default (req, res) => {
     : req.method === "PUT"
     ? console.log("PUT")
     : req.method === "DELETE"
-    ? console.log("DELETE")
+    ? remove(req, res)
     : req.method === "GET"
     ? get(req, res)
     : res.status(404).send("");

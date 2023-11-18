@@ -46,10 +46,10 @@ export default function CustomizedDialogs(props) {
   const uploadToClient = (event) => {
     if (event.target.files && event.target.files[0]) {
       const i = event.target.files[0];
-      if (i.name.endsWith(".yaml") || i.name.endsWith(".yml")) {
+      if (i.name.endsWith(".yaml")) {
         setScript(i);
       } else {
-        alert("仅支持后缀为.yaml或者.yml的脚本文件");
+        alert("仅支持后缀为.yaml的脚本文件");
       }
     }
   };
