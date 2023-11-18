@@ -1,6 +1,6 @@
 import * as React from "react";
-import YAML from "yaml";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useState } from "react";
+import { useImmer } from "use-immer";
 import Workspace from "components/workspace.js";
 import Button from "@mui/material/Button";
 
@@ -8,7 +8,7 @@ import Layout from "../components/layout.js";
 import { getAllScripts } from "lib/script.js";
 
 // 将更改保存到文件
-const callAPI = async (final_sc) => {
+const callAPI = async (final_sc, selectedScript) => {
   try {
     const res = await fetch(`/api/script`, {
       method: "POST",
@@ -19,63 +19,75 @@ const callAPI = async (final_sc) => {
     });
 
     const data = await res.json();
+    console.log("callAPI: ", data);
   } catch (err) {
     console.log(err);
   }
 };
 
-export async function getStaticProps() {
-  // const origin_script = await getVideoScript("武松打虎");
-  const all_script = getAllScripts();
-  return {
-    props: { all_script },
-  };
-}
+export default function Home() {
+  const [allScript, setAllScript] = useState([]);
 
-export default function Home({ all_script }) {
-  const [script, dispatch] = useReducer(tasksReducer, null);
+  useEffect(() => {
+    fetch("/api/file?files")
+      .then((r) => r.json())
+      .then((r) => {
+        // save data from fetch request to state
+        setAllScript(r.msg);
+      });
+  }, ["/api/file?files"]);
+
+  const [script, updateScript] = useImmer([]);  // 当前脚本的全部场景
+  const [selectedScript, setSelectedScript] = React.useState(null); // 当前脚本名字
 
   const getScript = (script) => {
     fetch("/api/file?file=" + script)
       .then((response) => {
-        return response.text();
+        return response.json();
       })
       .then((data) => {
-        // setScript(YAML.parse(data)["场景"]);
-        dispatch({
-          type: "set",
-          script: YAML.parse(data)["场景"],
-        });
+        setSelectedScript(script);
+        updateScript(data.msg["场景"]);
       });
   };
 
-  function handleAddTask() {
-    dispatch({
-      type: "added",
-    });
+  function handleAddTask(e) {
+    let sc = {
+      背景: "",
+      名字: "default" + script.length,
+      焦点: "中心",
+      背景音乐: null,
+      比例: 1,
+      角色: null,
+      活动: null,
+    };
+    updateScript([...script, sc]);
   }
 
-  function handleDeleteTask(index) {
-    dispatch({
-      type: "deleted",
-      index: index,
-    });
+  function handleDeleteScenario(index) {
+    const newScript = [];
+    for (var i = 0; i < script.length; i++) {
+      if (i != index) {
+        newScript.push(script[i]);
+      }
+    }
+    callAPI(newScript, selectedScript);
+    updateScript(newScript);
   }
 
   async function handleSaveSc(index, scenario) {
-    let final_sc = script;
-    console.log("final_sc: ", final_sc);
+    let final_sc = [...script];
     final_sc[index] = scenario;
-    callAPI(final_sc);
+    callAPI(final_sc, selectedScript);
   }
 
   return (
-    <Layout scripts={all_script} selectScript={getScript}>
+    <Layout scripts={allScript} selectScript={getScript}>
       {(script && (
         <Workspace
           scenarios={script}
           handleAddTask={handleAddTask}
-          handleDeleteTask={handleDeleteTask}
+          handleDeleteSC={handleDeleteScenario}
           handleSaveSc={handleSaveSc}
         ></Workspace>
       )) || (
@@ -89,31 +101,4 @@ export default function Home({ all_script }) {
       )}
     </Layout>
   );
-}
-
-function tasksReducer(tasks, action) {
-  // 这里tasks就是scenarios
-  switch (action.type) {
-    case "added": {
-      let sc = {
-        背景: "",
-        名字: "default" + tasks.length,
-        焦点: "中心",
-        背景音乐: null,
-        比例: 1,
-        角色: null,
-        活动: null,
-      };
-      return [...script, sc];
-    }
-    case "deleted": {
-      return script.filter((t, i) => i !== action.index);
-    }
-    case "set": {
-      return action.script;
-    }
-    default: {
-      throw Error("未知 action: " + action.type);
-    }
-  }
 }

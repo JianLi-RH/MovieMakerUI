@@ -12,14 +12,13 @@ import Link from "next/link";
 import { Help, Settings, UploadFile, VideoFile } from "@mui/icons-material";
 
 import GlobalConifg from "../pages/app.config";
-import Script from "next/script";
 import CustomizedDialogs from "../components/scriptdialog";
 import LoginForm from "../components/login-form";
 const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
 
 export default function Menu({ scripts, selectScript }) {
   const [openstate, setOpenstate] = useState(false);
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const [login, setLogin] = useState(false);
 
   const handleListItemClick = (event, index) => {
@@ -43,6 +42,7 @@ export default function Menu({ scripts, selectScript }) {
       anchor="left"
     >
       <CustomizedDialogs
+        length={scripts.length}
         open={openstate}
         close={() => setOpenstate(false)}
       ></CustomizedDialogs>

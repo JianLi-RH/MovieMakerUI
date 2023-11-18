@@ -10,19 +10,19 @@ import GlobalConifg from "../pages/app.config";
 export default function Workspace({
   scenarios,
   handleAddTask,
-  handleDeleteTask,
+  handleDeleteSC,
   handleSaveSc,
 }) {
   return (
     <Container>
-      {scenarios && (
+      {scenarios.length > 0 && (
         <Box>
           {scenarios.map((scenario, i) => (
             <Scenario
-              key={scenario["名字"] + i}
+              key={i}
               index={i}
               scenario={scenario}
-              onDeleteTask={handleDeleteTask}
+              handleDeleteSC={handleDeleteSC}
               onSave={handleSaveSc}
             ></Scenario>
           ))}

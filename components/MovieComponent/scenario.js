@@ -47,7 +47,7 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-export default function Scenario({ index, scenario, onDeleteTask, onSave }) {
+export default function Scenario({ index, scenario, handleDeleteSC, onSave }) {
   const [sc, setSC] = React.useState(scenario);
 
   // 场景是否展开
@@ -88,7 +88,7 @@ export default function Scenario({ index, scenario, onDeleteTask, onSave }) {
             sx={{ width: 40 }}
             onClick={(e) => {
               e.preventDefault();
-              onDeleteTask(index);
+              handleDeleteSC(index);
             }}
           ></Delete>
           {scenarioEditState ? (

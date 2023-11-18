@@ -37,11 +37,15 @@ const VisuallyHiddenInput = styled("input")({
 export default function CustomizedDialogs(props) {
   const [script, setScript] = useState(null);
   const [createObjectURL, setCreateObjectURL] = useState(null);
+  const [alert, setAlert] = useState({
+    display: "none",
+    severity: "info",
+    message: "",
+  });
 
   const uploadToClient = (event) => {
     if (event.target.files && event.target.files[0]) {
       const i = event.target.files[0];
-      console.log(event.target.files[0]);
       if (i.name.endsWith(".yaml") || i.name.endsWith(".yml")) {
         setScript(i);
       } else {
@@ -53,20 +57,48 @@ export default function CustomizedDialogs(props) {
     const body = new FormData();
     body.append("file", script);
     body.append("path", "script");
-    await fetch("/api/file", {
+    body.append("length", props.length);
+    const result = await fetch("/api/file", {
       method: "POST",
       body,
-    }).then((response) => {
+    })
+      .then((data) => {
+        return data.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .then(function (jsonStr) {
+        if (jsonStr.code === 200) {
+          return {
+            display: "flex",
+            severity: "success",
+            message: jsonStr.msg,
+          };
+        } else {
+          return {
+            display: "flex",
+            severity: "error",
+            message: jsonStr.msg,
+          };
+        }
+      });
+    setAlert(result);
+    setTimeout(() => {
+      setAlert({ display: "none", severity: "info", message: "" });
       props.close();
-      return response.text();
-    });
+    }, 2000);
   };
+
   return (
     <BootstrapDialog
       onClose={() => props.close()}
       aria-labelledby="customized-dialog-title"
       open={props.open}
     >
+      <Alert style={{ display: alert.display }} severity={alert.severity}>
+        {alert.message}
+      </Alert>
       <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
         上传脚本文件
       </DialogTitle>
