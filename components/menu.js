@@ -29,7 +29,7 @@ import CustomizedDialogs from "../components/scriptdialog";
 import LoginForm from "../components/login-form";
 const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
 
-export default function Menu({ scripts, selectScript }) {
+export default function Menu({ scripts, selectScript, updateList }) {
   const [openDeleteScript, setOpenDeleteScript] = useState(false);
   const [deleteScriptName, setDeleteScriptName] = useState("");
   const [alert, setAlert] = useState({
@@ -81,6 +81,7 @@ export default function Menu({ scripts, selectScript }) {
     setTimeout(() => {
       setAlert({ display: "none", severity: "info", message: "" });
       setOpenDeleteScript(false);
+      updateList();
     }, 2000);
   };
 
@@ -124,6 +125,7 @@ export default function Menu({ scripts, selectScript }) {
       <CustomizedDialogs
         length={scripts.length}
         open={openstate}
+        updateList={updateList}
         close={() => setOpenstate(false)}
       ></CustomizedDialogs>
       <List sx={{ height: "10px" }}>
@@ -137,7 +139,7 @@ export default function Menu({ scripts, selectScript }) {
         component="nav"
         aria-labelledby="nested-list-subheader"
       >
-        {scripts &&
+        {(scripts.length > 0 &&
           scripts.map((script, i) => (
             <ListItem
               key={i}
@@ -165,7 +167,11 @@ export default function Menu({ scripts, selectScript }) {
                 <ListItemText primary={script.id} />
               </ListItemButton>
             </ListItem>
-          ))}
+          )) || (
+          <ListItem>
+            <ListItemText primary="开始工作前请先上传脚本" />
+          </ListItem>
+        ))}
       </List>
       <Divider sx={{ mt: "auto" }} />
       <List>

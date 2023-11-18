@@ -37,8 +37,17 @@ export default function Home() {
       });
   }, ["/api/file?files"]);
 
-  const [script, updateScript] = useImmer([]);  // 当前脚本的全部场景
+  const [script, updateScript] = useImmer([]); // 当前脚本的全部场景
   const [selectedScript, setSelectedScript] = React.useState(null); // 当前脚本名字
+
+  const updateList = () => {
+    fetch("/api/file?files")
+      .then((r) => r.json())
+      .then((r) => {
+        // save data from fetch request to state
+        setAllScript(r.msg);
+      });
+  };
 
   const getScript = (script) => {
     fetch("/api/file?file=" + script)
@@ -82,7 +91,11 @@ export default function Home() {
   }
 
   return (
-    <Layout scripts={allScript} selectScript={getScript}>
+    <Layout
+      scripts={allScript}
+      selectScript={getScript}
+      updateList={updateList}
+    >
       {(script && (
         <Workspace
           scenarios={script}

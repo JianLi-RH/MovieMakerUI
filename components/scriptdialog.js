@@ -87,6 +87,7 @@ export default function CustomizedDialogs(props) {
     setTimeout(() => {
       setAlert({ display: "none", severity: "info", message: "" });
       props.close();
+      props.updateList();
     }, 2000);
   };
 
