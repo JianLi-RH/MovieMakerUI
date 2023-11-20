@@ -2,6 +2,7 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import Workspace from "components/workspace.js";
+import FullFeaturedCrudGrid from "components/settings.js"
 import Button from "@mui/material/Button";
 
 import Layout from "../components/layout.js";
@@ -99,17 +100,19 @@ export default function Home() {
       {(script && (
         <Workspace
           scenarios={script}
+          selectedScript={selectedScript}
           handleAddTask={handleAddTask}
           handleDeleteSC={handleDeleteScenario}
           handleSaveSc={handleSaveSc}
         ></Workspace>
       )) || (
         <>
-          请在左侧菜单栏选择脚本，如果还没有脚本请先上传，也可以点击
+          {/* 请在左侧菜单栏选择脚本，如果还没有脚本请先上传，也可以点击
           <Button component="label" variant="text">
             新建脚本
           </Button>
-          创建一个脚本
+          创建一个脚本 */}
+          <FullFeaturedCrudGrid></FullFeaturedCrudGrid>
         </>
       )}
     </Layout>

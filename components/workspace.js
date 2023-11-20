@@ -9,6 +9,7 @@ import GlobalConifg from "../pages/app.config";
 
 export default function Workspace({
   scenarios,
+  selectedScript,
   handleAddTask,
   handleDeleteSC,
   handleSaveSc,
@@ -21,6 +22,7 @@ export default function Workspace({
             <Scenario
               key={i}
               index={i}
+              selectedScript={selectedScript}
               scenario={scenario}
               handleDeleteSC={handleDeleteSC}
               onSave={handleSaveSc}

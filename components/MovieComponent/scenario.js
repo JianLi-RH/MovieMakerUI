@@ -47,7 +47,13 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-export default function Scenario({ index, scenario, handleDeleteSC, onSave }) {
+export default function Scenario({
+  index,
+  scenario,
+  selectedScript,
+  handleDeleteSC,
+  onSave,
+}) {
   const [sc, setSC] = React.useState(scenario);
 
   // 场景是否展开
@@ -59,6 +65,28 @@ export default function Scenario({ index, scenario, handleDeleteSC, onSave }) {
   const [circle, setCircle] = React.useState("none");
   const makeVideo = (scenario) => {
     setCircle(circle == "none" ? "flex" : "none");
+    fetch("api/makevideo?script=" + selectedScript + "&scenario=" + scenario)
+      .then((data) => {
+        return data.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .then(function (jsonStr) {
+        if (jsonStr.code === 200) {
+          return {
+            display: "flex",
+            severity: "success",
+            message: jsonStr.msg,
+          };
+        } else {
+          return {
+            display: "flex",
+            severity: "error",
+            message: jsonStr.msg,
+          };
+        }
+      });
   };
 
   function handleChange(e) {
