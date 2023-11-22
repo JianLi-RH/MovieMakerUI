@@ -1,6 +1,13 @@
 # React
 
 # Next.Js
+```
+npm install store
+npm install next-auth@beta
+openssl rand -base64 32
+```
+put secret key in '.env' file:
+
 
 # MUI
 ```

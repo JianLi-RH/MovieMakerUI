@@ -2,6 +2,8 @@ import formidable, { errors as formidableErrors } from "formidable";
 import fs from "fs";
 import YAML from "yaml";
 
+import user from "../../lib/user";
+
 export const config = {
   api: {
     bodyParser: false,
@@ -9,19 +11,22 @@ export const config = {
 };
 
 const get = async (req, res) => {
+  console.log("req: ", req)
+  let username = user.getUser("asd");
+  let scriptFolder = `workspaces/${username}/script`;
   if (req.query["file"] != undefined) {
     const script = fs.readFile(
-      `script/${req.query["file"]}.yaml`,
+      `${scriptFolder}/${req.query["file"]}.yaml`,
       "utf-8",
       (err, data) => {
         if (err) {
-          res.json({ code: 500, status: "fail", msg: err.toString() });
+          res.json({ code: 211, status: "fail", msg: err.toString() });
         }
         res.json({ code: 200, status: "success", msg: YAML.parse(data) });
       }
     );
   } else if (req.query["files"] != undefined) {
-    const fileNames = fs.readdirSync("script/");
+    const fileNames = fs.readdirSync(scriptFolder);
     let f = Array(fileNames.length);
     for (var i = 0; i < fileNames.length; i++) {
       f[i] = { id: fileNames[i].replace(/\.(yaml|yml)$/, "") };
@@ -43,7 +48,22 @@ const post = async (req, res) => {
         msg: "普通用户只能创建3个视频",
       });
     }
-    const fileNames = fs.readdirSync("script/");
+    let username = user.getUser("asd");
+    let scriptFolder = `workspaces/${username}/script`;
+    if (!fs.existsSync(scriptFolder)) {
+      let created = fs.mkdirSync(scriptFolder, { recursive: true }, (err) => {
+        if (err) {
+          console.log("err: ", err);
+          return res.send({
+            code: 203,
+            status: "fail",
+            msg: "创建脚本文件夹失败",
+          });
+        }
+        console.log("scriptFolder created successfully!");
+      });
+    }
+    const fileNames = fs.readdirSync(scriptFolder);
     if (fileNames.length > 2) {
       return res.send({
         code: 202,
@@ -51,15 +71,19 @@ const post = async (req, res) => {
         msg: "普通用户只能创建3个视频",
       });
     }
-    await saveFile(files.file[0], fields);
-    return res.send({ code: 200, status: "success", msg: "文件上传成功" });
+    let result = await saveFile(files.file[0], fields);
+    if (result) {
+      return res.send({ code: 200, status: "success", msg: "文件上传成功" });
+    } else {
+      return res.send({ code: 210, status: "fail", msg: "文件上传失败" });
+    }
   });
 };
 
 const remove = async (req, res) => {
+  let username = user.getUser("asd");
   if (req.query["file"] != undefined) {
-    let filepath = `./script/${req.query["file"]}.yaml`;
-    console.log(filepath)
+    let filepath = `workspaces/${username}/script/${req.query["file"]}.yaml`;
     fs.unlink(filepath, (err) => {
       if (err) {
         res.send({ code: 500, status: "fail", msg: err });
@@ -71,16 +95,19 @@ const remove = async (req, res) => {
 };
 
 const saveFile = async (file, fields) => {
+  let username = user.getUser("asd");
+  let fileNames = `workspaces/${username}/script`;
   fs.copyFile(
     file.filepath,
-    `./${fields.path}/${file.originalFilename}`,
+    `./${fileNames}/${file.originalFilename}`,
     (err) => {
       if (err) {
         console.log("Error Found:", err);
+        return false;
       }
     }
   );
-  return;
+  return true;
 };
 
 export default (req, res) => {

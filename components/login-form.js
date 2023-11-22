@@ -40,7 +40,6 @@ export default function LoginForm() {
           };
         }
       });
-    console.log("result: ", result);
     setAlert(result);
     setTimeout(() => {
       setAlert({ display: "none", severity: "info", message: "" });

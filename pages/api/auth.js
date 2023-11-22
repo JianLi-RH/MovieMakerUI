@@ -1,28 +1,51 @@
 import formidable, { errors as formidableErrors } from "formidable";
 import fs from "fs";
 
+import user from "../../lib/user";
+
 export const config = {
   api: {
     bodyParser: false,
   },
 };
 
-const get = async (req, res) => {
-  return res.send({ code: 200, status: "success", msg: "登录成功" });
+// 准备用户工作空间
+const prepareWorkspace = (username) => {
+  let workspace = `workspaces/${username}`;
+  if (!fs.existsSync(workspace)) {
+    let created = fs.mkdirSync(workspace, { recursive: true }, (err) => {
+      if (err) {
+        console.log("err: ", err);
+        return console.error(err);
+      }
+      console.log("Workspace created successfully!");
+    });
+    if (created == false) {
+      return false;
+    }
+    let sourcecode = `SourceCode/MovieMaker`;
+    fs.cpSync(sourcecode, workspace, { recursive: true }, (err) => {
+      return false;
+    });
+    return true;
+  }
+  return true;
 };
 
+//登录
 const post = (req, res) => {
-  //登录
   const form = formidable({});
-  console.log("form: ", form);
   form.parse(req, function (err, fields, files) {
-    console.log("fields: ", fields);
     let name = fields.username;
     let pwd = fields.password;
 
     if (name == "admin" && pwd == "admin") {
-      console.log("success");
-      return res.send({ code: 200, status: "success", msg: "登录成功" });
+      if (prepareWorkspace(name)) {
+        user.saveUser(name, 'asd')
+        return res.send({ code: 200, status: "success", msg: "登录成功" });
+      } else {
+        return res.send({ code: 202, status: "fail", msg: "创建工作空间失败" });
+      }
     } else {
       console.log("fail");
       return res.send({
