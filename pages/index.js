@@ -2,7 +2,7 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import Workspace from "components/workspace.js";
-import FullFeaturedCrudGrid from "components/settings.js"
+import FullFeaturedCrudGrid from "components/settings.js";
 import Button from "@mui/material/Button";
 
 import Layout from "../components/layout.js";
@@ -30,7 +30,12 @@ export default function Home() {
   const [allScript, setAllScript] = useState([]);
 
   useEffect(() => {
-    fetch("/api/file?files")
+    if (localStorage.token) {
+      headers = { Authorization: localStorage.token };
+    } else {
+      return;
+    }
+    fetch("/api/file?files", { headers: headers })
       .then((r) => r.json())
       .then((r) => {
         // save data from fetch request to state

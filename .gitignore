@@ -1,5 +1,7 @@
 .DS_STORE
 resources
+workspaces
+SourceCode
 .next
 node_modules
 scripts/flow/*/.flowconfig

@@ -41,21 +41,28 @@ export default function Menu({ scripts, selectScript, updateList }) {
   const [openstate, setOpenstate] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [login, setLogin] = useState(false);
+  const [config, setConfig] = useState(false);
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
   };
 
   const deleteScript = (script) => {
-    console.log("script: ", script);
     setDeleteScriptName(script);
     setOpenDeleteScript(true);
   };
 
   const confirmDelete = async (script) => {
-    const result = await fetch("/api/file?file=" + script, {
-      method: "DELETE",
-    })
+    if (localStorage.token) {
+      headers = { Authorization: localStorage.token };
+    }
+    const result = await fetch(
+      "/api/file?file=" + script,
+      { headers: headers },
+      {
+        method: "DELETE",
+      }
+    )
       .then((data) => {
         return data.json();
       })
@@ -167,21 +174,37 @@ export default function Menu({ scripts, selectScript, updateList }) {
                 <ListItemText primary={script.id} />
               </ListItemButton>
             </ListItem>
-          )) || (
+          ))) || (
           <ListItem>
             <ListItemText primary="开始工作前请先上传脚本" />
           </ListItem>
-        ))}
+        )}
       </List>
       <Divider sx={{ mt: "auto" }} />
       <List>
-        <ListItemButton onClick={() => setOpenstate(true)}>
+        <ListItemButton
+          onClick={() => {
+            if (localStorage.token) {
+              setOpenstate(true);
+            } else {
+              window.alert("请先登录");
+            }
+          }}
+        >
           <ListItemIcon>
             <UploadFile></UploadFile>
           </ListItemIcon>
           <ListItemText primary="上传脚本" />
         </ListItemButton>
-        <ListItemButton>
+        <ListItemButton
+          onClick={() => {
+            if (localStorage.token) {
+              setConfig();
+            } else {
+              window.alert("请先登录");
+            }
+          }}
+        >
           <ListItemIcon>
             <Settings />
           </ListItemIcon>

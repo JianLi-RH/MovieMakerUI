@@ -11,8 +11,11 @@ export const config = {
 };
 
 const get = async (req, res) => {
-  console.log("req: ", req)
-  let username = user.getUser("asd");
+  let token = req.headers.get("Authorization");
+  let username = user.getUser(token);
+  if (username.length === 0) {
+    return await res.json({ code: 212, status: "fail", msg: "请先登录" });
+  }
   let scriptFolder = `workspaces/${username}/script`;
   if (req.query["file"] != undefined) {
     const script = fs.readFile(
@@ -48,7 +51,11 @@ const post = async (req, res) => {
         msg: "普通用户只能创建3个视频",
       });
     }
-    let username = user.getUser("asd");
+    let token = req.headers.get("Authorization");
+    let username = user.getUser(token);
+    if (username.length === 0) {
+      return await res.json({ code: 202, status: "fail", msg: "请先登录" });
+    }
     let scriptFolder = `workspaces/${username}/script`;
     if (!fs.existsSync(scriptFolder)) {
       let created = fs.mkdirSync(scriptFolder, { recursive: true }, (err) => {
@@ -66,7 +73,7 @@ const post = async (req, res) => {
     const fileNames = fs.readdirSync(scriptFolder);
     if (fileNames.length > 2) {
       return res.send({
-        code: 202,
+        code: 204,
         status: "fail",
         msg: "普通用户只能创建3个视频",
       });
@@ -81,12 +88,16 @@ const post = async (req, res) => {
 };
 
 const remove = async (req, res) => {
-  let username = user.getUser("asd");
+  let token = req.headers.get("Authorization");
+  let username = user.getUser(token);
+  if (username.length === 0) {
+    return await res.json({ code: 302, status: "fail", msg: "请先登录" });
+  }
   if (req.query["file"] != undefined) {
     let filepath = `workspaces/${username}/script/${req.query["file"]}.yaml`;
     fs.unlink(filepath, (err) => {
       if (err) {
-        res.send({ code: 500, status: "fail", msg: err });
+        res.send({ code: 303, status: "fail", msg: err });
       } else {
         res.send({ code: 200, status: "success", msg: "脚本删除成功" });
       }
@@ -95,7 +106,8 @@ const remove = async (req, res) => {
 };
 
 const saveFile = async (file, fields) => {
-  let username = user.getUser("asd");
+  let token = req.headers.get("Authorization");
+  let username = user.getUser(token);
   let fileNames = `workspaces/${username}/script`;
   fs.copyFile(
     file.filepath,

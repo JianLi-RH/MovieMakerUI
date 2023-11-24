@@ -56,7 +56,6 @@ export default function CustomizedDialogs(props) {
   const uploadToServer = async (event) => {
     const body = new FormData();
     body.append("file", script);
-    body.append("path", "script");
     body.append("length", props.length);
     const result = await fetch("/api/file", {
       method: "POST",

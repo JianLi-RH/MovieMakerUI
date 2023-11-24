@@ -11,6 +11,7 @@ export default function LoginForm() {
     message: "",
   });
 
+  // 登录
   const login = async (values) => {
     const body = new FormData();
     body.append("username", values.username);
@@ -27,6 +28,7 @@ export default function LoginForm() {
       })
       .then(function (jsonStr) {
         if (jsonStr.code === 200) {
+          localStorage.setItem("token", jsonStr.token)
           return {
             display: "flex",
             severity: "success",

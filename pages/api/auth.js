@@ -41,8 +41,9 @@ const post = (req, res) => {
 
     if (name == "admin" && pwd == "admin") {
       if (prepareWorkspace(name)) {
-        user.saveUser(name, 'asd')
-        return res.send({ code: 200, status: "success", msg: "登录成功" });
+        let token = require("crypto").randomBytes(32).toString('hex');
+        user.saveUser(name, token);
+        return res.send({ code: 200, status: "success", msg: "登录成功", token: token });
       } else {
         return res.send({ code: 202, status: "fail", msg: "创建工作空间失败" });
       }
