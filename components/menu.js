@@ -53,38 +53,37 @@ export default function Menu({ scripts, selectScript, updateList }) {
   };
 
   const confirmDelete = async (script) => {
-    if (localStorage.token) {
-      headers = { Authorization: localStorage.token };
-    }
-    const result = await fetch(
-      "/api/file?file=" + script,
-      { headers: headers },
-      {
+    if (sessionStorage.token) {
+      const result = await fetch("/api/file?file=" + script, {
         method: "DELETE",
-      }
-    )
-      .then((data) => {
-        return data.json();
+        headers: { Authorization: sessionStorage.token },
       })
-      .then((res) => {
-        return res;
-      })
-      .then(function (jsonStr) {
-        if (jsonStr.code === 200) {
-          return {
-            display: "flex",
-            severity: "success",
-            message: jsonStr.msg,
-          };
-        } else {
-          return {
-            display: "flex",
-            severity: "error",
-            message: jsonStr.msg,
-          };
-        }
-      });
-    setAlert(result);
+        .then((data) => {
+          return data.json();
+        })
+        .then((res) => {
+          return res;
+        })
+        .then(function (jsonStr) {
+          if (jsonStr.code === 200) {
+            return {
+              display: "flex",
+              severity: "success",
+              message: jsonStr.msg,
+            };
+          } else {
+            return {
+              display: "flex",
+              severity: "error",
+              message: jsonStr.msg,
+            };
+          }
+        });
+      setAlert(result);
+    } else {
+      setAlert({ display: "flex", severity: "error", message: "请先登录" });
+    }
+
     setTimeout(() => {
       setAlert({ display: "none", severity: "info", message: "" });
       setOpenDeleteScript(false);
@@ -137,7 +136,7 @@ export default function Menu({ scripts, selectScript, updateList }) {
       ></CustomizedDialogs>
       <List sx={{ height: "10px" }}>
         <ListItem>
-          <LoginForm />
+          <LoginForm updateList={updateList} />
         </ListItem>
       </List>
       <Divider sx={{ mt: "auto" }} />
@@ -184,7 +183,7 @@ export default function Menu({ scripts, selectScript, updateList }) {
       <List>
         <ListItemButton
           onClick={() => {
-            if (localStorage.token) {
+            if (sessionStorage.token) {
               setOpenstate(true);
             } else {
               window.alert("请先登录");
@@ -198,7 +197,7 @@ export default function Menu({ scripts, selectScript, updateList }) {
         </ListItemButton>
         <ListItemButton
           onClick={() => {
-            if (localStorage.token) {
+            if (sessionStorage.token) {
               setConfig();
             } else {
               window.alert("请先登录");

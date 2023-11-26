@@ -11,9 +11,10 @@ export const config = {
 };
 
 const get = async (req, res) => {
-  let token = req.headers.get("Authorization");
+  let token = req.headers["authorization"];
+
   let username = user.getUser(token);
-  if (username.length === 0) {
+  if (!username) {
     return await res.json({ code: 212, status: "fail", msg: "请先登录" });
   }
   let scriptFolder = `workspaces/${username}/script`;
@@ -51,9 +52,9 @@ const post = async (req, res) => {
         msg: "普通用户只能创建3个视频",
       });
     }
-    let token = req.headers.get("Authorization");
+    let token = req.headers["authorization"];
     let username = user.getUser(token);
-    if (username.length === 0) {
+    if (!username) {
       return await res.json({ code: 202, status: "fail", msg: "请先登录" });
     }
     let scriptFolder = `workspaces/${username}/script`;
@@ -88,9 +89,9 @@ const post = async (req, res) => {
 };
 
 const remove = async (req, res) => {
-  let token = req.headers.get("Authorization");
+  let token = req.headers["authorization"];
   let username = user.getUser(token);
-  if (username.length === 0) {
+  if (!username) {
     return await res.json({ code: 302, status: "fail", msg: "请先登录" });
   }
   if (req.query["file"] != undefined) {
@@ -106,7 +107,7 @@ const remove = async (req, res) => {
 };
 
 const saveFile = async (file, fields) => {
-  let token = req.headers.get("Authorization");
+  let token = req.headers["authorization"];
   let username = user.getUser(token);
   let fileNames = `workspaces/${username}/script`;
   fs.copyFile(

@@ -3,24 +3,25 @@ import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import Workspace from "components/workspace.js";
 import FullFeaturedCrudGrid from "components/settings.js";
-import Button from "@mui/material/Button";
 
 import Layout from "../components/layout.js";
-import { getAllScripts } from "lib/script.js";
 
 // 将更改保存到文件
 const callAPI = async (final_sc, selectedScript) => {
   try {
-    const res = await fetch(`/api/script`, {
-      method: "POST",
-      body: JSON.stringify({
-        script: { 场景: final_sc },
-        path: selectedScript,
-      }),
-    });
+    if (sessionStorage.token) {
+      const res = await fetch(`/api/script`, {
+        method: "POST",
+        headers: { Authorization: sessionStorage.token },
+        body: JSON.stringify({
+          script: { 场景: final_sc },
+          path: selectedScript,
+        }),
+      });
 
-    const data = await res.json();
-    console.log("callAPI: ", data);
+      const data = await res.json();
+      console.log("callAPI: ", data);
+    }
   } catch (err) {
     console.log(err);
   }
@@ -30,40 +31,53 @@ export default function Home() {
   const [allScript, setAllScript] = useState([]);
 
   useEffect(() => {
-    if (localStorage.token) {
-      headers = { Authorization: localStorage.token };
+    if (sessionStorage.token) {
+      fetch("/api/file?files", {
+        headers: { Authorization: sessionStorage.token },
+      })
+        .then((r) => r.json())
+        .then((r) => {
+          // save data from fetch request to state
+          setAllScript(r.msg);
+        });
     } else {
       return;
     }
-    fetch("/api/file?files", { headers: headers })
-      .then((r) => r.json())
-      .then((r) => {
-        // save data from fetch request to state
-        setAllScript(r.msg);
-      });
   }, ["/api/file?files"]);
 
   const [script, updateScript] = useImmer([]); // 当前脚本的全部场景
   const [selectedScript, setSelectedScript] = React.useState(null); // 当前脚本名字
 
   const updateList = () => {
-    fetch("/api/file?files")
-      .then((r) => r.json())
-      .then((r) => {
-        // save data from fetch request to state
-        setAllScript(r.msg);
-      });
+    if (sessionStorage.token) {
+      fetch("/api/file?files", {
+        headers: { Authorization: sessionStorage.token },
+      })
+        .then((r) => r.json())
+        .then((r) => {
+          // save data from fetch request to state
+          setAllScript(r.msg);
+        });
+    } else {
+      return;
+    }
   };
 
   const getScript = (script) => {
-    fetch("/api/file?file=" + script)
-      .then((response) => {
-        return response.json();
+    if (sessionStorage.token) {
+      fetch("/api/file?file=" + script, {
+        headers: { Authorization: sessionStorage.token },
       })
-      .then((data) => {
-        setSelectedScript(script);
-        updateScript(data.msg["场景"]);
-      });
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          setSelectedScript(script);
+          updateScript(data.msg["场景"]);
+        });
+    } else {
+      return;
+    }
   };
 
   function handleAddTask(e) {
