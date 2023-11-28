@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import styles from "./login-form.module.css";
 import Alert from "@mui/material/Alert";
 
-export default function LoginForm({updateList}) {
+export default function LoginForm({ updateList, updateLogin }) {
   const [serverUrl, setServerUrl] = useState("/api/auth");
   const [alert, setAlert] = useState({
     display: "none",
@@ -28,7 +28,7 @@ export default function LoginForm({updateList}) {
       })
       .then(function (jsonStr) {
         if (jsonStr.code === 200) {
-          sessionStorage.setItem("token", jsonStr.token)
+          sessionStorage.setItem("token", jsonStr.token);
           return {
             display: "flex",
             severity: "success",
@@ -43,7 +43,8 @@ export default function LoginForm({updateList}) {
         }
       });
     setAlert(result);
-    updateList()
+    updateList();
+    updateLogin();
     setTimeout(() => {
       setAlert({ display: "none", severity: "info", message: "" });
     }, 2000);

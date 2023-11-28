@@ -54,11 +54,15 @@ export default function CustomizedDialogs(props) {
     }
   };
   const uploadToServer = async (event) => {
+    if (!sessionStorage.token) {
+      return;
+    }
     const body = new FormData();
     body.append("file", script);
     body.append("length", props.length);
     const result = await fetch("/api/file", {
       method: "POST",
+      headers: { Authorization: sessionStorage.token },
       body,
     })
       .then((data) => {

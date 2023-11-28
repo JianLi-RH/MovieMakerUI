@@ -27,6 +27,7 @@ import {
 import GlobalConifg from "../pages/app.config";
 import CustomizedDialogs from "../components/scriptdialog";
 import LoginForm from "../components/login-form";
+import LogoutForm from "./logout-form";
 const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
 
 export default function Menu({ scripts, selectScript, updateList }) {
@@ -41,6 +42,29 @@ export default function Menu({ scripts, selectScript, updateList }) {
   const [openstate, setOpenstate] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [login, setLogin] = useState(false);
+  useEffect(() => {
+    // Perform localStorage action
+    if (sessionStorage.token) {
+      fetch("/api/auth", {
+        method: "GET",
+        headers: { Authorization: sessionStorage.token },
+      })
+        .then((data) => {
+          return data.json();
+        })
+        .then(function (jsonStr) {
+          if (jsonStr.code === 200) {
+            setLogin(true);
+          } else {
+            sessionStorage.removeItem("token");
+            setLogin(false);
+          }
+        });
+    } else {
+      setLogin(false);
+    }
+  }, []);
+
   const [config, setConfig] = useState(false);
 
   const handleListItemClick = (event, index) => {
@@ -136,7 +160,17 @@ export default function Menu({ scripts, selectScript, updateList }) {
       ></CustomizedDialogs>
       <List sx={{ height: "10px" }}>
         <ListItem>
-          <LoginForm updateList={updateList} />
+          {(login && (
+            <LogoutForm
+              updateList={updateList}
+              updateLogin={() => setLogin(false)}
+            ></LogoutForm>
+          )) || (
+            <LoginForm
+              updateList={updateList}
+              updateLogin={() => setLogin(true)}
+            />
+          )}
         </ListItem>
       </List>
       <Divider sx={{ mt: "auto" }} />

@@ -41,14 +41,18 @@ const post = (req, res) => {
 
     if (name == "admin" && pwd == "admin") {
       if (prepareWorkspace(name)) {
-        let token = require("crypto").randomBytes(32).toString('hex');
+        let token = require("crypto").randomBytes(32).toString("hex");
         user.saveUser(name, token);
-        return res.send({ code: 200, status: "success", msg: "登录成功", token: token });
+        return res.send({
+          code: 200,
+          status: "success",
+          msg: "登录成功",
+          token: token,
+        });
       } else {
         return res.send({ code: 202, status: "fail", msg: "创建工作空间失败" });
       }
     } else {
-      console.log("fail");
       return res.send({
         code: 201,
         status: "fail",
@@ -58,14 +62,36 @@ const post = (req, res) => {
   });
 };
 
+//登出
+const remove = (req, res) => {
+  let token = req.headers["authorization"];
+  let username = user.getUser(token);
+  if (!username) {
+    return res.json({ code: 302, status: "fail", msg: "用户没有登录" });
+  }
+  user.delete(token);
+  return res.json({ code: 200, status: "success", msg: "用户已登出" });
+};
+
+//获取用户信息
+const get = (req, res) => {
+  let token = req.headers["authorization"];
+  let username = user.getUser(token);
+  if (username != null) {
+    return res.json({ code: 200, status: "success", msg: { name: username } });
+  } else {
+    return res.json({ code: 404, status: "false", msg: "没有用户登录" });
+  }
+};
+
 export default (req, res) => {
   req.method === "POST"
     ? post(req, res)
-    : req.method === "PUT"
-    ? console.log("PUT")
-    : // : req.method === "DELETE"
-    // ? remove(req, res)
-    req.method === "GET"
+    : // : req.method === "PUT"
+    // ? console.log("PUT")
+    req.method === "DELETE"
+    ? remove(req, res)
+    : req.method === "GET"
     ? get(req, res)
     : res.status(404).send("");
 };

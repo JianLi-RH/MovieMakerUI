@@ -79,7 +79,7 @@ const post = async (req, res) => {
         msg: "普通用户只能创建3个视频",
       });
     }
-    let result = await saveFile(files.file[0], fields);
+    let result = await saveFile(files.file[0], fields, username);
     if (result) {
       return res.send({ code: 200, status: "success", msg: "文件上传成功" });
     } else {
@@ -106,9 +106,7 @@ const remove = async (req, res) => {
   }
 };
 
-const saveFile = async (file, fields) => {
-  let token = req.headers["authorization"];
-  let username = user.getUser(token);
+const saveFile = async (file, fields, username) => {
   let fileNames = `workspaces/${username}/script`;
   fs.copyFile(
     file.filepath,

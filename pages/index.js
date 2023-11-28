@@ -30,21 +30,6 @@ const callAPI = async (final_sc, selectedScript) => {
 export default function Home() {
   const [allScript, setAllScript] = useState([]);
 
-  useEffect(() => {
-    if (sessionStorage.token) {
-      fetch("/api/file?files", {
-        headers: { Authorization: sessionStorage.token },
-      })
-        .then((r) => r.json())
-        .then((r) => {
-          // save data from fetch request to state
-          setAllScript(r.msg);
-        });
-    } else {
-      return;
-    }
-  }, ["/api/file?files"]);
-
   const [script, updateScript] = useImmer([]); // 当前脚本的全部场景
   const [selectedScript, setSelectedScript] = React.useState(null); // 当前脚本名字
 
@@ -56,7 +41,12 @@ export default function Home() {
         .then((r) => r.json())
         .then((r) => {
           // save data from fetch request to state
-          setAllScript(r.msg);
+          if (r.msg instanceof Array) {
+            setAllScript(r.msg);
+          } else {
+            setAllScript([]);
+            updateScript([]);
+          }
         });
     } else {
       return;
@@ -73,12 +63,20 @@ export default function Home() {
         })
         .then((data) => {
           setSelectedScript(script);
-          updateScript(data.msg["场景"]);
+          if (data.msg["场景"] instanceof Array) {
+            updateScript(data.msg["场景"]);
+          } else {
+            updateScript([]);
+          }
         });
     } else {
       return;
     }
   };
+
+  useEffect(() => {
+    updateList();
+  }, []);
 
   function handleAddTask(e) {
     let sc = {
