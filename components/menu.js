@@ -30,7 +30,7 @@ import LoginForm from "../components/login-form";
 import LogoutForm from "./logout-form";
 const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
 
-export default function Menu({ scripts, selectScript, updateList }) {
+export default function Menu({ scripts, selectScript, updateList, setting }) {
   const [openDeleteScript, setOpenDeleteScript] = useState(false);
   const [deleteScriptName, setDeleteScriptName] = useState("");
   const [alert, setAlert] = useState({
@@ -64,8 +64,6 @@ export default function Menu({ scripts, selectScript, updateList }) {
       setLogin(false);
     }
   }, []);
-
-  const [config, setConfig] = useState(false);
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
@@ -141,7 +139,7 @@ export default function Menu({ scripts, selectScript, updateList }) {
         </Alert>
         <DialogTitle>删除脚本 - {deleteScriptName.id}</DialogTitle>
         <DialogContent dividers>
-          删除脚本将会清空全部视频内容，删除后无法恢复，却恶人要删除脚本吗？
+          删除脚本将会清空全部视频内容，删除后无法恢复，确认要删除脚本吗？
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={() => setOpenDeleteScript(false)}>
@@ -232,7 +230,7 @@ export default function Menu({ scripts, selectScript, updateList }) {
         <ListItemButton
           onClick={() => {
             if (sessionStorage.token) {
-              setConfig();
+              setting();
             } else {
               window.alert("请先登录");
             }

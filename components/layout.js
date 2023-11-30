@@ -7,11 +7,11 @@ import ThemeRegistry from "./ThemeRegistry/ThemeRegistry";
 import GlobalConifg from "../pages/app.config";
 const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
 
-export default function Layout({ scripts, selectScript, updateList, children }) {
+export default function Layout({ scripts, selectScript, updateList, setting, children }) {
   return (
     <ThemeRegistry>
       <Header></Header>
-      <Menu scripts={scripts} selectScript={selectScript} updateList={updateList}></Menu>
+      <Menu scripts={scripts} selectScript={selectScript} updateList={updateList} setting={setting}></Menu>
       <Box
         component="main"
         sx={{

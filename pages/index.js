@@ -3,7 +3,12 @@ import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import Workspace from "components/workspace.js";
 import FullFeaturedCrudGrid from "components/settings.js";
-
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Dialog from "@mui/material/Dialog";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 import Layout from "../components/layout.js";
 
 // 将更改保存到文件
@@ -29,6 +34,8 @@ const callAPI = async (final_sc, selectedScript) => {
 
 export default function Home() {
   const [allScript, setAllScript] = useState([]);
+  const [showSetting, setShowSetting] = useState(false);
+  const [settings, setSettings] = useState({});
 
   const [script, updateScript] = useImmer([]); // 当前脚本的全部场景
   const [selectedScript, setSelectedScript] = React.useState(null); // 当前脚本名字
@@ -74,6 +81,55 @@ export default function Home() {
     }
   };
 
+  const setting = () => {
+    if (sessionStorage.token) {
+      fetch("/api/settings", {
+        headers: { Authorization: sessionStorage.token },
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          if (data.code === 200) {
+            let s = [];
+            let i = 0;
+            for (const [key, value] of Object.entries(data.msg)) {
+              s.push({
+                id: i++,
+                key: key,
+                value: value,
+              });
+            }
+            setSettings(s);
+            setShowSetting(true);
+          } else {
+          }
+        });
+    } else {
+      return;
+    }
+  };
+
+  const saveSetting = (key, value) => {
+    console.log("key: ", key);
+    const body = new FormData();
+    body.append("key", key);
+    body.append("value", value);
+    if (sessionStorage.token) {
+      fetch("/api/settings", {
+        method: "POST",
+        body,
+        headers: { Authorization: sessionStorage.token },
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data.msg);
+        });
+    }
+  };
+
   useEffect(() => {
     updateList();
   }, []);
@@ -113,8 +169,36 @@ export default function Home() {
       scripts={allScript}
       selectScript={getScript}
       updateList={updateList}
+      setting={setting}
     >
-      {(script && (
+      <Dialog
+        sx={{
+          "& .MuiDialog-paper": { width: 600, maxWidth: 600, maxHeight: 600 },
+        }}
+        maxWidth="xs"
+        open={showSetting}
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }}>设置视频基本参数</DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={() => setShowSetting(false)}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers>
+          <FullFeaturedCrudGrid
+            data={settings}
+            onSave={saveSetting}
+          ></FullFeaturedCrudGrid>
+        </DialogContent>
+      </Dialog>
+      {script && (
         <Workspace
           scenarios={script}
           selectedScript={selectedScript}
@@ -122,15 +206,6 @@ export default function Home() {
           handleDeleteSC={handleDeleteScenario}
           handleSaveSc={handleSaveSc}
         ></Workspace>
-      )) || (
-        <>
-          {/* 请在左侧菜单栏选择脚本，如果还没有脚本请先上传，也可以点击
-          <Button component="label" variant="text">
-            新建脚本
-          </Button>
-          创建一个脚本 */}
-          <FullFeaturedCrudGrid></FullFeaturedCrudGrid>
-        </>
       )}
     </Layout>
   );
