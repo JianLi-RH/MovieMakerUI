@@ -21,28 +21,36 @@ import {
 } from "@mui/x-data-grid-generator";
 import { grey, red } from "@mui/material/colors";
 
-// function EditToolbar(props) {
-//   const { setRows, setRowModesModel } = props;
+function EditToolbar(props) {
+  const { setRows, setRowModesModel } = props;
 
-//   const handleClick = () => {
-//     const id = randomId();
-//     setRows((oldRows) => [...oldRows, { id, key: "", value: "", isNew: true }]);
-//     setRowModesModel((oldModel) => ({
-//       ...oldModel,
-//       [id]: { mode: GridRowModes.Edit, fieldToFocus: "value" },
-//     }));
-//   };
+  const handleClick = () => {
+    const id = randomId();
+    setRows((oldRows) => [...oldRows, { id, key: "", value: "", isNew: true }]);
+    setRowModesModel((oldModel) => ({
+      ...oldModel,
+      [id]: { mode: GridRowModes.Edit, fieldToFocus: "value" },
+    }));
+  };
 
-//   return (
-//     <GridToolbarContainer>
-//       <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-//         添加配置
-//       </Button>
-//     </GridToolbarContainer>
-//   );
-// }
+  return (
+    <GridToolbarContainer>
+      <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
+        添加配置
+      </Button>
+    </GridToolbarContainer>
+  );
+}
 
-export default function FullFeaturedCrudGrid({ data, onSave }) {
+export default function FullFeaturedCrudGrid({
+  columns,
+  data,
+  onSave = null,
+  onDelete = null,
+  enableEdit = false,
+  enableDelete = false,
+  showEditToolbar = false,
+}) {
   const [rows, setRows] = React.useState(data);
   const [rowModesModel, setRowModesModel] = React.useState({});
 
@@ -79,7 +87,7 @@ export default function FullFeaturedCrudGrid({ data, onSave }) {
   const processRowUpdate = (newRow) => {
     const updatedRow = { ...newRow, isNew: false };
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-    console.log("updatedRow: ", updatedRow)
+    console.log("updatedRow: ", updatedRow);
     onSave(updatedRow.key, updatedRow.value);
     return updatedRow;
   };
@@ -88,22 +96,8 @@ export default function FullFeaturedCrudGrid({ data, onSave }) {
     setRowModesModel(newRowModesModel);
   };
 
-  const columns = [
-    {
-      field: "key",
-      headerName: "参数",
-      width: 150,
-      color: "#FFF",
-      editable: false,
-    },
-    {
-      field: "value",
-      headerName: "参数值",
-      width: 150,
-      align: "left",
-      headerAlign: "left",
-      editable: true,
-    },
+  const allcolumns = [
+    ...columns,
     {
       field: "actions",
       type: "actions",
@@ -133,21 +127,29 @@ export default function FullFeaturedCrudGrid({ data, onSave }) {
           ];
         }
 
-        return [
-          <GridActionsCellItem
-            icon={<EditIcon />}
-            label="Edit"
-            className="textPrimary"
-            onClick={handleEditClick(id)}
-            color="inherit"
-          />,
-          <GridActionsCellItem
-            icon={<DeleteIcon />}
-            label="Delete"
-            onClick={handleDeleteClick(id)}
-            color="inherit"
-          />,
-        ];
+        let actions = [];
+        if (enableEdit) {
+          actions.push(
+            <GridActionsCellItem
+              icon={<EditIcon />}
+              label="Edit"
+              className="textPrimary"
+              onClick={handleEditClick(id)}
+              color="inherit"
+            />
+          );
+        }
+        if (enableDelete) {
+          actions.push(
+            <GridActionsCellItem
+              icon={<DeleteIcon />}
+              label="Delete"
+              onClick={handleDeleteClick(id)}
+              color="inherit"
+            />
+          );
+        }
+        return actions;
       },
     },
   ];
@@ -167,15 +169,17 @@ export default function FullFeaturedCrudGrid({ data, onSave }) {
       <DataGrid
         hideFooter={true}
         rows={rows}
-        columns={columns}
+        columns={allcolumns}
         editMode="row"
         rowModesModel={rowModesModel}
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
-        // slots={{
-        //   toolbar: EditToolbar,
-        // }}
+        slots={
+          showEditToolbar && {
+            toolbar: EditToolbar,
+          }
+        }
         slotProps={{
           toolbar: { setRows, setRowModesModel },
         }}

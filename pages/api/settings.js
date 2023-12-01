@@ -1,5 +1,6 @@
 import formidable, { errors as formidableErrors } from "formidable";
 import fs from "fs";
+import { encode } from "punycode";
 import YAML from "yaml";
 
 import user from "../../lib/user";
@@ -39,18 +40,19 @@ const post = (req, res) => {
     }
     let config = `workspaces/${username}/config.yaml`;
     fs.readFile(config, "utf-8", (err, data) => {
-      console.log("data: ", data);
-
       if (err) {
         res.json({ code: 211, status: "fail", msg: err.toString() });
       }
-      let k = fields.key[0]
-      console.log("k: ", k)
-      let jdoc = data.json()
+      let k = fields.key[0];
+      let jdoc = YAML.parse(data);
       jdoc[k] = fields.value[0];
       // save to file
-      console.log("jdoc: ", jdoc);
-      fs.writeFileSync(config, jdoc, "utf8");
+      const yaml = require("js-yaml");
+      fs.writeFile(config, yaml.dump(jdoc), (err) => {
+        if (err) {
+          res.json({ code: 201, status: "fail", msg: err.toString() });
+        }
+      });
       res.json({ code: 200, status: "success", msg: "更新成功" });
     });
     return res;

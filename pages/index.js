@@ -2,7 +2,7 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import Workspace from "components/workspace.js";
-import FullFeaturedCrudGrid from "components/settings.js";
+import FullFeaturedCrudGrid from "components/grid.js";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
@@ -111,7 +111,6 @@ export default function Home() {
   };
 
   const saveSetting = (key, value) => {
-    console.log("key: ", key);
     const body = new FormData();
     body.append("key", key);
     body.append("value", value);
@@ -193,8 +192,26 @@ export default function Home() {
         </IconButton>
         <DialogContent dividers>
           <FullFeaturedCrudGrid
+            columns={[
+              {
+                field: "key",
+                headerName: "参数",
+                width: 150,
+                color: "#FFF",
+                editable: false,
+              },
+              {
+                field: "value",
+                headerName: "参数值",
+                width: 150,
+                align: "left",
+                headerAlign: "left",
+                editable: true,
+              },
+            ]}
             data={settings}
             onSave={saveSetting}
+            enableEdit={true}
           ></FullFeaturedCrudGrid>
         </DialogContent>
       </Dialog>
