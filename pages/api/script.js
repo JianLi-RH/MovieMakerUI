@@ -1,13 +1,22 @@
 const fs = require("fs");
 const yaml = require("js-yaml");
 
+import user from "../../lib/user";
+
 export default function handler(req, res) {
-  try {
-    const jdoc = JSON.parse(req.body);
-    const doc = yaml.dump(jdoc.script);
-    fs.writeFileSync(`script/${jdoc.path}.yaml`, doc, "utf8");
-    res.status(200).json({ result: "successed" });
-  } catch (e) {
-    res.status(503).json({ result: e });
+  let token = req.headers["authorization"];
+  let username = user.getUser(token);
+  if (!username) {
+    return res.json({ code: 202, status: "fail", msg: "请先登录" });
   }
+
+  let jdoc = JSON.parse(req.body);
+  let doc = yaml.dump(jdoc.script);
+  let config = `workspaces/${username}/script/${jdoc.path}.yaml`;
+  fs.writeFile(config, doc, (err) => {
+    if (err) {
+      res.json({ code: 201, status: "fail", msg: err.toString() });
+    }
+  });
+  res.json({ code: 200, status: "success", msg: "更新脚本成功" });
 }
