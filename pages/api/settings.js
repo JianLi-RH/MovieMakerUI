@@ -1,6 +1,5 @@
 import formidable, { errors as formidableErrors } from "formidable";
 import fs from "fs";
-import { encode } from "punycode";
 import YAML from "yaml";
 
 import user from "../../lib/user";
@@ -32,7 +31,6 @@ const post = (req, res) => {
   // 更新配置
   const form = formidable({});
   form.parse(req, async function (err, fields, files) {
-    console.log("fields: ", fields);
     let token = req.headers["authorization"];
     let username = user.getUser(token);
     if (!username) {

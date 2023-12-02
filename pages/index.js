@@ -33,12 +33,12 @@ const callAPI = async (final_sc, selectedScript) => {
 };
 
 export default function Home() {
-  const [allScript, setAllScript] = useState([]);
+  const [allScriptNames, setAllScriptNames] = useState([]);
   const [showSetting, setShowSetting] = useState(false);
   const [settings, setSettings] = useState({});
 
-  const [script, updateScript] = useImmer([]); // 当前脚本的全部场景
-  const [selectedScript, setSelectedScript] = React.useState(null); // 当前脚本名字
+  const [scenario, setScenario] = useImmer([]); // 当前脚本的全部场景
+  const [selectedScript, setSelectedScript] = useState(null); // 当前脚本名字
 
   const updateList = () => {
     if (sessionStorage.token) {
@@ -49,10 +49,10 @@ export default function Home() {
         .then((r) => {
           // save data from fetch request to state
           if (r.msg instanceof Array) {
-            setAllScript(r.msg);
+            setAllScriptNames(r.msg);
           } else {
-            setAllScript([]);
-            updateScript([]);
+            setAllScriptNames([]);
+            setScenario([]);
           }
         });
     } else {
@@ -60,25 +60,28 @@ export default function Home() {
     }
   };
 
-  const getScript = (script) => {
+  const updateWorkspace = (scriptName) => {
     if (sessionStorage.token) {
-      fetch("/api/file?file=" + script, {
+      fetch("/api/file?file=" + scriptName, {
         headers: { Authorization: sessionStorage.token },
       })
         .then((response) => {
           return response.json();
         })
         .then((data) => {
-          setSelectedScript(script);
+          setSelectedScript(scriptName);
           if (data.msg["场景"] instanceof Array) {
-            updateScript(data.msg["场景"]);
-          } else {
-            updateScript([]);
+            console.log("更新前scenario： ", scenario);
+            console.log("新scenario: ", data.msg["场景"]);
+            setScenario([...data.msg["场景"]]);
           }
         });
-    } else {
-      return;
     }
+  };
+
+  const getScript = (scriptName) => {
+    console.log("selected: ", scriptName);
+    updateWorkspace(scriptName);
   };
 
   const setting = () => {
@@ -110,10 +113,10 @@ export default function Home() {
     }
   };
 
-  const saveSetting = (key, value) => {
+  const saveSetting = (row) => {
     const body = new FormData();
-    body.append("key", key);
-    body.append("value", value);
+    body.append("key", row.key);
+    body.append("value", row.value);
     if (sessionStorage.token) {
       fetch("/api/settings", {
         method: "POST",
@@ -136,36 +139,36 @@ export default function Home() {
   function handleAddTask(e) {
     let sc = {
       背景: "",
-      名字: "default" + script.length,
+      名字: "default" + scenario.length,
       焦点: "中心",
       背景音乐: null,
       比例: 1,
       角色: null,
       活动: null,
     };
-    updateScript([...script, sc]);
+    setScenario([...scenario, sc]);
   }
 
   function handleDeleteScenario(index) {
     const newScript = [];
-    for (var i = 0; i < script.length; i++) {
+    for (var i = 0; i < scenario.length; i++) {
       if (i != index) {
-        newScript.push(script[i]);
+        newScript.push(scenario[i]);
       }
     }
     callAPI(newScript, selectedScript);
-    updateScript(newScript);
+    setScenario(newScript);
   }
 
-  async function handleSaveSc(index, scenario) {
-    let final_sc = [...script];
-    final_sc[index] = scenario;
+  async function handleSaveSc(index, updatedScenario) {
+    let final_sc = [...scenario];
+    final_sc[index] = updatedScenario;
     callAPI(final_sc, selectedScript);
   }
 
   return (
     <Layout
-      scripts={allScript}
+      scripts={allScriptNames}
       selectScript={getScript}
       updateList={updateList}
       setting={setting}
@@ -215,9 +218,9 @@ export default function Home() {
           ></FullFeaturedCrudGrid>
         </DialogContent>
       </Dialog>
-      {script && (
+      {scenario && (
         <Workspace
-          scenarios={script}
+          scenarios={scenario}
           selectedScript={selectedScript}
           handleAddTask={handleAddTask}
           handleDeleteSC={handleDeleteScenario}

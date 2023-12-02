@@ -101,6 +101,18 @@ export default function Scenario({
     setScenarioEditState(false);
   }
 
+  function updateActivity(index, activity) {
+    let newSC = sc["活动"].map((act, i) => {
+      if (i === index) {
+        return activity;
+      }
+      return act;
+    });
+    sc["活动"] = newSC;
+    onSave(index, sc);
+    setSC(sc);
+  }
+
   return (
     <Box
       sx={{
@@ -249,7 +261,12 @@ export default function Scenario({
           >
             {sc["活动"] &&
               sc["活动"].map((activity, i) => (
-                <Activity key={i} activity={activity}></Activity>
+                <Activity
+                  key={i}
+                  index={i}
+                  activity={activity}
+                  onSave={updateActivity}
+                ></Activity>
               ))}
           </Box>
           <Box>

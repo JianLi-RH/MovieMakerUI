@@ -36,7 +36,7 @@ function EditToolbar(props) {
   return (
     <GridToolbarContainer>
       <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-        添加配置
+        添加
       </Button>
     </GridToolbarContainer>
   );
@@ -70,6 +70,7 @@ export default function FullFeaturedCrudGrid({
 
   const handleDeleteClick = (id) => () => {
     setRows(rows.filter((row) => row.id !== id));
+    onDelete(id);
   };
 
   const handleCancelClick = (id) => () => {
@@ -87,8 +88,7 @@ export default function FullFeaturedCrudGrid({
   const processRowUpdate = (newRow) => {
     const updatedRow = { ...newRow, isNew: false };
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-    console.log("updatedRow: ", updatedRow);
-    onSave(updatedRow.key, updatedRow.value);
+    onSave(updatedRow);
     return updatedRow;
   };
 
