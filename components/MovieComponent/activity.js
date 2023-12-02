@@ -48,28 +48,30 @@ export default function Activity({ index, activity, onSave }) {
     },
   ];
 
-  const subtitles = activity["字幕"].map((subtitleRow, i) => {
-    let v = {
-      id: i,
-      start: subtitleRow[0],
-      end: subtitleRow[1],
-      text: subtitleRow[2],
-      sound: "",
-      char: "",
-      action: "",
-    };
+  const subtitles =
+    activity["字幕"] &&
+    activity["字幕"].map((subtitleRow, i) => {
+      let v = {
+        id: i,
+        start: subtitleRow[0],
+        end: subtitleRow[1],
+        text: subtitleRow[2],
+        sound: "",
+        char: "",
+        action: "",
+      };
 
-    if (subtitleRow.length >= 4) {
-      v.sound = subtitleRow[3];
-    }
-    if (subtitleRow.length >= 5) {
-      v.char = subtitleRow[4];
-    }
-    if (subtitleRow.length >= 6) {
-      v.action = subtitleRow[5];
-    }
-    return v;
-  });
+      if (subtitleRow.length >= 4) {
+        v.sound = subtitleRow[3];
+      }
+      if (subtitleRow.length >= 5) {
+        v.char = subtitleRow[4];
+      }
+      if (subtitleRow.length >= 6) {
+        v.action = subtitleRow[5];
+      }
+      return v;
+    });
 
   const saveSubtitle = (row) => {
     let newSubtitle = [];
@@ -139,7 +141,7 @@ export default function Activity({ index, activity, onSave }) {
         </Table>
         <FullFeaturedCrudGrid
           columns={columns}
-          data={subtitles}
+          data={subtitles || []}
           onSave={saveSubtitle}
           enableEdit={true}
           onDelete={deleteSubtitle}

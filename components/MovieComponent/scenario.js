@@ -1,23 +1,14 @@
 import * as React from "react";
 import { styled } from "@mui/material/styles";
 import CircularProgress from "@mui/material/CircularProgress";
-import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Unstable_Grid2";
-import Activity from "./activity";
 import TextField from "@mui/material/TextField";
+import { List, ListItemButton, ListItemText, Collapse } from "@mui/material";
 import {
-  List,
-  ListItemButton,
-  ListItemText,
-  ListItemIcon,
-  Collapse,
-} from "@mui/material";
-import {
-  AddCircle,
   ExpandLess,
   ExpandMore,
   Edit,
@@ -26,6 +17,8 @@ import {
   Delete,
   CloudUpload,
 } from "@mui/icons-material/";
+
+import Activity from "./activity";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -63,30 +56,32 @@ export default function Scenario({
   const [scenarioEditState, setScenarioEditState] = React.useState(false);
 
   const [circle, setCircle] = React.useState("none");
-  const makeVideo = (scenario) => {
+  const makeVideo = async (scenario) => {
     setCircle(circle == "none" ? "flex" : "none");
-    fetch("api/makevideo?script=" + selectedScript + "&scenario=" + scenario)
-      .then((data) => {
-        return data.json();
-      })
-      .then((res) => {
-        return res;
-      })
-      .then(function (jsonStr) {
-        if (jsonStr.code === 200) {
-          return {
-            display: "flex",
-            severity: "success",
-            message: jsonStr.msg,
-          };
-        } else {
-          return {
-            display: "flex",
-            severity: "error",
-            message: jsonStr.msg,
-          };
-        }
+    const body = new FormData();
+    body.append("script", selectedScript);
+    body.append("scenario", scenario);
+    if (sessionStorage.token) {
+      const res = await fetch("api/makevideo", {
+        method: "POST",
+        body,
+        headers: { Authorization: sessionStorage.token },
       });
+      const data = await res.json();
+      if (data.code === 200) {
+        return {
+          display: "flex",
+          severity: "success",
+          message: data.msg,
+        };
+      } else {
+        return {
+          display: "flex",
+          severity: "error",
+          message: data.msg,
+        };
+      }
+    }
   };
 
   function handleChange(e) {

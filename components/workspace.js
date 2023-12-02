@@ -18,6 +18,10 @@ export default function Workspace({
     <Container>
       {scenarios.length > 0 && (
         <Box>
+          <ListItemText
+            primary={selectedScript}
+            sx={{ textAlign: "center", bgcolor: "#F00", fontWeight: "24" }}
+          ></ListItemText>
           {scenarios.map((scenario, i) => (
             <Scenario
               key={i}
