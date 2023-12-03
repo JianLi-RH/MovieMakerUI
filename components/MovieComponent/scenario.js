@@ -232,7 +232,7 @@ export default function Scenario({
                       component="img"
                       sx={{ width: "200px" }}
                       alt="背景"
-                      src={sc["背景"]}
+                      src={"admin/" + sc["背景"]}
                     />
                   </Item>
                 </Grid>
@@ -248,8 +248,8 @@ export default function Scenario({
                   <Box
                     component="img"
                     sx={{ width: "200px" }}
-                    alt="The house from the offer."
-                    src={sc["背景"]}
+                    alt="背景"
+                    src={"admin/" + sc["背景"]}
                   />
                 </Grid>
               </>
