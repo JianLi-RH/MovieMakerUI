@@ -3,6 +3,7 @@ import { styled } from "@mui/material/styles";
 import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Unstable_Grid2";
@@ -17,6 +18,7 @@ import {
   Delete,
   CloudUpload,
 } from "@mui/icons-material/";
+import useDownloader from "react-use-downloader";
 
 import Activity from "./activity";
 
@@ -55,34 +57,11 @@ export default function Scenario({
   // 场景是否处于编辑状态
   const [scenarioEditState, setScenarioEditState] = React.useState(false);
 
+  const [downloadDisplay, setDownloadDisplay] = React.useState("none");
+  const { size, elapsed, percentage, download, cancel, error, isInProgress } =
+    useDownloader();
+  const [url, setUrl] = React.useState("");
   const [circle, setCircle] = React.useState("none");
-  const makeVideo = async (scenario) => {
-    setCircle(circle == "none" ? "flex" : "none");
-    const body = new FormData();
-    body.append("script", selectedScript);
-    body.append("scenario", scenario);
-    if (sessionStorage.token) {
-      const res = await fetch("api/makevideo", {
-        method: "POST",
-        body,
-        headers: { Authorization: sessionStorage.token },
-      });
-      const data = await res.json();
-      if (data.code === 200) {
-        return {
-          display: "flex",
-          severity: "success",
-          message: data.msg,
-        };
-      } else {
-        return {
-          display: "flex",
-          severity: "error",
-          message: data.msg,
-        };
-      }
-    }
-  };
 
   function handleChange(e) {
     e.preventDefault();
@@ -107,6 +86,33 @@ export default function Scenario({
     onSave(index, sc);
     setSC(sc);
   }
+
+  const makeVideo = async (scenario) => {
+    if (sessionStorage.token) {
+      setDownloadDisplay("none");
+      setCircle("inline-block");
+      const body = new FormData();
+      body.append("script", selectedScript);
+      body.append("scenario", scenario || "");
+      await fetch("api/makevideo", {
+        method: "POST",
+        body,
+        headers: { Authorization: sessionStorage.token },
+      })
+        .then((response) => {
+          setCircle("none");
+          return response.json();
+        })
+        .then((data) => {
+          if (data.code === 200) {
+            setDownloadDisplay("inline");
+            setUrl(data.msg);
+          } else {
+            setDownloadDisplay("none");
+          }
+        });
+    }
+  };
 
   return (
     <Box
@@ -264,11 +270,26 @@ export default function Scenario({
                 ></Activity>
               ))}
           </Box>
-          <Box>
-            <Button variant="outlined" onClick={() => makeVideo(sc["名字"])}>
-              生成视频
-            </Button>
-            <CircularProgress sx={{ display: circle }} />
+          <Box sx={{ p: 0 }}>
+            <Stack sx={{ color: "grey.500" }} spacing={1} direction="row">
+              <Button
+                onClick={() => {
+                  setCircle(circle == "none" ? "flex" : "none");
+                  makeVideo(sc["名字"]);
+                }}
+              >
+                生成视频
+              </Button>
+              <CircularProgress size="1rem" sx={{ m: 1, display: circle }} />
+              <Button
+                sx={{ display: downloadDisplay }}
+                onClick={() => {
+                  download(url, `${sc["名字"]}.mp4`);
+                }}
+              >
+                下载视频
+              </Button>
+            </Stack>
           </Box>
         </Collapse>
       </List>

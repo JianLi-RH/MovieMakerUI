@@ -27,6 +27,7 @@
     "react-dom": "18.2.0",
     "react-native": "^0.72.6",
     "react-native-web": "^0.19.9",
+    "react-use-downloader": "^1.2.4",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
     "store": "^2.0.12",

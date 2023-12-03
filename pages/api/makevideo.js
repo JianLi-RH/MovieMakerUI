@@ -20,8 +20,10 @@ const post = async (req, res) => {
   form.parse(req, async function (err, fields, files) {
     let script = `workspaces/${username}/script/${fields.script[0]}.yaml`;
     let scenario = "";
+    let output = `${fields.script[0]}.mp4`;
     if (fields.scenario != undefined) {
       scenario = fields.scenario[0];
+      output = `${scenario}.mp4`;
     }
 
     console.log("script: ", script);
@@ -29,7 +31,6 @@ const post = async (req, res) => {
 
     const spawn = require("child_process").spawn;
     const runPath = `workspaces/${username}/run.py`;
-    const output = `workspaces/${username}/output/test.mp4`;
     let cmd = [runPath, "-o", output, "-s", script];
     if (scenario.length > 0) {
       cmd.push("-c");
@@ -52,39 +53,39 @@ const post = async (req, res) => {
         "Python process is now completed send data as response, code: ",
         code
       );
+      if (code != 0) {
+        return res.json({
+          code: 500,
+          status: "fail",
+          msg: "生成视频失败",
+        });
+      }
+      let video = `workspaces/${username}/output/${output}`;
+      let publicFolder = `public/${username}/${output}`;
+      fs.mkdirSync(`public/${username}/`, { recursive: true }, (err) => {
+        if (err) {
+          return res.json({
+            code: 500,
+            status: "fail",
+            msg: "无法找到视频存放目标地址",
+          });
+        }
+      });
+      fs.cpSync(video, publicFolder, { recursive: true }, (err) => {
+        return res.json({
+          code: 501,
+          status: "fail",
+          msg: "复制视频失败",
+        });
+      });
+
       return res.json({
         code: 200,
         status: "fail",
-        msg: data,
+        msg: `${username}/${output}`,
       });
     });
   });
-};
-
-const get = async (req, res) => {
-  let script = req.query["script"];
-  let scenario = req.query["scenario"];
-
-  if ((scenario = undefined)) {
-    const script = fs.readFile(
-      `script/${req.query["file"]}.yaml`,
-      "utf-8",
-      (err, data) => {
-        if (err) {
-          res.json({ code: 500, status: "fail", msg: err.toString() });
-        }
-        res.json({ code: 200, status: "success", msg: YAML.parse(data) });
-      }
-    );
-  } else if (req.query["files"] != undefined) {
-    const fileNames = fs.readdirSync("script/");
-    let f = Array(fileNames.length);
-    for (var i = 0; i < fileNames.length; i++) {
-      f[i] = { id: fileNames[i].replace(/\.(yaml|yml)$/, "") };
-    }
-    res.json({ code: 200, status: "success", msg: f });
-  }
-  return res;
 };
 
 export default (req, res) => {

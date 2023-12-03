@@ -56,7 +56,7 @@ export default function LogoutForm({ updateList, updateLogin }) {
       updateLogin();
       setTimeout(() => {
         setAlert({ display: "none", severity: "info", message: "" });
-      }, 2000);
+      }, 1000);
     }
   };
   return (

@@ -91,7 +91,7 @@ export default function CustomizedDialogs(props) {
       setAlert({ display: "none", severity: "info", message: "" });
       props.close();
       props.updateList();
-    }, 2000);
+    }, 1000);
   };
 
   return (

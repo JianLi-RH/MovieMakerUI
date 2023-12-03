@@ -47,7 +47,7 @@ export default function LoginForm({ updateList, updateLogin }) {
     updateLogin();
     setTimeout(() => {
       setAlert({ display: "none", severity: "info", message: "" });
-    }, 2000);
+    }, 1000);
   };
   return (
     <div className={styles.login_box + " p-3"}>

@@ -110,7 +110,7 @@ export default function Menu({ scripts, selectScript, updateList, setting }) {
       setAlert({ display: "none", severity: "info", message: "" });
       setOpenDeleteScript(false);
       updateList();
-    }, 2000);
+    }, 1000);
   };
 
   return (

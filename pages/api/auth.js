@@ -12,22 +12,28 @@ export const config = {
 // 准备用户工作空间
 const prepareWorkspace = (username) => {
   let workspace = `workspaces/${username}`;
+  let publicFolder = `public/${username}`;
   if (!fs.existsSync(workspace)) {
-    let created = fs.mkdirSync(workspace, { recursive: true }, (err) => {
+    fs.mkdirSync(workspace, { recursive: true }, (err) => {
       if (err) {
         console.log("err: ", err);
-        return console.error(err);
+        return false;
       }
       console.log("Workspace created successfully!");
     });
-    if (created == false) {
-      return false;
-    }
     let sourcecode = `SourceCode/MovieMaker`;
     fs.cpSync(sourcecode, workspace, { recursive: true }, (err) => {
       return false;
     });
-    return true;
+  }
+  if (!fs.existsSync(publicFolder)) {
+    fs.mkdirSync(publicFolder, { recursive: true }, (err) => {
+      if (err) {
+        console.log("err: ", err);
+        return console.error(err);
+      }
+      console.log("Public folder created successfully!");
+    });
   }
   return true;
 };
