@@ -8,6 +8,7 @@ import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Unstable_Grid2";
 import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import { List, ListItemButton, ListItemText, Collapse } from "@mui/material";
 import {
   ExpandLess,
@@ -19,8 +20,12 @@ import {
   CloudUpload,
 } from "@mui/icons-material/";
 import useDownloader from "react-use-downloader";
+import Card from "@mui/material/Card";
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
 
 import Activity from "./activity";
+import Character from "./character";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -49,7 +54,7 @@ export default function Scenario({
   handleDeleteSC,
   onSave,
 }) {
-  const [sc, setSC] = React.useState(scenario);
+  const [sc, setSc] = React.useState(scenario);
 
   // 场景是否展开
   const [scenarioState, setScenarioState] = React.useState(false);
@@ -68,7 +73,7 @@ export default function Scenario({
     let _sc = {};
     Object.assign(_sc, sc);
     _sc[e.target.name] = e.target.value;
-    setSC(_sc);
+    setSc(_sc);
   }
   function handleSaveScenarioClick(index) {
     onSave(index, sc);
@@ -84,7 +89,48 @@ export default function Scenario({
     });
     sc["活动"] = newSC;
     onSave(index, sc);
-    setSC(sc);
+    setSc(sc);
+  }
+
+  function addCharacter() {
+    sc["角色"] = [
+      ...sc["角色"],
+      {
+        名字: "",
+        素材: "",
+        位置: "",
+        大小: "",
+        显示: "",
+        图层: "",
+        角度: "",
+      },
+    ];
+    onSave(index, sc);
+  }
+
+  function onSaveChar(charIndex, char) {
+    let newSC = sc["角色"].map((c, i) => {
+      if (i === charIndex) {
+        return char;
+      }
+      return c;
+    });
+    sc["角色"] = newSC;
+    onSave(index, sc);
+  }
+
+  function onRemoveChar(charIndex) {
+    let newSC = [];
+    var l = sc["角色"].length;
+    if (l > 1) {
+      for (var i = 0; i < l; i++) {
+        if (i !== charIndex) {
+          newSC.push(sc["角色"][i]);
+        }
+      }
+    }
+    sc["角色"] = newSC;
+    onSave(index, sc);
   }
 
   const makeVideo = async (scenario) => {
@@ -138,7 +184,7 @@ export default function Scenario({
                 sx={{ width: 40 }}
                 onClick={(e) => {
                   e.preventDefault();
-                  setSC(scenario);
+                  setSc(scenario);
                   setScenarioEditState(false);
                 }}
               ></Cancel>
@@ -192,6 +238,9 @@ export default function Scenario({
             {scenarioEditState ? (
               <>
                 <Grid xs={6} spacing={2}>
+                  <Typography gutterBottom variant="subtitle2" component="span">
+                    焦点：
+                  </Typography>
                   <TextField
                     id="outlined-basic"
                     label="焦点"
@@ -203,6 +252,9 @@ export default function Scenario({
                     {sc["焦点"]}
                   </TextField>
                   <Divider></Divider>
+                  <Typography gutterBottom variant="subtitle2" component="span">
+                    比例：
+                  </Typography>
                   <TextField
                     id="outlined-basic"
                     label="比例"
@@ -240,9 +292,27 @@ export default function Scenario({
             ) : (
               <>
                 <Grid xs={2}>
-                  <Box>{sc["焦点"]}</Box>
+                  <Box>
+                    <Typography
+                      gutterBottom
+                      variant="subtitle1"
+                      component="span"
+                    >
+                      焦点：
+                    </Typography>
+                    {sc["焦点"]}
+                  </Box>
                   <Divider></Divider>
-                  <Box>{sc["比例"]}</Box>
+                  <Box>
+                    <Typography
+                      gutterBottom
+                      variant="subtitle1"
+                      component="span"
+                    >
+                      比例：
+                    </Typography>
+                    {sc["比例"]}
+                  </Box>
                 </Grid>
                 <Grid xs={10}>
                   <Box
@@ -255,6 +325,60 @@ export default function Scenario({
               </>
             )}
           </Grid>
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={{ xs: 1, sm: 1, md: 1, lg: 1 }}
+            sx={{
+              maxWidth: "100%",
+              width: "100%",
+              p: 1,
+              bgcolor: "#723342",
+              overflow: "visible",
+              display: "flex",
+              flexDirection: "flex-start",
+              alignItems: "flex-start",
+              justifyContent: "flex-start",
+              flexWrap: "nowrap",
+            }}
+          >
+            {sc["角色"] &&
+              sc["角色"].map((char, i) => (
+                <Character
+                  key={i}
+                  i={i}
+                  name={char["名字"]}
+                  image={char["素材"]}
+                  pos={char["位置"]}
+                  size={char["大小"]}
+                  rotate={char["角度"]}
+                  display={char["显示"]}
+                  index={char["图层"]}
+                  save={onSaveChar}
+                  remove={onRemoveChar}
+                ></Character>
+              ))}
+            <Card
+              sx={{
+                width: 180,
+                minWidth: 180,
+                height: 380,
+                p: 1,
+                m: 1,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Fab
+                color="primary"
+                aria-label="add"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                <AddIcon onClick={addCharacter} />
+              </Fab>
+            </Card>
+          </Stack>
           <Box
             sx={{
               border: 1,

@@ -164,6 +164,7 @@ export default function Home() {
     let final_sc = [...scenario];
     final_sc[index] = updatedScenario;
     callAPI(final_sc, selectedScript);
+    setScenario(final_sc);
   }
 
   return (

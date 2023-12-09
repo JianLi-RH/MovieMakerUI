@@ -8,6 +8,7 @@ import useDownloader from "react-use-downloader";
 import { List, ListItemButton, ListItemText } from "@mui/material";
 import { AddCircle } from "@mui/icons-material/";
 import CircularProgress from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
 
 import GlobalConifg from "../pages/app.config";
 
@@ -55,14 +56,15 @@ export default function Workspace({
       {scenarios.length > 0 && (
         <Box>
           <Box>
-            <ListItemText
-              primary={selectedScript}
+            <Typography
+              variant="h5"
               sx={{
                 textAlign: "center",
-                bgcolor: "#F00",
-                fontWeight: "24",
               }}
-            ></ListItemText>
+              component="div"
+            >
+              {selectedScript}
+            </Typography>
             <Box>
               <Button
                 onClick={() => {
@@ -71,10 +73,7 @@ export default function Workspace({
               >
                 生成视频
               </Button>
-              <CircularProgress
-                size="1rem"
-                sx={{ m:1, display: circle }}
-              />
+              <CircularProgress size="1rem" sx={{ m: 1, display: circle }} />
               <Button
                 sx={{ display: downloadDisplay }}
                 onClick={() => {
