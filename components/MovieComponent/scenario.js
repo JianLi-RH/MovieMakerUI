@@ -9,6 +9,7 @@ import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Unstable_Grid2";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import Input from "@mui/material/Input";
 import { List, ListItemButton, ListItemText, Collapse } from "@mui/material";
 import {
   ExpandLess,
@@ -241,30 +242,26 @@ export default function Scenario({
                   <Typography gutterBottom variant="subtitle2" component="span">
                     焦点：
                   </Typography>
-                  <TextField
-                    id="outlined-basic"
-                    label="焦点"
-                    variant="outlined"
+                  <Input
                     name="焦点"
-                    onChange={handleChange}
+                    size="small"
+                    sx={{ width: "80px" }}
+                    type="string"
+                    onChange={(e) => handleChange(e)}
                     defaultValue={sc["焦点"]}
-                  >
-                    {sc["焦点"]}
-                  </TextField>
+                  />
                   <Divider></Divider>
                   <Typography gutterBottom variant="subtitle2" component="span">
                     比例：
                   </Typography>
-                  <TextField
-                    id="outlined-basic"
-                    label="比例"
-                    variant="outlined"
+                  <Input
                     name="比例"
-                    onChange={handleChange}
+                    size="small"
+                    sx={{ width: "80px" }}
+                    type="string"
+                    onChange={(e) => handleChange(e)}
                     defaultValue={sc["比例"]}
-                  >
-                    {sc["比例"]}
-                  </TextField>
+                  />
                 </Grid>
                 <Grid xs={6}>
                   <Item>
@@ -284,7 +281,7 @@ export default function Scenario({
                       component="img"
                       sx={{ width: "200px" }}
                       alt="背景"
-                      src={"admin/" + sc["背景"]}
+                      src={sc["背景"]}
                     />
                   </Item>
                 </Grid>
@@ -319,7 +316,7 @@ export default function Scenario({
                     component="img"
                     sx={{ width: "200px" }}
                     alt="背景"
-                    src={"admin/" + sc["背景"]}
+                    src={sc["背景"]}
                   />
                 </Grid>
               </>
@@ -390,6 +387,7 @@ export default function Scenario({
                   key={i}
                   index={i}
                   activity={activity}
+                  chars={sc["角色"]}
                   onSave={updateActivity}
                 ></Activity>
               ))}

@@ -6,8 +6,10 @@ import { ExpandLess, ExpandMore } from "@mui/icons-material/";
 import Disappear from "./Action/disappear";
 import FullFeaturedCrudGrid from "components/grid.js";
 
-export default function Activity({ index, activity, onSave }) {
+export default function Activity({ index, activity, chars, onSave }) {
   const [activityState, setActivityState] = React.useState(false);
+
+  const cNames = chars.map((c) => c["名字"])
 
   const columns = [
     {
@@ -46,9 +48,9 @@ export default function Activity({ index, activity, onSave }) {
     {
       field: "char",
       headerName: "角色",
-      width: 50,
+      width: 100,
       type: 'singleSelect',
-      valueOptions: ['ws', 'xe'],
+      valueOptions: cNames,
       editable: true,
       sortable: false,
       filterable: false,
@@ -56,7 +58,7 @@ export default function Activity({ index, activity, onSave }) {
     {
       field: "action",
       headerName: "动作",
-      width: 50,
+      width: 100,
       editable: true,
       sortable: false,
       filterable: false,
