@@ -60,8 +60,6 @@ export default function Character(props) {
   const handleChange = (event) => {
     let c = { ...char };
     c[event.target.name] = event.target.value;
-    console.log("event.target.name: ", event.target.name);
-    console.log("event.target.value: ", event.target.value);
     setChar(c);
   };
 
@@ -197,8 +195,16 @@ export default function Character(props) {
               显示：
               <Switch
                 size="small"
-                checked={props.display == "是" ? true : false}
-                onChange={handleChange}
+                name="显示"
+                defaultChecked={(props.display == "是" && true) || false}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    e.target.value = "是";
+                  } else {
+                    e.target.value = "否";
+                  }
+                  handleChange(e);
+                }}
                 inputProps={{ "aria-label": "controlled" }}
               />
               <br></br>
