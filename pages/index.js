@@ -160,11 +160,12 @@ export default function Home() {
     setScenario(newScript);
   }
 
-  async function handleSaveSc(index, updatedScenario) {
+  function handleSaveSc(index, updatedScenario) {
     let final_sc = [...scenario];
     final_sc[index] = updatedScenario;
     callAPI(final_sc, selectedScript);
     setScenario(final_sc);
+    return true;
   }
 
   return (

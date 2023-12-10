@@ -94,8 +94,11 @@ export default function Scenario({
         }
       });
     }
-    onSave(index, sc);
-    setScenarioEditState(false);
+    const res = onSave(index, sc);
+    if (res) {
+      setSc(sc);
+      setScenarioEditState(false);
+    }
   }
 
   function updateActivity(index, activity) {
@@ -111,18 +114,20 @@ export default function Scenario({
   }
 
   function addCharacter() {
-    sc["角色"] = [
-      ...sc["角色"],
-      {
-        名字: "",
-        素材: "",
-        位置: "",
-        大小: "",
-        显示: "",
-        图层: "",
-        角度: "",
-      },
-    ];
+    let juese = [];
+    if (sc["角色"] != null) {
+      juese = [...sc["角色"]];
+    }
+    juese.push({
+      名字: "",
+      素材: "",
+      位置: "",
+      大小: "",
+      显示: "",
+      图层: "",
+      角度: "",
+    });
+    sc["角色"] = juese;
     onSave(index, sc);
   }
 
@@ -294,12 +299,6 @@ export default function Scenario({
                         onChange={uploadToClient}
                       />
                     </Button>
-                    <Box
-                      component="img"
-                      sx={{ width: "200px" }}
-                      alt="背景"
-                      src={sc["背景"]}
-                    />
                   </Item>
                 </Grid>
               </>
