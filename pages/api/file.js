@@ -121,13 +121,40 @@ const saveFile = async (file, fields, username) => {
   return true;
 };
 
+// 手动创建脚本文件（非上传）
+const put = async (req, res) => {
+  console.log("req.query: ", req.query["name"]);
+  let token = req.headers["authorization"];
+  let username = user.getUser(token);
+  if (!username) {
+    return await res.json({ code: 302, status: "fail", msg: "请先登录" });
+  }
+  if (req.query["name"] != undefined) {
+    const filepath = `workspaces/${username}/script/${req.query["name"]}.yaml`;
+    if (fs.existsSync(filepath)) {
+      res.send({ code: 303, status: "fail", msg: "已存在同名的脚本" });
+    } else {
+      fs.writeFile(filepath, "场景:\n  -\n      名字: 新场景", (err) => {
+        if (err) {
+          res.send({ code: 303, status: "fail", msg: err });
+        } else {
+          res.send({ code: 200, status: "success", msg: "新脚本创建成功" });
+        }
+      });
+    }
+  } else {
+    res.send({ code: 303, status: "fail", msg: "请上传脚本名" });
+  }
+  return res;
+};
+
 export default (req, res) => {
   // 上传文件时(POST)，表单需要两个参数： file和path, path是文件存放的目标路径
   // 下载文件时(get)， 表单需要一个参数：file
   req.method === "POST"
     ? post(req, res)
     : req.method === "PUT"
-    ? console.log("PUT")
+    ? put(req, res)
     : req.method === "DELETE"
     ? remove(req, res)
     : req.method === "GET"

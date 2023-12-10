@@ -1,18 +1,25 @@
-import * as React from "react";
+import React, { useRef } from "react";
 import { useEffect, useState } from "react";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
+import {
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
+import Input from "@mui/material/Input";
+import { AddCircle } from "@mui/icons-material/";
 import IconButton from "@mui/material/IconButton";
-import ListItemText from "@mui/material/ListItemText";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import Dialog from "@mui/material/Dialog";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from "@mui/material";
 import Alert from "@mui/material/Alert";
 import Link from "next/link";
 
@@ -33,6 +40,8 @@ const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
 export default function Menu({ scripts, selectScript, updateList, setting }) {
   const [openDeleteScript, setOpenDeleteScript] = useState(false);
   const [deleteScriptName, setDeleteScriptName] = useState("");
+  const [addSCDislogopen, setAddSCDislogopen] = React.useState(false);
+  let ref = useRef();
   const [alert, setAlert] = useState({
     display: "none",
     severity: "info",
@@ -69,17 +78,65 @@ export default function Menu({ scripts, selectScript, updateList, setting }) {
     setSelectedIndex(index);
   };
 
+  const addNewScript = () => {
+    setAddSCDislogopen(true);
+  };
+  const handleAddNewSCDialogClose = () => {
+    setAddSCDislogopen(false);
+  };
+
+  const handleAddNewSC = () => {
+    if (sessionStorage.token) {
+      const name = ref.current.value;
+      console.log("name: ", name);
+      if (name == null || name == undefined) {
+        return;
+      }
+      const result = fetch("/api/file?name=" + name, {
+        method: "PUT",
+        headers: { Authorization: sessionStorage.token },
+      });
+      // .then((data) => {
+      //   return data.json();
+      // })
+      // .then((res) => {
+      //   return res;
+      // })
+      // .then(function (jsonStr) {
+      //   if (jsonStr.code === 200) {
+      //     return {
+      //       display: "flex",
+      //       severity: "success",
+      //       message: jsonStr.msg,
+      //     };
+      //   } else {
+      //     return {
+      //       display: "flex",
+      //       severity: "error",
+      //       message: jsonStr.msg,
+      //     };
+      //   }
+      // });
+      setAlert(result);
+    } else {
+      setAlert({ display: "flex", severity: "error", message: "请先登录" });
+    }
+  };
+
   const deleteScript = (script) => {
     setDeleteScriptName(script);
     setOpenDeleteScript(true);
   };
 
-  const confirmDelete = async (script) => {
+  const confirmDelete = async (name) => {
     if (sessionStorage.token) {
-      const result = await fetch("/api/file?file=" + script, {
-        method: "DELETE",
-        headers: { Authorization: sessionStorage.token },
-      })
+      const result = await fetch(
+        "/api/file?file=" + name,
+        {
+          method: "DELETE",
+          headers: { Authorization: sessionStorage.token },
+        }
+      )
         .then((data) => {
           return data.json();
         })
@@ -156,6 +213,29 @@ export default function Menu({ scripts, selectScript, updateList, setting }) {
         updateList={updateList}
         close={() => setOpenstate(false)}
       ></CustomizedDialogs>
+      <Dialog
+        name="newscript"
+        open={addSCDislogopen}
+        onClose={handleAddNewSCDialogClose}
+      >
+        <DialogTitle>创建新脚本</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            脚本名将被用于展示在菜单列表中，且不能修改，请谨慎填写。
+          </DialogContentText>
+          <input
+            name="name"
+            size="small"
+            sx={{ width: "200px" }}
+            type="string"
+            ref={ref}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleAddNewSCDialogClose}>取消</Button>
+          <Button onClick={handleAddNewSC}>保存</Button>
+        </DialogActions>
+      </Dialog>
       <List sx={{ height: "10px" }}>
         <ListItem>
           {(login && (
@@ -171,7 +251,7 @@ export default function Menu({ scripts, selectScript, updateList, setting }) {
           )}
         </ListItem>
       </List>
-      <Divider sx={{ mt: "auto" }} />
+      <Divider sx={{ mt: "200px" }} />
       <List
         sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
         component="nav"
@@ -210,37 +290,32 @@ export default function Menu({ scripts, selectScript, updateList, setting }) {
             <ListItemText primary="开始工作前请先上传脚本" />
           </ListItem>
         )}
+        <ListItem>
+          <ListItemButton onClick={addNewScript}>
+            <ListItemText sx={{ textAlign: "center" }}>
+              <AddCircle></AddCircle>
+            </ListItemText>
+          </ListItemButton>
+        </ListItem>
       </List>
       <Divider sx={{ mt: "auto" }} />
       <List>
-        <ListItemButton
-          onClick={() => {
-            if (sessionStorage.token) {
-              setOpenstate(true);
-            } else {
-              window.alert("请先登录");
-            }
-          }}
-        >
-          <ListItemIcon>
-            <UploadFile></UploadFile>
-          </ListItemIcon>
-          <ListItemText primary="上传脚本" />
-        </ListItemButton>
-        <ListItemButton
-          onClick={() => {
-            if (sessionStorage.token) {
-              setting();
-            } else {
-              window.alert("请先登录");
-            }
-          }}
-        >
-          <ListItemIcon>
-            <Settings />
-          </ListItemIcon>
-          <ListItemText primary="配置" />
-        </ListItemButton>
+        {login && (
+          <>
+            <ListItemButton onClick={() => setOpenstate(true)}>
+              <ListItemIcon>
+                <UploadFile></UploadFile>
+              </ListItemIcon>
+              <ListItemText primary="上传脚本" />
+            </ListItemButton>
+            <ListItemButton onClick={setting}>
+              <ListItemIcon>
+                <Settings />
+              </ListItemIcon>
+              <ListItemText primary="配置" />
+            </ListItemButton>
+          </>
+        )}
         <ListItemButton component={Link} to="/help" target="_blank">
           <ListItemIcon>
             <Help />
