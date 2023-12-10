@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import Input from "@mui/material/Input";
 import Switch from "@mui/material/Switch";
 import { styled } from "@mui/material/styles";
+import resource from "../../lib/resource"
 
 const ariaLabel = { "aria-label": "description" };
 const VisuallyHiddenInput = styled("input")({
@@ -39,7 +40,7 @@ export default function Character(props) {
     if (char != null) {
       let c = { ...char };
       if (image != null) {
-        uploadToServer().then((res) => {
+        resource.uploadToServer(image, "character").then((res) => {
           if (res != "") {
             c["素材"] = res;
           }
@@ -68,33 +69,6 @@ export default function Character(props) {
       const i = event.target.files[0];
       setImage(i);
     }
-  };
-
-  const uploadToServer = () => {
-    if (!sessionStorage.token) {
-      return;
-    }
-    const body = new FormData();
-    body.append("file", image);
-    let result = fetch("/api/character", {
-      method: "POST",
-      headers: { Authorization: sessionStorage.token },
-      body,
-    })
-      .then((data) => {
-        return data.json();
-      })
-      .then((res) => {
-        return res;
-      })
-      .then(function (jsonStr) {
-        if (jsonStr.code === 200) {
-          return jsonStr.msg;
-        } else {
-          return null;
-        }
-      });
-    return result;
   };
 
   return (

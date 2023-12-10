@@ -27,6 +27,7 @@ import AddIcon from "@mui/icons-material/Add";
 
 import Activity from "./activity";
 import Character from "./character";
+import resource from "../../lib/resource";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -56,6 +57,7 @@ export default function Scenario({
   onSave,
 }) {
   const [sc, setSc] = React.useState(scenario);
+  const [image, setImage] = React.useState(null); //背景图
 
   // 场景是否展开
   const [scenarioState, setScenarioState] = React.useState(false);
@@ -76,7 +78,22 @@ export default function Scenario({
     _sc[e.target.name] = e.target.value;
     setSc(_sc);
   }
+
+  const uploadToClient = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      const i = event.target.files[0];
+      setImage(i);
+    }
+  };
+
   function handleSaveScenarioClick(index) {
+    if (image != null) {
+      resource.uploadToServer(image, "background").then((res) => {
+        if (res != "") {
+          sc["背景"] = res;
+        }
+      });
+    }
     onSave(index, sc);
     setScenarioEditState(false);
   }
@@ -274,7 +291,7 @@ export default function Scenario({
                       <VisuallyHiddenInput
                         type="file"
                         name="背景"
-                        onChange={handleChange}
+                        onChange={uploadToClient}
                       />
                     </Button>
                     <Box
