@@ -1,15 +1,14 @@
 import * as React from "react";
 import { Table, TableBody, TableCell, TableRow } from "@mui/material";
-import Display from "./Action/display";
 import { List, ListItemButton, ListItemText, Collapse } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material/";
-import Disappear from "./Action/disappear";
+import UpdateChar from "./Action/update";
 import FullFeaturedCrudGrid from "components/grid.js";
 
 export default function Activity({ index, activity, chars, onSave }) {
   const [activityState, setActivityState] = React.useState(false);
 
-  const cNames = chars.map((c) => c["名字"])
+  const cNames = chars.map((c) => c["名字"]);
 
   const columns = [
     {
@@ -31,7 +30,7 @@ export default function Activity({ index, activity, chars, onSave }) {
     {
       field: "text",
       headerName: "文字",
-      type: 'string',
+      type: "string",
       width: 200,
       editable: true,
       sortable: false,
@@ -49,7 +48,7 @@ export default function Activity({ index, activity, chars, onSave }) {
       field: "char",
       headerName: "角色",
       width: 100,
-      type: 'singleSelect',
+      type: "singleSelect",
       valueOptions: cNames,
       editable: true,
       sortable: false,
@@ -165,20 +164,21 @@ export default function Activity({ index, activity, chars, onSave }) {
           enableDelete={true}
           showEditToolbar={true}
         ></FullFeaturedCrudGrid>
-
-        {/* {activity["动作"] &&
-          activity["动作"].map((action, i) => (
-            <List key={action["名称"] + i} index={i}>
-              <ListItemButton onClick={() => handleActionClick(i)}>
-                <ListItemText primary={action["名称"]} />
-              </ListItemButton>
-              <Collapse in={false} timeout="auto" unmountOnExit>
-                return ( if (action["名字"] == "显示")
-                {<Display action={action}></Display>} else if(action["名字"] ==
-                "消失"){<Disappear action={action}></Disappear>})
-              </Collapse>
-            </List>
-          ))} */}
+        {activity["动作"] &&
+          activity["动作"].map((action, i) => {
+            console.log("action: ", action["名称"]);
+            let name = action["名称"];
+            if (name == "更新") {
+              return <UpdateChar
+                key={i}
+                action={action}
+                allChars={cNames}
+              ></UpdateChar>
+            } else {
+              console.log(`暂不支持该动作 ${action["名称"]}.`);
+            }
+          })}
+        {!activity["动作"] && {}}
       </Collapse>
     </List>
   );

@@ -130,13 +130,10 @@ export default function Menu({ scripts, selectScript, updateList, setting }) {
 
   const confirmDelete = async (name) => {
     if (sessionStorage.token) {
-      const result = await fetch(
-        "/api/file?file=" + name,
-        {
-          method: "DELETE",
-          headers: { Authorization: sessionStorage.token },
-        }
-      )
+      const result = await fetch("/api/file?file=" + name, {
+        method: "DELETE",
+        headers: { Authorization: sessionStorage.token },
+      })
         .then((data) => {
           return data.json();
         })
@@ -290,13 +287,15 @@ export default function Menu({ scripts, selectScript, updateList, setting }) {
             <ListItemText primary="开始工作前请先上传脚本" />
           </ListItem>
         )}
-        <ListItem>
-          <ListItemButton onClick={addNewScript}>
-            <ListItemText sx={{ textAlign: "center" }}>
-              <AddCircle></AddCircle>
-            </ListItemText>
-          </ListItemButton>
-        </ListItem>
+        {scripts.length < 3  && (
+          <ListItem>
+            <ListItemButton onClick={addNewScript}>
+              <ListItemText sx={{ textAlign: "center" }}>
+                <AddCircle></AddCircle>
+              </ListItemText>
+            </ListItemButton>
+          </ListItem>
+        )}
       </List>
       <Divider sx={{ mt: "auto" }} />
       <List>
