@@ -287,7 +287,7 @@ export default function Menu({ scripts, selectScript, updateList, setting }) {
             <ListItemText primary="开始工作前请先上传脚本" />
           </ListItem>
         )}
-        {scripts.length < 3  && (
+        {scripts.length < 3 && login && (
           <ListItem>
             <ListItemButton onClick={addNewScript}>
               <ListItemText sx={{ textAlign: "center" }}>

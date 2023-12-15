@@ -5,7 +5,7 @@ import { ExpandLess, ExpandMore } from "@mui/icons-material/";
 import UpdateChar from "./Action/update";
 import FullFeaturedCrudGrid from "components/grid.js";
 
-export default function Activity({ index, activity, chars, onSave }) {
+export default function Activity({ activity, chars, onSave }) {
   const [activityState, setActivityState] = React.useState(false);
 
   const cNames = chars.map((c) => c["名字"]);
@@ -89,9 +89,11 @@ export default function Activity({ index, activity, chars, onSave }) {
       return v;
     });
 
+  // 字幕
   const saveSubtitle = (row) => {
     let newSubtitle = [];
     if (isNaN(row.id)) {
+      // 添加一行新字幕
       newSubtitle = [
         ...activity["字幕"],
         [row.start, row.end, row.text, row.sound, row.char, row.action],
@@ -113,7 +115,7 @@ export default function Activity({ index, activity, chars, onSave }) {
     }
 
     activity["字幕"] = newSubtitle;
-    onSave(index, activity);
+    onSave(activity);
   };
 
   const deleteSubtitle = (id) => {
@@ -124,7 +126,34 @@ export default function Activity({ index, activity, chars, onSave }) {
       }
     }
     activity["字幕"] = newSubtitle;
-    onSave(index, activity);
+    onSave(activity);
+  };
+
+  //动作
+  const saveAction = (id, newAct) => {
+    let act = [];
+    for (var i = 0; i < activity["动作"].length; i++) {
+      if (i == id) {
+        act.push(newAct);
+      } else {
+        act.push(activity["动作"][i]);
+      }
+    }
+
+    activity["动作"] = act;
+    console.log("activity: ", activity)
+    onSave(activity);
+  };
+
+  const deleteAction = (id) => {
+    let act = [];
+    for (var i = 0; i < activity["动作"].length; i++) {
+      if (i !== id) {
+        act.push(activity["动作"][i]);
+      }
+    }
+    activity["动作"] = act;
+    onSave(activity);
   };
 
   return (
@@ -166,14 +195,17 @@ export default function Activity({ index, activity, chars, onSave }) {
         ></FullFeaturedCrudGrid>
         {activity["动作"] &&
           activity["动作"].map((action, i) => {
-            console.log("action: ", action["名称"]);
             let name = action["名称"];
             if (name == "更新") {
-              return <UpdateChar
-                key={i}
-                action={action}
-                allChars={cNames}
-              ></UpdateChar>
+              return (
+                <UpdateChar
+                  key={i}
+                  action={action}
+                  allChars={cNames}
+                  onSaveAction={(newAction) => saveAction(i, newAction)}
+                  onDeleteAction={() => deleteAction(i)}
+                ></UpdateChar>
+              );
             } else {
               console.log(`暂不支持该动作 ${action["名称"]}.`);
             }

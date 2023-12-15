@@ -50,7 +50,6 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 export default function Scenario({
-  index,
   scenario,
   selectedScript,
   handleDeleteSC,
@@ -86,7 +85,7 @@ export default function Scenario({
     }
   };
 
-  function handleSaveScenarioClick(index) {
+  function handleSaveScenarioClick() {
     if (image != null) {
       resource.uploadToServer(image, "background").then((res) => {
         if (res != "") {
@@ -94,7 +93,7 @@ export default function Scenario({
         }
       });
     }
-    const res = onSave(index, sc);
+    const res = onSave(sc);
     if (res) {
       setSc(sc);
       setScenarioEditState(false);
@@ -109,8 +108,8 @@ export default function Scenario({
       return act;
     });
     sc["活动"] = newSC;
-    onSave(index, sc);
-    setSc(sc);
+    console.log("sc: ", sc);
+    onSave(sc);
   }
 
   function addCharacter() {
@@ -119,16 +118,16 @@ export default function Scenario({
       juese = [...sc["角色"]];
     }
     juese.push({
-      名字: "",
+      名字: "沙雕",
       素材: "",
-      位置: "",
-      大小: "",
-      显示: "",
-      图层: "",
+      位置: "中心",
+      大小: "1",
+      显示: "0",
+      图层: "0",
       角度: "",
     });
     sc["角色"] = juese;
-    onSave(index, sc);
+    onSave(sc);
   }
 
   function onSaveChar(charIndex, char) {
@@ -139,7 +138,7 @@ export default function Scenario({
       return c;
     });
     sc["角色"] = newSC;
-    onSave(index, sc);
+    onSave(sc);
   }
 
   function onRemoveChar(charIndex) {
@@ -153,7 +152,7 @@ export default function Scenario({
       }
     }
     sc["角色"] = newSC;
-    onSave(index, sc);
+    onSave(sc);
   }
 
   const makeVideo = async (scenario) => {
@@ -215,7 +214,7 @@ export default function Scenario({
                 sx={{ width: 40 }}
                 onClick={(e) => {
                   e.preventDefault();
-                  handleSaveScenarioClick(index);
+                  handleSaveScenarioClick();
                 }}
               ></Save>
               <TextField
@@ -401,10 +400,9 @@ export default function Scenario({
               sc["活动"].map((activity, i) => (
                 <Activity
                   key={i}
-                  index={i}
                   activity={activity}
                   chars={sc["角色"]}
-                  onSave={updateActivity}
+                  onSave={(act) => updateActivity(i, act)}
                 ></Activity>
               ))}
           </Box>

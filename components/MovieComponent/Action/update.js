@@ -15,7 +15,6 @@ import { styled } from "@mui/material/styles";
 
 import resource from "../../../lib/resource";
 
-const ariaLabel = { "aria-label": "description" };
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -28,14 +27,19 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-export default function UpdateChar({ action, allChars, save }) {
-  console.log("action2: ", action);
-  console.log("allChars: ", allChars);
-  const [edit, setEdit] = useState(false);
+export default function UpdateChar({
+  action,
+  allChars,
+  onSaveAction,
+  onDeleteAction,
+}) {
   const [image, setImage] = useState(null);
+  const [name, setName] = useState(action["角色"]["名字"]);
+
+  const [edit, setEdit] = useState(false);
 
   const handleChange = (event) => {
-    setChar(event.target.value);
+    setName(event.target.value);
   };
 
   const uploadToClient = (event) => {
@@ -46,21 +50,23 @@ export default function UpdateChar({ action, allChars, save }) {
   };
 
   const onSave = () => {
+    let c = Object.assign({}, action);
     if (image != null) {
       resource.uploadToServer(image, "action").then((res) => {
         if (res != "") {
-          setImage(res);
+          c["角色"]["素材"] = res;
         }
       });
-      save(props.i, c);
-      setChar(c);
-      setEdit(false);
-    } else {
-      console.log("角色没有修改");
     }
+    c["角色"]["名字"] = name;
+    onSaveAction(c);
+    setEdit(false);
   };
 
-  const onDelete = () => {};
+  const onDelete = () => {
+    onDeleteAction();
+    setEdit(false);
+  };
 
   return (
     <Box sx={{ bgcolor: "#aabb44" }}>
@@ -104,15 +110,21 @@ export default function UpdateChar({ action, allChars, save }) {
                 <Select
                   labelId="demo-simple-select-standard-label"
                   id="demo-simple-select-standard"
-                  value={action["角色"]["名字"].trim()}
+                  // value={action["角色"]["名字"].trim()}
                   onChange={handleChange}
                   label="角色"
                 >
-                  {allChars.map((name, i) => (
-                    <MenuItem key={i} value={name}>
-                      {name}
-                    </MenuItem>
-                  ))}
+                  {allChars.map((name, i) => {
+                    let selected = false;
+                    if (name == action["角色"]["名字"]) {
+                      selected = true;
+                    }
+                    return (
+                      <MenuItem key={i} selected={selected} value={name}>
+                        {name}
+                      </MenuItem>
+                    );
+                  })}
                 </Select>
               </FormControl>
               <CardActions sx={{ m: 0, p: 0 }}>

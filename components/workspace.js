@@ -87,11 +87,10 @@ export default function Workspace({
           {scenarios.map((scenario, i) => (
             <Scenario
               key={i}
-              index={i}
               selectedScript={selectedScript}
               scenario={scenario}
               handleDeleteSC={handleDeleteSC}
-              onSave={handleSaveSc}
+              onSave={(sc) => handleSaveSc(i, sc)}
             ></Scenario>
           ))}
           <Box

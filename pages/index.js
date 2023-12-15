@@ -25,7 +25,6 @@ const callAPI = async (final_sc, selectedScript) => {
       });
 
       const data = await res.json();
-      console.log("callAPI: ", data);
     }
   } catch (err) {
     console.log(err);
@@ -226,7 +225,7 @@ export default function Home() {
           selectedScript={selectedScript}
           handleAddTask={handleAddTask}
           handleDeleteSC={handleDeleteScenario}
-          handleSaveSc={handleSaveSc}
+          handleSaveSc={(index, sc) => handleSaveSc(index, sc)}
         ></Workspace>
       )}
     </Layout>
