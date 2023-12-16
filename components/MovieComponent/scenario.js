@@ -53,7 +53,7 @@ export default function Scenario({
   scenario,
   selectedScript,
   handleDeleteSC,
-  onSave,
+  onSaveScenario,
 }) {
   const [sc, setSc] = React.useState(scenario);
   const [image, setImage] = React.useState(null); //背景图
@@ -93,7 +93,7 @@ export default function Scenario({
         }
       });
     }
-    const res = onSave(sc);
+    const res = onSaveScenario(sc);
     if (res) {
       setSc(sc);
       setScenarioEditState(false);
@@ -108,8 +108,7 @@ export default function Scenario({
       return act;
     });
     sc["活动"] = newSC;
-    console.log("sc: ", sc);
-    onSave(sc);
+    onSaveScenario(sc);
   }
 
   function addCharacter() {
@@ -127,18 +126,18 @@ export default function Scenario({
       角度: "",
     });
     sc["角色"] = juese;
-    onSave(sc);
+    onSaveScenario(sc);
   }
 
-  function onSaveChar(charIndex, char) {
+  function onSaveChar(index, char) {
     let newSC = sc["角色"].map((c, i) => {
-      if (i === charIndex) {
+      if (i === index) {
         return char;
       }
       return c;
     });
     sc["角色"] = newSC;
-    onSave(sc);
+    onSaveScenario(sc);
   }
 
   function onRemoveChar(charIndex) {
@@ -152,7 +151,7 @@ export default function Scenario({
       }
     }
     sc["角色"] = newSC;
-    onSave(sc);
+    onSaveScenario(sc);
   }
 
   const makeVideo = async (scenario) => {
@@ -357,7 +356,6 @@ export default function Scenario({
               sc["角色"].map((char, i) => (
                 <Character
                   key={i}
-                  i={i}
                   name={char["名字"]}
                   image={char["素材"]}
                   pos={char["位置"]}

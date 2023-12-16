@@ -141,7 +141,6 @@ export default function Activity({ activity, chars, onSave }) {
     }
 
     activity["动作"] = act;
-    console.log("activity: ", activity)
     onSave(activity);
   };
 

@@ -110,7 +110,7 @@ export default function UpdateChar({
                 <Select
                   labelId="demo-simple-select-standard-label"
                   id="demo-simple-select-standard"
-                  // value={action["角色"]["名字"].trim()}
+                  value={action["角色"]["名字"].trim()}
                   onChange={handleChange}
                   label="角色"
                 >

@@ -11,35 +11,38 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Layout from "../components/layout.js";
 
-// 将更改保存到文件
-const callAPI = async (final_sc, selectedScript) => {
-  try {
-    if (sessionStorage.token) {
-      const res = await fetch(`/api/script`, {
-        method: "POST",
-        headers: { Authorization: sessionStorage.token },
-        body: JSON.stringify({
-          script: { 场景: final_sc },
-          path: selectedScript,
-        }),
-      });
+import { deepCopy } from "../lib/jsUtil";
 
-      const data = await res.json();
-    }
-  } catch (err) {
-    console.log(err);
+// 将更改保存到文件
+const callAPI = async (scenarios, selectedScript) => {
+  if (sessionStorage.token) {
+    console.log("final_sc提交api之前： ", scenarios);
+    const cc = deepCopy(scenarios);
+    console.log("cc: ", cc);
+    const res = await fetch(`/api/script`, {
+      method: "POST",
+      headers: { Authorization: sessionStorage.token },
+      body: JSON.stringify({
+        script: { 场景: cc },
+        path: selectedScript,
+      }),
+    });
+
+    const data = await res.json();
+    console.log("callAPI: ", data);
   }
 };
 
 export default function Home() {
-  const [allScriptNames, setAllScriptNames] = useState([]);
+  const [allScriptNames, setAllScriptNames] = useState([]); //全部脚本名
   const [showSetting, setShowSetting] = useState(false);
   const [settings, setSettings] = useState({});
 
   const [scenario, setScenario] = useImmer([]); // 当前脚本的全部场景
   const [selectedScript, setSelectedScript] = useState(null); // 当前脚本名字
 
-  const updateList = () => {
+  //更新脚本列表
+  const updateMenuList = () => {
     if (sessionStorage.token) {
       fetch("/api/file?files", {
         headers: { Authorization: sessionStorage.token },
@@ -54,12 +57,11 @@ export default function Home() {
             setScenario([]);
           }
         });
-    } else {
-      return;
     }
   };
 
-  const updateWorkspace = (scriptName) => {
+  //更新工作区
+  const getWorkingScript = (scriptName) => {
     if (sessionStorage.token) {
       fetch("/api/file?file=" + scriptName, {
         headers: { Authorization: sessionStorage.token },
@@ -68,21 +70,17 @@ export default function Home() {
           return response.json();
         })
         .then((data) => {
-          setSelectedScript(scriptName);
+          setSelectedScript(scriptName); //更新当前选中的脚本
           if (data.msg["场景"] instanceof Array) {
-            console.log("更新前scenario： ", scenario);
-            console.log("新scenario: ", data.msg["场景"]);
-            setScenario([...data.msg["场景"]]);
+            setScenario([...data.msg["场景"]]); // 更新场景
+          } else {
+            setScenario([]);
           }
         });
     }
   };
 
-  const getScript = (scriptName) => {
-    console.log("selected: ", scriptName);
-    updateWorkspace(scriptName);
-  };
-
+  //设置用户配置信息
   const setting = () => {
     if (sessionStorage.token) {
       fetch("/api/settings", {
@@ -93,25 +91,22 @@ export default function Home() {
         })
         .then((data) => {
           if (data.code === 200) {
-            let s = [];
-            let i = 0;
+            let settings = []; //全部配置
+            let i = 0; // id
             for (const [key, value] of Object.entries(data.msg)) {
-              s.push({
+              settings.push({
                 id: i++,
                 key: key,
                 value: value,
               });
             }
-            setSettings(s);
+            setSettings(settings);
             setShowSetting(true);
-          } else {
           }
         });
-    } else {
-      return;
     }
   };
-
+  //保存用户配置的变更
   const saveSetting = (row) => {
     const body = new FormData();
     body.append("key", row.key);
@@ -131,11 +126,13 @@ export default function Home() {
     }
   };
 
+  // 打开页面时展示菜单列表
   useEffect(() => {
-    updateList();
+    updateMenuList();
   }, []);
 
-  function handleAddTask(e) {
+  // 添加新场景
+  const handleAddScenario = (e) => {
     let sc = {
       背景: "",
       名字: "default" + scenario.length,
@@ -146,9 +143,10 @@ export default function Home() {
       活动: null,
     };
     setScenario([...scenario, sc]);
-  }
+  };
 
-  function handleDeleteScenario(index) {
+  // 删除指定顺序的场景
+  const handleDeleteScenario = (index) => {
     const newScript = [];
     for (var i = 0; i < scenario.length; i++) {
       if (i != index) {
@@ -157,21 +155,24 @@ export default function Home() {
     }
     callAPI(newScript, selectedScript);
     setScenario(newScript);
-  }
-
-  function handleSaveSc(index, updatedScenario) {
+  };
+  // 保存场景
+  const onSaveScenario = (index, updatedScenario) => {
+    console.log("scenario: ", JSON.stringify(scenario));
     let final_sc = [...scenario];
+    console.log("updatedScenario: ", updatedScenario);
     final_sc[index] = updatedScenario;
+    console.log("final_sc: ", final_sc);
     callAPI(final_sc, selectedScript);
-    setScenario(final_sc);
+    // setScenario(final_sc);
     return true;
-  }
+  };
 
   return (
     <Layout
       scripts={allScriptNames}
-      selectScript={getScript}
-      updateList={updateList}
+      selectScript={(scriptName) => getWorkingScript(scriptName)}
+      updateMenuList={() => updateMenuList()}
       setting={setting}
     >
       <Dialog
@@ -223,9 +224,9 @@ export default function Home() {
         <Workspace
           scenarios={scenario}
           selectedScript={selectedScript}
-          handleAddTask={handleAddTask}
-          handleDeleteSC={handleDeleteScenario}
-          handleSaveSc={(index, sc) => handleSaveSc(index, sc)}
+          onAddScenario={handleAddScenario}
+          onDeleteScenario={handleDeleteScenario}
+          onSaveScenario={(index, sc) => onSaveScenario(index, sc)}
         ></Workspace>
       )}
     </Layout>

@@ -15,9 +15,9 @@ import GlobalConifg from "../pages/app.config";
 export default function Workspace({
   scenarios,
   selectedScript,
-  handleAddTask,
-  handleDeleteSC,
-  handleSaveSc,
+  onAddScenario,
+  onDeleteScenario,
+  onSaveScenario,
 }) {
   const [downloadDisplay, setDownloadDisplay] = React.useState("none");
   const { size, elapsed, percentage, download, cancel, error, isInProgress } =
@@ -89,8 +89,8 @@ export default function Workspace({
               key={i}
               selectedScript={selectedScript}
               scenario={scenario}
-              handleDeleteSC={handleDeleteSC}
-              onSave={(sc) => handleSaveSc(i, sc)}
+              onDeleteScenario={onDeleteScenario}
+              onSaveScenario={(sc) => onSaveScenario(i, sc)}
             ></Scenario>
           ))}
           <Box
@@ -101,7 +101,7 @@ export default function Workspace({
             }}
           >
             <List>
-              <ListItemButton onClick={handleAddTask}>
+              <ListItemButton onClick={onAddScenario}>
                 <ListItemText sx={{ textAlign: "center" }}>
                   <AddCircle></AddCircle>
                 </ListItemText>
