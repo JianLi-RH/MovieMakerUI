@@ -14,22 +14,24 @@ import Layout from "../components/layout.js";
 import { deepCopy } from "../lib/jsUtil";
 
 // 将更改保存到文件
-const callAPI = async (scenarios, selectedScript) => {
+const callAPI = (scenarios, selectedScript) => {
   if (sessionStorage.token) {
-    console.log("final_sc提交api之前： ", scenarios);
-    const cc = deepCopy(scenarios);
+    const cc = [];
+    for (var i = 0; i < scenarios.length; i++) {
+      cc.push(scenarios[i]);
+    }
     console.log("cc: ", cc);
-    const res = await fetch(`/api/script`, {
+    let res = fetch(`/api/script`, {
       method: "POST",
       headers: { Authorization: sessionStorage.token },
       body: JSON.stringify({
         script: { 场景: cc },
         path: selectedScript,
       }),
+    }).then((response) => {
+      return response.json();
     });
-
-    const data = await res.json();
-    console.log("callAPI: ", data);
+    return res;
   }
 };
 
@@ -38,7 +40,7 @@ export default function Home() {
   const [showSetting, setShowSetting] = useState(false);
   const [settings, setSettings] = useState({});
 
-  const [scenario, setScenario] = useImmer([]); // 当前脚本的全部场景
+  const [selectedScenarios, setSelectedScenarios] = useState([]); // 当前脚本的全部场景
   const [selectedScript, setSelectedScript] = useState(null); // 当前脚本名字
 
   //更新脚本列表
@@ -54,7 +56,7 @@ export default function Home() {
             setAllScriptNames(r.msg);
           } else {
             setAllScriptNames([]);
-            setScenario([]);
+            setSelectedScenarios([]);
           }
         });
     }
@@ -70,11 +72,13 @@ export default function Home() {
           return response.json();
         })
         .then((data) => {
-          setSelectedScript(scriptName); //更新当前选中的脚本
-          if (data.msg["场景"] instanceof Array) {
-            setScenario([...data.msg["场景"]]); // 更新场景
-          } else {
-            setScenario([]);
+          if (data.code === 200) {
+            setSelectedScript(scriptName); //更新当前选中的脚本
+            if (data.msg["场景"] instanceof Array) {
+              setSelectedScenarios(data.msg["场景"]); // 更新场景
+            } else {
+              setSelectedScenarios([]);
+            }
           }
         });
     }
@@ -135,37 +139,41 @@ export default function Home() {
   const handleAddScenario = (e) => {
     let sc = {
       背景: "",
-      名字: "default" + scenario.length,
+      名字: "default" + selectedScenarios.length,
       焦点: "中心",
       背景音乐: null,
       比例: 1,
       角色: null,
       活动: null,
     };
-    setScenario([...scenario, sc]);
+    setSelectedScenarios([...selectedScenarios, sc]);
   };
 
   // 删除指定顺序的场景
   const handleDeleteScenario = (index) => {
     const newScript = [];
-    for (var i = 0; i < scenario.length; i++) {
+    for (var i = 0; i < selectedScenarios.length; i++) {
       if (i != index) {
-        newScript.push(scenario[i]);
+        newScript.push(selectedScenarios[i]);
       }
     }
-    callAPI(newScript, selectedScript);
-    setScenario(newScript);
+    const res = callAPI(newScript, selectedScript);
+    res.then((data) => {
+      if (data.code === 200) {
+        setSelectedScenarios(newScript);
+      }
+    });
   };
   // 保存场景
   const onSaveScenario = (index, updatedScenario) => {
-    console.log("scenario: ", JSON.stringify(scenario));
-    let final_sc = [...scenario];
-    console.log("updatedScenario: ", updatedScenario);
+    let final_sc = JSON.parse(JSON.stringify(selectedScenarios));
     final_sc[index] = updatedScenario;
-    console.log("final_sc: ", final_sc);
-    callAPI(final_sc, selectedScript);
-    // setScenario(final_sc);
-    return true;
+    const res = callAPI(final_sc, selectedScript);
+    res.then((data) => {
+      if (data.code === 200) {
+        setSelectedScenarios(final_sc);
+      }
+    });
   };
 
   return (
@@ -220,15 +228,14 @@ export default function Home() {
           ></FullFeaturedCrudGrid>
         </DialogContent>
       </Dialog>
-      {scenario && (
-        <Workspace
-          scenarios={scenario}
-          selectedScript={selectedScript}
-          onAddScenario={handleAddScenario}
-          onDeleteScenario={handleDeleteScenario}
-          onSaveScenario={(index, sc) => onSaveScenario(index, sc)}
-        ></Workspace>
-      )}
+
+      <Workspace
+        scenarios={selectedScenarios}
+        selectedScript={selectedScript}
+        onAddScenario={() => handleAddScenario()}
+        onDeleteScenario={(index) => handleDeleteScenario(index)}
+        onSaveScenario={(index, sc) => onSaveScenario(index, sc)}
+      ></Workspace>
     </Layout>
   );
 }

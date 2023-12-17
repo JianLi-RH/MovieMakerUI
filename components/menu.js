@@ -37,7 +37,12 @@ import LoginForm from "../components/login-form";
 import LogoutForm from "./logout-form";
 const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
 
-export default function Menu({ scripts, selectScript, updateList, setting }) {
+export default function Menu({
+  scripts,
+  selectScript,
+  updateMenuList,
+  setting,
+}) {
   const [openDeleteScript, setOpenDeleteScript] = useState(false);
   const [deleteScriptName, setDeleteScriptName] = useState("");
   const [addSCDislogopen, setAddSCDislogopen] = React.useState(false);
@@ -76,13 +81,6 @@ export default function Menu({ scripts, selectScript, updateList, setting }) {
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
-  };
-
-  const addNewScript = () => {
-    setAddSCDislogopen(true);
-  };
-  const handleAddNewSCDialogClose = () => {
-    setAddSCDislogopen(false);
   };
 
   const handleAddNewSC = () => {
@@ -163,7 +161,7 @@ export default function Menu({ scripts, selectScript, updateList, setting }) {
     setTimeout(() => {
       setAlert({ display: "none", severity: "info", message: "" });
       setOpenDeleteScript(false);
-      updateList();
+      updateMenuList();
     }, 1000);
   };
 
@@ -207,13 +205,13 @@ export default function Menu({ scripts, selectScript, updateList, setting }) {
       <CustomizedDialogs
         length={scripts.length}
         open={openstate}
-        updateList={updateList}
+        updateList={() => updateMenuList()}
         close={() => setOpenstate(false)}
       ></CustomizedDialogs>
       <Dialog
         name="newscript"
         open={addSCDislogopen}
-        onClose={handleAddNewSCDialogClose}
+        onClose={() => setAddSCDislogopen(false)}
       >
         <DialogTitle>创建新脚本</DialogTitle>
         <DialogContent>
@@ -229,7 +227,7 @@ export default function Menu({ scripts, selectScript, updateList, setting }) {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleAddNewSCDialogClose}>取消</Button>
+          <Button onClick={() => setAddSCDislogopen(false)}>取消</Button>
           <Button onClick={handleAddNewSC}>保存</Button>
         </DialogActions>
       </Dialog>
@@ -237,12 +235,12 @@ export default function Menu({ scripts, selectScript, updateList, setting }) {
         <ListItem>
           {(login && (
             <LogoutForm
-              updateList={updateList}
+              updateList={() => updateMenuList()}
               updateLogin={() => setLogin(false)}
             ></LogoutForm>
           )) || (
             <LoginForm
-              updateList={updateList}
+              updateList={() => updateMenuList()}
               updateLogin={() => setLogin(true)}
             />
           )}
@@ -254,7 +252,13 @@ export default function Menu({ scripts, selectScript, updateList, setting }) {
         component="nav"
         aria-labelledby="nested-list-subheader"
       >
-        {(scripts.length > 0 &&
+        {!login && (
+          <ListItem>
+            <ListItemText primary="请先登录" />
+          </ListItem>
+        )}
+        {scripts.length > 0 &&
+          login &&
           scripts.map((script, i) => (
             <ListItem
               key={i}
@@ -282,14 +286,10 @@ export default function Menu({ scripts, selectScript, updateList, setting }) {
                 <ListItemText primary={script.id} />
               </ListItemButton>
             </ListItem>
-          ))) || (
-          <ListItem>
-            <ListItemText primary="开始工作前请先上传脚本" />
-          </ListItem>
-        )}
+          ))}
         {scripts.length < 3 && login && (
           <ListItem>
-            <ListItemButton onClick={addNewScript}>
+            <ListItemButton onClick={() => setAddSCDislogopen(true)}>
               <ListItemText sx={{ textAlign: "center" }}>
                 <AddCircle></AddCircle>
               </ListItemText>

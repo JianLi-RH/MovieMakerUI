@@ -1,5 +1,6 @@
 const fs = require("fs");
-const yaml = require("js-yaml");
+// const yaml = require("js-yaml");
+const yaml = require('yaml');
 
 import user from "../../lib/user";
 
@@ -11,8 +12,8 @@ export default function handler(req, res) {
   }
 
   let jdoc = JSON.parse(req.body);
-  let doc = yaml.dump(jdoc.script);
-  let config = `workspaces/${username}/script/${jdoc.path}.yaml`;
+  let doc = JSON.stringify(jdoc.script);
+  const config = `workspaces/${username}/script/${jdoc.path}.yaml`;
   fs.writeFile(config, doc, (err) => {
     if (err) {
       res.json({ code: 201, status: "fail", msg: err.toString() });

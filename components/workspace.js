@@ -89,27 +89,27 @@ export default function Workspace({
               key={i}
               selectedScript={selectedScript}
               scenario={scenario}
-              onDeleteScenario={onDeleteScenario}
+              onDeleteScenario={() => onDeleteScenario(i)}
               onSaveScenario={(sc) => onSaveScenario(i, sc)}
             ></Scenario>
           ))}
-          <Box
-            sx={{
-              width: 1,
-              marginRight: 0.5,
-              my: 1,
-            }}
-          >
-            <List>
-              <ListItemButton onClick={onAddScenario}>
-                <ListItemText sx={{ textAlign: "center" }}>
-                  <AddCircle></AddCircle>
-                </ListItemText>
-              </ListItemButton>
-            </List>
-          </Box>
         </Box>
       )}
+      <Box
+        sx={{
+          width: 1,
+          marginRight: 0.5,
+          my: 1,
+        }}
+      >
+        <List>
+          <ListItemButton onClick={onAddScenario}>
+            <ListItemText sx={{ textAlign: "center" }}>
+              <AddCircle></AddCircle>
+            </ListItemText>
+          </ListItemButton>
+        </List>
+      </Box>
     </Container>
   );
 }

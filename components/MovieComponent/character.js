@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 import Input from "@mui/material/Input";
 import Switch from "@mui/material/Switch";
 import { styled } from "@mui/material/styles";
-import resource from "../../lib/resource"
+import resource from "../../lib/resource";
 
 const ariaLabel = { "aria-label": "description" };
 const VisuallyHiddenInput = styled("input")({
@@ -35,9 +35,10 @@ export default function Character(props) {
     角度: props.rotate,
   });
   const [image, setImage] = React.useState(null);
+  const [changed, setChanged] = React.useState(false);
 
   const save = () => {
-    if (char != null) {
+    if (changed == true) {
       let c = { ...char };
       if (image != null) {
         resource.uploadToServer(image, "character").then((res) => {
@@ -46,7 +47,7 @@ export default function Character(props) {
           }
         });
       }
-      props.save(props.i, c);
+      props.save(c);
       setChar(c);
       setEdit(false);
     } else {
@@ -62,12 +63,14 @@ export default function Character(props) {
     let c = { ...char };
     c[event.target.name] = event.target.value;
     setChar(c);
+    setChanged(true);
   };
 
   const uploadToClient = (event) => {
     if (event.target.files && event.target.files[0]) {
       const i = event.target.files[0];
       setImage(i);
+      setChanged(true);
     }
   };
 
@@ -124,8 +127,9 @@ export default function Character(props) {
                 type="string"
                 onChange={(e) => handleChange(e)}
                 defaultValue={
-                  Array.isArray(props.pos) &&
-                  props.pos[0] + " : " + props.pos[1]
+                  (Array.isArray(props.pos) &&
+                    props.pos[0] + " : " + props.pos[1]) ||
+                  props.pos
                 }
                 inputProps={ariaLabel}
               />
@@ -138,8 +142,9 @@ export default function Character(props) {
                 type="string"
                 onChange={(e) => handleChange(e)}
                 defaultValue={
-                  Array.isArray(props.size) &&
-                  props.size[0] + " : " + props.size[1]
+                  (Array.isArray(props.size) &&
+                    props.size[0] + " : " + props.size[1]) ||
+                  props.size
                 }
                 inputProps={ariaLabel}
               />
@@ -202,12 +207,14 @@ export default function Character(props) {
               size="small"
             >
               位置：
-              {Array.isArray(props.pos) &&
-                props.pos[0] + " : " + props.pos[1]}{" "}
+              {(Array.isArray(props.pos) &&
+                props.pos[0] + " : " + props.pos[1]) ||
+                props.pos}
               <br></br>
               大小：
-              {Array.isArray(props.size) &&
-                props.size[0] + " : " + props.size[1]}
+              {(Array.isArray(props.size) &&
+                props.size[0] + " : " + props.size[1]) ||
+                props.size}
               <br></br>
               角度： {props.rotate} <br></br>
               图层： {props.index} <br></br>

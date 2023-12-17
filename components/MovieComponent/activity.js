@@ -1,14 +1,18 @@
 import * as React from "react";
+import Button from "@mui/material/Button";
 import { Table, TableBody, TableCell, TableRow } from "@mui/material";
 import { List, ListItemButton, ListItemText, Collapse } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material/";
+import Typography from "@mui/material/Typography";
+import { Select, MenuItem } from "@mui/material";
 import UpdateChar from "./Action/update";
 import FullFeaturedCrudGrid from "components/grid.js";
 
 export default function Activity({ activity, chars, onSave }) {
   const [activityState, setActivityState] = React.useState(false);
+  const [action, setAction] = React.useState("--");
 
-  const cNames = chars.map((c) => c["名字"]);
+  const cNames = chars.map((c) => c["名字"]); // 全部角色名
 
   const columns = [
     {
@@ -192,6 +196,27 @@ export default function Activity({ activity, chars, onSave }) {
           enableDelete={true}
           showEditToolbar={true}
         ></FullFeaturedCrudGrid>
+        <Typography gutterBottom variant="subtitle2" component="span">
+          添加动作：
+        </Typography>
+        <Select
+          size="small"
+          labelId="demo-simple-select-standard-label"
+          id="demo-simple-select-standard"
+          onChange={(event) => setAction(event.target.value)}
+          value={action}
+          label="动作"
+        >
+          <MenuItem value="--">--</MenuItem>
+          <MenuItem value="更新">更新</MenuItem>
+          <MenuItem value="显示">显示</MenuItem>
+          <MenuItem value="消失">消失</MenuItem>
+          <MenuItem value="镜头">镜头</MenuItem>
+          <MenuItem value="行进">行进</MenuItem>
+          <MenuItem value="转身">转身</MenuItem>
+          <MenuItem value="gif">gif</MenuItem>
+        </Select>
+        <Button>添加新动作</Button>
         {activity["动作"] &&
           activity["动作"].map((action, i) => {
             let name = action["名称"];

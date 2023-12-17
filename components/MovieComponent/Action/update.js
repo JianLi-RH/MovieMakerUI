@@ -33,9 +33,8 @@ export default function UpdateChar({
   onSaveAction,
   onDeleteAction,
 }) {
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState(action["角色"]["素材"]);
   const [name, setName] = useState(action["角色"]["名字"]);
-
   const [edit, setEdit] = useState(false);
 
   const handleChange = (event) => {
@@ -45,26 +44,32 @@ export default function UpdateChar({
   const uploadToClient = (event) => {
     if (event.target.files && event.target.files[0]) {
       const i = event.target.files[0];
-      setImage(i);
+      resource.uploadToServer(i, "action").then((res) => {
+        if (res != "") {
+          console.log("res: ", res);
+          setImage(res);
+        }
+      });
     }
   };
 
   const onSave = () => {
     let c = Object.assign({}, action);
-    if (image != null) {
-      resource.uploadToServer(image, "action").then((res) => {
-        if (res != "") {
-          c["角色"]["素材"] = res;
-        }
-      });
-    }
     c["角色"]["名字"] = name;
+    c["角色"]["素材"] = image;
+    console.log("onSave: ", c);
     onSaveAction(c);
     setEdit(false);
   };
 
   const onDelete = () => {
     onDeleteAction();
+    setEdit(false);
+  };
+
+  const onCancel = () => {
+    setImage(action["角色"]["素材"]);
+    setName(action["角色"]["名字"]);
     setEdit(false);
   };
 
@@ -110,21 +115,22 @@ export default function UpdateChar({
                 <Select
                   labelId="demo-simple-select-standard-label"
                   id="demo-simple-select-standard"
-                  value={action["角色"]["名字"].trim()}
-                  onChange={handleChange}
+                  value={name}
+                  onChange={(e) => handleChange(e)}
                   label="角色"
                 >
-                  {allChars.map((name, i) => {
-                    let selected = false;
-                    if (name == action["角色"]["名字"]) {
-                      selected = true;
-                    }
-                    return (
-                      <MenuItem key={i} selected={selected} value={name}>
-                        {name}
-                      </MenuItem>
-                    );
-                  })}
+                  {allChars.length > 0 &&
+                    allChars.map((cName, i) => {
+                      let selected = false;
+                      if (name == cName) {
+                        selected = true;
+                      }
+                      return (
+                        <MenuItem key={i} selected={selected} value={cName}>
+                          {cName}
+                        </MenuItem>
+                      );
+                    })}
                 </Select>
               </FormControl>
               <CardActions sx={{ m: 0, p: 0 }}>
@@ -138,7 +144,7 @@ export default function UpdateChar({
                 <Button
                   sx={{ m: 0, p: 0 }}
                   variant="text"
-                  onClick={() => setEdit(false)}
+                  onClick={() => onCancel()}
                 >
                   取消
                 </Button>
@@ -149,11 +155,11 @@ export default function UpdateChar({
             <>
               <CardMedia
                 sx={{ height: 160, width: 120, alignItems: "center" }}
-                image={action["角色"]["素材"]}
-                title={action["角色"]["名字"]}
+                image={image}
+                title={name}
               />
               <Typography gutterBottom variant="h6" component="div">
-                {action["角色"]["名字"]}
+                {name}
               </Typography>
               <Button
                 sx={{ m: 0, p: 0 }}

@@ -52,7 +52,7 @@ const VisuallyHiddenInput = styled("input")({
 export default function Scenario({
   scenario,
   selectedScript,
-  handleDeleteSC,
+  onDeleteScenario,
   onSaveScenario,
 }) {
   const [sc, setSc] = React.useState(scenario);
@@ -93,11 +93,7 @@ export default function Scenario({
         }
       });
     }
-    const res = onSaveScenario(sc);
-    if (res) {
-      setSc(sc);
-      setScenarioEditState(false);
-    }
+    onSaveScenario(sc);
   }
 
   function updateActivity(index, activity) {
@@ -112,21 +108,20 @@ export default function Scenario({
   }
 
   function addCharacter() {
-    let juese = [];
-    if (sc["角色"] != null) {
-      juese = [...sc["角色"]];
-    }
-    juese.push({
+    const c = {
       名字: "沙雕",
-      素材: "",
+      素材: "default.png",
       位置: "中心",
       大小: "1",
       显示: "0",
       图层: "0",
       角度: "",
-    });
-    sc["角色"] = juese;
+    };
+    sc["角色"] = [...sc["角色"], c];
     onSaveScenario(sc);
+    let _sc = {};
+    Object.assign(_sc, sc);
+    setSc(_sc);
   }
 
   function onSaveChar(index, char) {
@@ -140,14 +135,12 @@ export default function Scenario({
     onSaveScenario(sc);
   }
 
-  function onRemoveChar(charIndex) {
+  function onRemoveChar(index) {
     let newSC = [];
     var l = sc["角色"].length;
-    if (l > 1) {
-      for (var i = 0; i < l; i++) {
-        if (i !== charIndex) {
-          newSC.push(sc["角色"][i]);
-        }
+    for (var i = 0; i < l; i++) {
+      if (i !== index) {
+        newSC.push(sc["角色"][i]);
       }
     }
     sc["角色"] = newSC;
@@ -194,9 +187,8 @@ export default function Scenario({
         <ListItemButton sx={{ bgcolor: "#cfe8fc", border: 1 }}>
           <Delete
             sx={{ width: 40 }}
-            onClick={(e) => {
-              e.preventDefault();
-              handleDeleteSC(index);
+            onClick={() => {
+              onDeleteScenario();
             }}
           ></Delete>
           {scenarioEditState ? (
@@ -216,16 +208,14 @@ export default function Scenario({
                   handleSaveScenarioClick();
                 }}
               ></Save>
-              <TextField
-                id="outlined-basic"
-                label="场景名"
-                variant="outlined"
-                name="名字"
+              <Input
+                name="场景名"
+                size="small"
+                sx={{ width: "200px" }}
+                type="string"
                 onChange={(e) => handleChange(e)}
                 defaultValue={sc["名字"]}
-              >
-                {sc["名字"]}
-              </TextField>
+              />
             </>
           ) : (
             <>
@@ -363,8 +353,8 @@ export default function Scenario({
                   rotate={char["角度"]}
                   display={char["显示"]}
                   index={char["图层"]}
-                  save={onSaveChar}
-                  remove={onRemoveChar}
+                  save={(char) => onSaveChar(i, char)}
+                  remove={() => onRemoveChar(i)}
                 ></Character>
               ))}
             <Card
@@ -385,7 +375,7 @@ export default function Scenario({
                 aria-label="add"
                 sx={{ display: "flex", alignItems: "center" }}
               >
-                <AddIcon onClick={addCharacter} />
+                <AddIcon onClick={() => addCharacter()} />
               </Fab>
             </Card>
           </Stack>

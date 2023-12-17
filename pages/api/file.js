@@ -1,6 +1,6 @@
 import formidable, { errors as formidableErrors } from "formidable";
 import fs from "fs";
-import YAML from "yaml";
+const yaml = require("js-yaml");
 
 import user from "../../lib/user";
 
@@ -26,7 +26,7 @@ const get = async (req, res) => {
         if (err) {
           res.json({ code: 211, status: "fail", msg: err.toString() });
         }
-        res.json({ code: 200, status: "success", msg: YAML.parse(data) });
+        res.json({ code: 200, status: "success", msg: yaml.load(data) });
       }
     );
   } else if (req.query["files"] != undefined) {
