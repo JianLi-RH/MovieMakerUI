@@ -103,7 +103,7 @@ export default function CustomizedDialogs(props) {
       <Alert style={{ display: alert.display }} severity={alert.severity}>
         {alert.message}
       </Alert>
-      <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+      <DialogTitle sx={{ m: 0, p: 2 }}>
         上传脚本文件
       </DialogTitle>
       <IconButton

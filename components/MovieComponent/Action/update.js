@@ -74,7 +74,7 @@ export default function UpdateChar({
   };
 
   return (
-    <Box sx={{ bgcolor: "#aabb44" }}>
+    <Box sx={{ bgcolor: "#aabb44", p: 1 }}>
       <Typography
         variant="h5"
         sx={{
@@ -87,11 +87,10 @@ export default function UpdateChar({
       <Card
         component="div"
         sx={{
-          width: 180,
-          minWidth: 180,
-          height: 380,
+          width: "90%",
+          height: 240,
           p: 1,
-          m: 1,
+          m: "auto",
           alignItems: "flex-start",
           justifyContent: "flex-start",
         }}
@@ -109,12 +108,10 @@ export default function UpdateChar({
               </Button>
               <br></br>
               <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel id="demo-simple-select-standard-label">
+                <InputLabel>
                   角色
                 </InputLabel>
                 <Select
-                  labelId="demo-simple-select-standard-label"
-                  id="demo-simple-select-standard"
                   value={name}
                   onChange={(e) => handleChange(e)}
                   label="角色"

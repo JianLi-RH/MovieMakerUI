@@ -4,32 +4,37 @@ import { Box } from "@mui/system";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
-import { styled } from "@mui/material/styles";
+import Input from "@mui/material/Input";
 
 import resource from "../../../lib/resource";
 
-export default function Display({
+export default function Turn({
   action,
   allChars,
   onSaveAction,
   onDeleteAction,
 }) {
   const [name, setName] = useState(action["角色"]);
+  const [degree, setDegree] = useState(action["度数"]);
   const [edit, setEdit] = useState(false);
 
   const handleChange = (event) => {
-    setName(event.target.value);
+    if (event.target.name == "角色") {
+      setName(event.target.value);
+    }
+    if (event.target.name == "度数") {
+      setDegree(event.target.value);
+    }
   };
 
   const onSave = () => {
-    onSaveAction({ 名称: "显示", 角色: name });
+    onSaveAction({ 名称: "转身", 角色: name, 度数: degree });
     setEdit(false);
   };
 
@@ -40,6 +45,7 @@ export default function Display({
 
   const onCancel = () => {
     setName(action["角色"]);
+    setDegree(action["度数"]);
     setEdit(false);
   };
 
@@ -58,7 +64,7 @@ export default function Display({
         component="div"
         sx={{
           width: "90%",
-          height: 120,
+          height: 140,
           p: 1,
           m: "auto",
           alignItems: "flex-start",
@@ -71,6 +77,7 @@ export default function Display({
               <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
                 <InputLabel>角色</InputLabel>
                 <Select
+                  name="角色"
                   value={name}
                   onChange={(e) => handleChange(e)}
                   label="角色"
@@ -88,6 +95,14 @@ export default function Display({
                       );
                     })}
                 </Select>
+                <Input
+                  name="度数"
+                  size="small"
+                  sx={{ width: "200px" }}
+                  type="string"
+                  onChange={(e) => handleChange(e)}
+                  defaultValue={action["度数"]}
+                />
               </FormControl>
               <CardActions sx={{ m: 0, p: 0 }}>
                 <Button
@@ -109,11 +124,25 @@ export default function Display({
           )}
           {!edit && (
             <>
-              <Typography gutterBottom variant="h6" component="div">
-                {name}
+              <Typography
+                sx={{ width: 200, p: 1, display: "inline-block" }}
+                component="div"
+              >
+                角色: {action["角色"]}
               </Typography>
+              <Typography
+                sx={{ width: 200, display: "inline-block" }}
+                component="div"
+              >
+                度数:{" "}
+                {(Array.isArray(action["度数"]) &&
+                  action["度数"][0] + " : " + action["度数"][1]) ||
+                  action["度数"]}
+              </Typography>{" "}
+              <br></br>
+              <br></br>
               <Button
-                sx={{ m: 0, p: 0 }}
+                sx={{ m: 0, p: 1 }}
                 variant="text"
                 onClick={() => setEdit(true)}
               >

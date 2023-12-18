@@ -4,32 +4,28 @@ import { Box } from "@mui/system";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
+import Input from "@mui/material/Input";
 import Button from "@mui/material/Button";
 import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
-import { styled } from "@mui/material/styles";
 
-import resource from "../../../lib/resource";
-
-export default function Display({
-  action,
-  allChars,
-  onSaveAction,
-  onDeleteAction,
-}) {
-  const [name, setName] = useState(action["角色"]);
+export default function Camera({ action, onSaveAction, onDeleteAction }) {
+  const [focus, setFocus] = useState(action["焦点"]);
+  const [change, setChange] = useState(action["变化"]);
   const [edit, setEdit] = useState(false);
 
   const handleChange = (event) => {
-    setName(event.target.value);
+    if (event.target.name == "焦点") {
+      setFocus(event.target.value);
+    }
+    if (event.target.name == "变化") {
+      setChange(event.target.value);
+    }
   };
 
   const onSave = () => {
-    onSaveAction({ 名称: "显示", 角色: name });
+    onSaveAction({ 名称: "镜头", 焦点: focus, 变化: change });
     setEdit(false);
   };
 
@@ -39,7 +35,8 @@ export default function Display({
   };
 
   const onCancel = () => {
-    setName(action["角色"]);
+    setFocus(action["焦点"]);
+    setChange(action["变化"]);
     setEdit(false);
   };
 
@@ -52,7 +49,7 @@ export default function Display({
         }}
         component="div"
       >
-        显示
+        镜头
       </Typography>
       <Card
         component="div"
@@ -69,25 +66,22 @@ export default function Display({
           {edit && (
             <>
               <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel>角色</InputLabel>
-                <Select
-                  value={name}
+                <Input
+                  name="焦点"
+                  size="small"
+                  sx={{ width: "200px" }}
+                  type="string"
                   onChange={(e) => handleChange(e)}
-                  label="角色"
-                >
-                  {allChars.length > 0 &&
-                    allChars.map((cName, i) => {
-                      let selected = false;
-                      if (name == cName) {
-                        selected = true;
-                      }
-                      return (
-                        <MenuItem key={i} selected={selected} value={cName}>
-                          {cName}
-                        </MenuItem>
-                      );
-                    })}
-                </Select>
+                  defaultValue={action["焦点"]}
+                />
+                <Input
+                  name="变化"
+                  size="small"
+                  sx={{ width: "200px" }}
+                  type="string"
+                  onChange={(e) => handleChange(e)}
+                  defaultValue={action["变化"]}
+                />
               </FormControl>
               <CardActions sx={{ m: 0, p: 0 }}>
                 <Button
@@ -109,9 +103,19 @@ export default function Display({
           )}
           {!edit && (
             <>
-              <Typography gutterBottom variant="h6" component="div">
-                {name}
-              </Typography>
+              <InputLabel>
+                焦点:{" "}
+                {(Array.isArray(action["焦点"]) &&
+                  action["焦点"][0] + " : " + action["焦点"][1]) ||
+                  action["焦点"]}
+              </InputLabel>
+              <InputLabel>
+                变化:{" "}
+                {(Array.isArray(action["变化"]) &&
+                  action["变化"][0] + " : " + action["变化"][1]) ||
+                  action["变化"]}
+              </InputLabel>
+              <br></br>
               <Button
                 sx={{ m: 0, p: 0 }}
                 variant="text"
