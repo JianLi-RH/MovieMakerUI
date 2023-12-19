@@ -80,7 +80,7 @@ export default function Walk({
         }}
         component="div"
       >
-        显示
+        行进
       </Typography>
       <Card
         component="div"
@@ -149,7 +149,11 @@ export default function Walk({
                   sx={{ width: "200px" }}
                   type="string"
                   onChange={(e) => handleChange(e)}
-                  defaultValue={action["比例"]}
+                  defaultValue={
+                    (Array.isArray(action["比例"]) &&
+                      action["比例"][0] + " : " + action["比例"][1]) ||
+                    action["比例"]
+                  }
                 />
               </FormControl>
               <br></br>

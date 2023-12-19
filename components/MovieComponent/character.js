@@ -92,7 +92,7 @@ export default function Character(props) {
           <>
             <br></br>
             <Button component="label" variant="contained">
-              选择脚本
+              选择素材
               <VisuallyHiddenInput
                 name="素材"
                 type="file"

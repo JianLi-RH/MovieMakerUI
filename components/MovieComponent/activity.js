@@ -1,21 +1,13 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
 import { Table, TableBody, TableCell, TableRow } from "@mui/material";
 import { List, ListItemButton, ListItemText, Collapse } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material/";
-import Typography from "@mui/material/Typography";
-import { Select, MenuItem } from "@mui/material";
-import UpdateChar from "./Action/update";
-import Display from "./Action/display";
-import Disappear from "./Action/disappear";
-import Camera from "./Action/camera";
-import Turn from "./Action/turn";
-import Walk from "./Action/walk";
+import Action from "./Action/action";
+
 import FullFeaturedCrudGrid from "components/grid.js";
 
 export default function Activity({ activity, chars, onSave }) {
   const [activityState, setActivityState] = React.useState(false);
-  const [action, setAction] = React.useState("--");
 
   const cNames = chars.map((c) => c["名字"]); // 全部角色名
 
@@ -138,29 +130,9 @@ export default function Activity({ activity, chars, onSave }) {
     onSave(activity);
   };
 
-  //动作
-  const saveAction = (id, newAct) => {
-    let act = [];
-    for (var i = 0; i < activity["动作"].length; i++) {
-      if (i == id) {
-        act.push(newAct);
-      } else {
-        act.push(activity["动作"][i]);
-      }
-    }
-
-    activity["动作"] = act;
-    onSave(activity);
-  };
-
-  const deleteAction = (id) => {
-    let act = [];
-    for (var i = 0; i < activity["动作"].length; i++) {
-      if (i !== id) {
-        act.push(activity["动作"][i]);
-      }
-    }
-    activity["动作"] = act;
+  // 保存动作的更新
+  const onSaveAction = (actions) => {
+    activity["动作"] = actions;
     onSave(activity);
   };
 
@@ -201,94 +173,12 @@ export default function Activity({ activity, chars, onSave }) {
           enableDelete={true}
           showEditToolbar={true}
         ></FullFeaturedCrudGrid>
-        <Typography gutterBottom variant="subtitle2" component="span">
-          添加动作：
-        </Typography>
-        <Select
-          size="small"
-          onChange={(event) => setAction(event.target.value)}
-          value={action}
-          label="动作"
-        >
-          <MenuItem value="--">--</MenuItem>
-          <MenuItem value="更新">更新</MenuItem>
-          <MenuItem value="显示">显示</MenuItem>
-          <MenuItem value="消失">消失</MenuItem>
-          <MenuItem value="镜头">镜头</MenuItem>
-          <MenuItem value="行进">行进</MenuItem>
-          <MenuItem value="转身">转身</MenuItem>
-          <MenuItem value="gif">gif</MenuItem>
-        </Select>
-        <Button>添加新动作</Button>
-        {activity["动作"] &&
-          activity["动作"].map((action, i) => {
-            // console.log("action: ", action);
-            // console.log("cNames: ", cNames);
-            let name = action["名称"];
-            if (name == "更新") {
-              return (
-                <UpdateChar
-                  key={i}
-                  action={action}
-                  allChars={cNames}
-                  onSaveAction={(newAction) => saveAction(i, newAction)}
-                  onDeleteAction={() => deleteAction(i)}
-                ></UpdateChar>
-              );
-            } else if (name == "显示") {
-              return (
-                <Display
-                  key={i}
-                  action={action}
-                  allChars={cNames}
-                  onSaveAction={(newAction) => saveAction(i, newAction)}
-                  onDeleteAction={() => deleteAction(i)}
-                ></Display>
-              );
-            } else if (name == "消失") {
-              return (
-                <Disappear
-                  key={i}
-                  action={action}
-                  allChars={cNames}
-                  onSaveAction={(newAction) => saveAction(i, newAction)}
-                  onDeleteAction={() => deleteAction(i)}
-                ></Disappear>
-              );
-            } else if (name == "镜头") {
-              return (
-                <Camera
-                  key={i}
-                  action={action}
-                  onSaveAction={(newAction) => saveAction(i, newAction)}
-                  onDeleteAction={() => deleteAction(i)}
-                ></Camera>
-              );
-            } else if (name == "转身") {
-              return (
-                <Turn
-                  key={i}
-                  action={action}
-                  allChars={cNames}
-                  onSaveAction={(newAction) => saveAction(i, newAction)}
-                  onDeleteAction={() => deleteAction(i)}
-                ></Turn>
-              );
-            } else if (name == "行进") {
-              return (
-                <Walk
-                  key={i}
-                  action={action}
-                  allChars={cNames}
-                  onSaveAction={(newAction) => saveAction(i, newAction)}
-                  onDeleteAction={() => deleteAction(i)}
-                ></Walk>
-              );
-            } else {
-              console.log(`暂不支持该动作 ${action["名称"]}.`);
-            }
-          })}
-        {/* {!activity["动作"] && {}} */}
+
+        <Action
+          allActions={activity["动作"]}
+          allChars={cNames}
+          onSaveAction={onSaveAction}
+        ></Action>
       </Collapse>
     </List>
   );
