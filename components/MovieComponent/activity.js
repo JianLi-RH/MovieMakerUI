@@ -1,14 +1,11 @@
 import * as React from "react";
 import { Table, TableBody, TableCell, TableRow } from "@mui/material";
-import { List, ListItemButton, ListItemText, Collapse } from "@mui/material";
-import { ExpandLess, ExpandMore } from "@mui/icons-material/";
 import Action from "./Action/action";
+import CollapseComponent from "../collapsecomponent";
 
 import FullFeaturedCrudGrid from "components/grid.js";
 
 export default function Activity({ activity, chars, onSave }) {
-  const [activityState, setActivityState] = React.useState(false);
-
   const cNames = chars.map((c) => c["名字"]); // 全部角色名
 
   const columns = [
@@ -137,33 +134,20 @@ export default function Activity({ activity, chars, onSave }) {
   };
 
   return (
-    <List
-      sx={{
-        width: 1,
-        my: 1,
-        bgcolor: "#FFF",
-      }}
-    >
-      <ListItemButton onClick={() => setActivityState(!activityState)}>
-        <ListItemText
-          sx={{ textAlign: "center", fontSize: "0.875rem" }}
-          primary={activity["名字"]}
-        />
-        {activityState ? <ExpandLess /> : <ExpandMore />}
-      </ListItemButton>
-      <Collapse in={activityState} timeout="auto" unmountOnExit>
-        <Table aria-label="simple table">
-          <TableBody>
-            <TableRow sx={{ "& > *": { border: 1, borderBottom: "unset" } }}>
-              <TableCell scope="row">描述</TableCell>
-              <TableCell>{activity["描述"]}</TableCell>
-            </TableRow>
-            <TableRow sx={{ "& > *": { border: 1 } }}>
-              <TableCell>背景音乐</TableCell>
-              <TableCell align="right">{activity["背景音乐"]}</TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+    <CollapseComponent color="#ABC" title={activity["名字"]}>
+      <Table aria-label="simple table">
+        <TableBody>
+          <TableRow sx={{ "& > *": { border: 1, borderBottom: "unset" } }}>
+            <TableCell scope="row">描述</TableCell>
+            <TableCell>{activity["描述"]}</TableCell>
+          </TableRow>
+          <TableRow sx={{ "& > *": { border: 1 } }}>
+            <TableCell>背景音乐</TableCell>
+            <TableCell align="right">{activity["背景音乐"]}</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+      <CollapseComponent title="字幕">
         <FullFeaturedCrudGrid
           columns={columns}
           data={subtitles || []}
@@ -173,13 +157,14 @@ export default function Activity({ activity, chars, onSave }) {
           enableDelete={true}
           showEditToolbar={true}
         ></FullFeaturedCrudGrid>
-
+      </CollapseComponent>
+      <CollapseComponent title="动作">
         <Action
           allActions={activity["动作"]}
           allChars={cNames}
           onSaveAction={onSaveAction}
         ></Action>
-      </Collapse>
-    </List>
+      </CollapseComponent>
+    </CollapseComponent>
   );
 }

@@ -27,6 +27,7 @@ import AddIcon from "@mui/icons-material/Add";
 import Activity from "./activity";
 import Character from "./character";
 import resource from "../../lib/resource";
+import CollapseComponent from "../collapsecomponent";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -174,7 +175,7 @@ export default function Scenario({
   };
 
   return (
-    <Box
+    <List
       sx={{
         width: 1,
         marginRight: 0.5,
@@ -182,149 +183,141 @@ export default function Scenario({
         flexGrow: 1,
       }}
     >
-      <List>
-        <ListItemButton sx={{ bgcolor: "#cfe8fc", border: 1 }}>
-          <Delete
-            sx={{ width: 40 }}
-            onClick={() => {
-              onDeleteScenario();
-            }}
-          ></Delete>
+      <ListItemButton sx={{ bgcolor: "#cfe8fc", border: 1 }}>
+        <Delete
+          sx={{ width: 40 }}
+          onClick={() => {
+            onDeleteScenario();
+          }}
+        ></Delete>
+        {scenarioEditState ? (
+          <>
+            <Cancel
+              sx={{ width: 40 }}
+              onClick={(e) => {
+                e.preventDefault();
+                setSc(scenario);
+                setScenarioEditState(false);
+              }}
+            ></Cancel>
+            <Save
+              sx={{ width: 40 }}
+              onClick={(e) => {
+                e.preventDefault();
+                handleSaveScenarioClick();
+              }}
+            ></Save>
+            <Input
+              name="场景名"
+              size="small"
+              sx={{ width: "200px" }}
+              type="string"
+              onChange={(e) => handleChange(e)}
+              defaultValue={sc["名字"]}
+            />
+          </>
+        ) : (
+          <>
+            <Edit
+              sx={{ width: 40 }}
+              onClick={(e) => {
+                e.preventDefault();
+                setScenarioEditState(true);
+                setScenarioState(true);
+              }}
+            ></Edit>
+            <ListItemText
+              sx={{ textAlign: "center" }}
+              primary={sc["名字"]}
+              onClick={(e) => {
+                e.preventDefault();
+                setScenarioState(!scenarioState);
+              }}
+            ></ListItemText>
+          </>
+        )}
+        {scenarioState ? <ExpandLess /> : <ExpandMore />}
+      </ListItemButton>
+      <Collapse in={scenarioState} timeout="auto" unmountOnExit>
+        <Grid
+          container
+          sx={{
+            bgcolor: "#cfe8fc",
+          }}
+        >
           {scenarioEditState ? (
             <>
-              <Cancel
-                sx={{ width: 40 }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setSc(scenario);
-                  setScenarioEditState(false);
-                }}
-              ></Cancel>
-              <Save
-                sx={{ width: 40 }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleSaveScenarioClick();
-                }}
-              ></Save>
-              <Input
-                name="场景名"
-                size="small"
-                sx={{ width: "200px" }}
-                type="string"
-                onChange={(e) => handleChange(e)}
-                defaultValue={sc["名字"]}
-              />
+              <Grid xs={6} spacing={2}>
+                <Typography gutterBottom variant="subtitle2" component="span">
+                  焦点：
+                </Typography>
+                <Input
+                  name="焦点"
+                  size="small"
+                  sx={{ width: "80px" }}
+                  type="string"
+                  onChange={(e) => handleChange(e)}
+                  defaultValue={sc["焦点"]}
+                />
+                <Divider></Divider>
+                <Typography gutterBottom variant="subtitle2" component="span">
+                  比例：
+                </Typography>
+                <Input
+                  name="比例"
+                  size="small"
+                  sx={{ width: "80px" }}
+                  type="string"
+                  onChange={(e) => handleChange(e)}
+                  defaultValue={sc["比例"]}
+                />
+              </Grid>
+              <Grid xs={6}>
+                <Item>
+                  <Button
+                    component="label"
+                    variant="outlined"
+                    startIcon={<CloudUpload />}
+                  >
+                    背景
+                    <VisuallyHiddenInput
+                      type="file"
+                      name="背景"
+                      onChange={uploadToClient}
+                    />
+                  </Button>
+                </Item>
+              </Grid>
             </>
           ) : (
             <>
-              <Edit
-                sx={{ width: 40 }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setScenarioEditState(true);
-                  setScenarioState(true);
-                }}
-              ></Edit>
-              <ListItemText
-                sx={{ textAlign: "center" }}
-                primary={sc["名字"]}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setScenarioState(!scenarioState);
-                }}
-              ></ListItemText>
-            </>
-          )}
-          {scenarioState ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-        <Collapse in={scenarioState} timeout="auto" unmountOnExit>
-          <Grid
-            container
-            sx={{
-              bgcolor: "#cfe8fc",
-            }}
-          >
-            {scenarioEditState ? (
-              <>
-                <Grid xs={6} spacing={2}>
-                  <Typography gutterBottom variant="subtitle2" component="span">
+              <Grid xs={2}>
+                <Box>
+                  <Typography gutterBottom variant="subtitle1" component="span">
                     焦点：
                   </Typography>
-                  <Input
-                    name="焦点"
-                    size="small"
-                    sx={{ width: "80px" }}
-                    type="string"
-                    onChange={(e) => handleChange(e)}
-                    defaultValue={sc["焦点"]}
-                  />
-                  <Divider></Divider>
-                  <Typography gutterBottom variant="subtitle2" component="span">
+                  {sc["焦点"]}
+                </Box>
+                <Divider></Divider>
+                <Box>
+                  <Typography gutterBottom variant="subtitle1" component="span">
                     比例：
                   </Typography>
-                  <Input
-                    name="比例"
-                    size="small"
-                    sx={{ width: "80px" }}
-                    type="string"
-                    onChange={(e) => handleChange(e)}
-                    defaultValue={sc["比例"]}
-                  />
-                </Grid>
-                <Grid xs={6}>
-                  <Item>
-                    <Button
-                      component="label"
-                      variant="outlined"
-                      startIcon={<CloudUpload />}
-                    >
-                      背景
-                      <VisuallyHiddenInput
-                        type="file"
-                        name="背景"
-                        onChange={uploadToClient}
-                      />
-                    </Button>
-                  </Item>
-                </Grid>
-              </>
-            ) : (
-              <>
-                <Grid xs={2}>
-                  <Box>
-                    <Typography
-                      gutterBottom
-                      variant="subtitle1"
-                      component="span"
-                    >
-                      焦点：
-                    </Typography>
-                    {sc["焦点"]}
-                  </Box>
-                  <Divider></Divider>
-                  <Box>
-                    <Typography
-                      gutterBottom
-                      variant="subtitle1"
-                      component="span"
-                    >
-                      比例：
-                    </Typography>
-                    {sc["比例"]}
-                  </Box>
-                </Grid>
-                <Grid xs={10}>
-                  <Box
-                    component="img"
-                    sx={{ width: "200px" }}
-                    alt="背景"
-                    src={sc["背景"]}
-                  />
-                </Grid>
-              </>
-            )}
-          </Grid>
+                  {sc["比例"]}
+                </Box>
+              </Grid>
+              <Grid xs={10}>
+                <Box
+                  component="img"
+                  sx={{ width: "200px" }}
+                  alt="背景"
+                  src={sc["背景"]}
+                />
+              </Grid>
+            </>
+          )}
+        </Grid>
+        <CollapseComponent color="#ABC" title="角色">
           <Stack
             direction={{ xs: "column", sm: "row" }}
             spacing={{ xs: 1, sm: 1, md: 1, lg: 1 }}
@@ -378,44 +371,42 @@ export default function Scenario({
               </Fab>
             </Card>
           </Stack>
-          <Box
-            sx={{
-              border: 1,
-            }}
-          >
-            {sc["活动"] &&
-              sc["活动"].map((activity, i) => (
-                <Activity
-                  key={i}
-                  activity={activity}
-                  chars={sc["角色"]}
-                  onSave={(act) => updateActivity(i, act)}
-                ></Activity>
-              ))}
-          </Box>
-          <Box sx={{ p: 0 }}>
-            <Stack sx={{ color: "grey.500" }} spacing={1} direction="row">
-              <Button
-                onClick={() => {
-                  setCircle(circle == "none" ? "flex" : "none");
-                  makeVideo(sc["名字"]);
-                }}
-              >
-                生成视频
-              </Button>
-              <CircularProgress size="1rem" sx={{ m: 1, display: circle }} />
-              <Button
-                sx={{ display: downloadDisplay }}
-                onClick={() => {
-                  download(url, `${sc["名字"]}.mp4`);
-                }}
-              >
-                下载视频
-              </Button>
-            </Stack>
-          </Box>
-        </Collapse>
-      </List>
-    </Box>
+        </CollapseComponent>
+
+        <CollapseComponent color="#ABC" title="活动">
+          {sc["活动"] &&
+            sc["活动"].map((activity, i) => (
+              <Activity
+                key={i}
+                activity={activity}
+                chars={sc["角色"]}
+                onSave={(act) => updateActivity(i, act)}
+              ></Activity>
+            ))}
+        </CollapseComponent>
+
+        <Box sx={{ p: 0 }}>
+          <Stack sx={{ color: "grey.500" }} spacing={1} direction="row">
+            <Button
+              onClick={() => {
+                setCircle(circle == "none" ? "flex" : "none");
+                makeVideo(sc["名字"]);
+              }}
+            >
+              生成视频
+            </Button>
+            <CircularProgress size="1rem" sx={{ m: 1, display: circle }} />
+            <Button
+              sx={{ display: downloadDisplay }}
+              onClick={() => {
+                download(url, `${sc["名字"]}.mp4`);
+              }}
+            >
+              下载视频
+            </Button>
+          </Stack>
+        </Box>
+      </Collapse>
+    </List>
   );
 }
