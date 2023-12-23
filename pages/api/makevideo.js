@@ -18,16 +18,13 @@ const post = async (req, res) => {
   //制作视频
   const form = formidable({});
   form.parse(req, async function (err, fields, files) {
-    let script = `workspaces/${username}/script/${fields.script[0]}.yaml`;
+    let script = `script/${fields.script[0]}.yaml`;
     let scenario = "";
-    let output = `${fields.script[0]}.mp4`;
-    if (fields.scenario != undefined) {
+    let output = `${fields.script[0].split(".")[0]}.mp4`;
+    if (fields.scenario[0] != '') {
       scenario = fields.scenario[0];
       output = `${scenario}.mp4`;
     }
-
-    console.log("script: ", script);
-    console.log("scenario: ", scenario);
 
     const spawn = require("child_process").spawn;
     const runPath = `workspaces/${username}/run.py`;
@@ -36,16 +33,13 @@ const post = async (req, res) => {
       cmd.push("-c");
       cmd.push(scenario);
     }
-
+    console.log("cmd: ", cmd);
     const python = spawn("python3.10", cmd);
-    let data = "";
     python.stdout.on("data", function (response) {
-      // Keep collecting the data from python script
       console.log(response.toString());
-      data += response.toString();
     });
     python.stderr.on("data", function (response) {
-      data += `Error: ${response.toString()}`;
+      console.log(response.toString());
     });
 
     python.on("exit", function (code) {

@@ -12,7 +12,7 @@ export default function handler(req, res) {
   }
 
   let jdoc = JSON.parse(req.body);
-  let doc = JSON.stringify(jdoc.script);
+  let doc = JSON.stringify(jdoc.script, null, 4);
   const config = `workspaces/${username}/script/${jdoc.path}.yaml`;
   fs.writeFile(config, doc, (err) => {
     if (err) {

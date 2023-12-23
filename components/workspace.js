@@ -95,21 +95,24 @@ export default function Workspace({
           ))}
         </Box>
       )}
-      <Box
-        sx={{
-          width: 1,
-          marginRight: 0.5,
-          my: 1,
-        }}
-      >
-        <List>
-          <ListItemButton onClick={onAddScenario}>
-            <ListItemText sx={{ textAlign: "center" }}>
-              <AddCircle></AddCircle>
-            </ListItemText>
-          </ListItemButton>
-        </List>
-      </Box>
+      {/* 只有选中了脚本的时候才出现添加场景按钮 */}
+      {selectedScript && (
+        <Box
+          sx={{
+            width: 1,
+            marginRight: 0.5,
+            my: 1,
+          }}
+        >
+          <List>
+            <ListItemButton onClick={onAddScenario}>
+              <ListItemText sx={{ textAlign: "center" }}>
+                <AddCircle></AddCircle>
+              </ListItemText>
+            </ListItemButton>
+          </List>
+        </Box>
+      )}
     </Container>
   );
 }

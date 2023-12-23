@@ -19,7 +19,7 @@ const get = async (req, res) => {
   }
   let scriptFolder = `workspaces/${username}/script`;
   if (req.query["file"] != undefined) {
-    const script = fs.readFile(
+    fs.readFile(
       `${scriptFolder}/${req.query["file"]}.yaml`,
       "utf-8",
       (err, data) => {
@@ -59,7 +59,7 @@ const post = async (req, res) => {
     }
     let scriptFolder = `workspaces/${username}/script`;
     if (!fs.existsSync(scriptFolder)) {
-      let created = fs.mkdirSync(scriptFolder, { recursive: true }, (err) => {
+      fs.mkdirSync(scriptFolder, { recursive: true }, (err) => {
         if (err) {
           console.log("err: ", err);
           return res.send({

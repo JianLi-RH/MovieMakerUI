@@ -3,6 +3,9 @@ import fs from "fs";
 
 import user from "../../lib/user";
 
+const rootFolder = __dirname.split(".next")[0];
+
+const yaml = require("js-yaml");
 export const config = {
   api: {
     bodyParser: false,
@@ -11,8 +14,9 @@ export const config = {
 
 // 准备用户工作空间
 const prepareWorkspace = (username) => {
-  let workspace = `workspaces/${username}`;
-  let publicFolder = `public/${username}`;
+  const workspace = `workspaces/${username}`;
+  const publicFolder = `public/${username}`;
+  // 创建工作区（python代码）
   if (!fs.existsSync(workspace)) {
     fs.mkdirSync(workspace, { recursive: true }, (err) => {
       if (err) {
@@ -26,15 +30,28 @@ const prepareWorkspace = (username) => {
       return false;
     });
   }
+  // 创建资源存储区
   if (!fs.existsSync(publicFolder)) {
     fs.mkdirSync(publicFolder, { recursive: true }, (err) => {
       if (err) {
-        console.log("err: ", err);
         return console.error(err);
       }
       console.log("Public folder created successfully!");
     });
   }
+
+  // 更新全局配置
+  const config = `workspaces/${username}/global_config.yaml`;
+  const settings = yaml.load(fs.readFileSync(config, "utf-8"));
+  settings.output_dir = `${rootFolder}workspaces/${username}/output`;
+  settings.sucai_dir = `${rootFolder}public`;
+
+  const yaml_string = yaml.dump(settings);
+  fs.writeFile(config, yaml_string, (err) => {
+    if (err) {
+      return false;
+    }
+  });
   return true;
 };
 
