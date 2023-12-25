@@ -1,11 +1,10 @@
-import { Formik, Field, Form, FormikHelpers, useFormikContext } from "formik";
 import { useState, useEffect } from "react";
+import Avatar from "@mui/material/Avatar";
 import styles from "./login-form.module.css";
 import Alert from "@mui/material/Alert";
 
 export default function LogoutForm({ updateList, updateLogin }) {
   const [user, setUser] = useState(null);
-  const serverUrl = "/api/auth";
   const [alert, setAlert] = useState({
     display: "none",
     severity: "info",
@@ -13,7 +12,7 @@ export default function LogoutForm({ updateList, updateLogin }) {
   });
 
   useEffect(() => {
-    fetch(serverUrl, {
+    fetch("/api/auth", {
       method: "GET",
       headers: { Authorization: sessionStorage.token },
     })
@@ -28,7 +27,7 @@ export default function LogoutForm({ updateList, updateLogin }) {
   // 登出
   const logout = async () => {
     if (sessionStorage.token) {
-      let result = fetch(serverUrl, {
+      let result = fetch("/api/auth", {
         method: "DELETE",
         headers: { Authorization: sessionStorage.token },
       })
@@ -64,7 +63,7 @@ export default function LogoutForm({ updateList, updateLogin }) {
       <Alert style={{ display: alert.display }} severity={alert.severity}>
         {alert.message}
       </Alert>
-      <h1 className="display-6 mb-3">{user && user.name}</h1>
+      <Avatar sx={{ width: 80, height: 80 }}>{user && user.name}</Avatar>
       <button type="submit" className="btn btn-primary" onClick={logout}>
         退出
       </button>

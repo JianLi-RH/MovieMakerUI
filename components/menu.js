@@ -10,7 +10,6 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import Input from "@mui/material/Input";
 import { AddCircle } from "@mui/icons-material/";
 import IconButton from "@mui/material/IconButton";
 import {
@@ -33,8 +32,8 @@ import {
 
 import GlobalConifg from "../pages/app.config";
 import CustomizedDialogs from "../components/scriptdialog";
-import LoginForm from "../components/login-form";
-import LogoutForm from "./logout-form";
+import LoginForm from "./login/login-form";
+import LogoutForm from "./login/logout-form";
 const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
 
 export default function Menu({
