@@ -37,15 +37,15 @@ export default function Character(props) {
   const [image, setImage] = React.useState(null);
   const [changed, setChanged] = React.useState(false);
 
-  const save = () => {
+  const save = async () => {
     if (changed == true) {
       let c = { ...char };
       if (image != null) {
-        resource.uploadToServer(image, "character").then((res) => {
-          if (res != "") {
-            c["素材"] = res;
-          }
-        });
+        const res = await resource.uploadToServer(
+          image,
+          `character/${char["名字"]}`
+        );
+        c["素材"] = res;
       }
       props.save(c);
       setChar(c);

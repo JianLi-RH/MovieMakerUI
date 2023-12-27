@@ -2,11 +2,22 @@ import * as React from "react";
 import { Table, TableBody, TableCell, TableRow } from "@mui/material";
 import Action from "./Action/action";
 import CollapseComponent from "../collapsecomponent";
-
 import FullFeaturedCrudGrid from "components/grid.js";
+import { GRID_STRING_COL_DEF, useGridApiContext } from "@mui/x-data-grid";
+
+import GridEditFileCell from "../fileColumn";
 
 export default function Activity({ activity, chars, onSave }) {
   const cNames = chars.map((c) => c["名字"]); // 全部角色名
+
+  const fileColumnType = {
+    ...GRID_STRING_COL_DEF,
+    type: "file",
+    resizable: false,
+    renderEditCell: (params) => {
+      return <GridEditFileCell {...params} />;
+    },
+  };
 
   const columns = [
     {
@@ -38,6 +49,7 @@ export default function Activity({ activity, chars, onSave }) {
       field: "sound",
       headerName: "声音",
       width: 150,
+      ...fileColumnType,
       editable: true,
       sortable: false,
       filterable: false,
@@ -56,6 +68,7 @@ export default function Activity({ activity, chars, onSave }) {
       field: "action",
       headerName: "动作",
       width: 100,
+      ...fileColumnType,
       editable: true,
       sortable: false,
       filterable: false,
@@ -149,6 +162,7 @@ export default function Activity({ activity, chars, onSave }) {
       </Table>
       <CollapseComponent title="字幕">
         <FullFeaturedCrudGrid
+          folder={activity["名字"]}
           columns={columns}
           data={subtitles || []}
           onSave={saveSubtitle}

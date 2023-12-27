@@ -20,6 +20,7 @@ import {
   randomArrayItem,
 } from "@mui/x-data-grid-generator";
 import { grey, red } from "@mui/material/colors";
+import resource from "../lib/resource";
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props;
@@ -43,6 +44,7 @@ function EditToolbar(props) {
 }
 
 export default function FullFeaturedCrudGrid({
+  folder,
   columns,
   data,
   onSave = null,
@@ -85,9 +87,26 @@ export default function FullFeaturedCrudGrid({
     }
   };
 
-  const processRowUpdate = (newRow) => {
-    const updatedRow = { ...newRow, isNew: false };
+  const processRowUpdate = async (newRow) => {
+    let updatedRow = { ...newRow, isNew: false };
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+
+    const l = columns.length;
+    for (var i = 0; i < l; i++) {
+      const field = columns[i].field;
+      const oldRow = rows.find((row) => row.id === updatedRow.id);
+      if (oldRow[field] === updatedRow[field]) {
+        // column没改变
+        continue;
+      }
+      if (columns[i].type == "file") {
+        const value = await resource.uploadToServer(
+          updatedRow[field],
+          `${folder}/datagrid/${oldRow.id}-${columns[i].field}`
+        );
+        updatedRow[field] = value;
+      }
+    }
     onSave(updatedRow);
     return updatedRow;
   };

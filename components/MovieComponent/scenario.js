@@ -85,13 +85,10 @@ export default function Scenario({
     }
   };
 
-  function handleSaveScenarioClick() {
+  async function handleSaveScenarioClick() {
     if (image != null) {
-      resource.uploadToServer(image, "background").then((res) => {
-        if (res != "") {
-          sc["背景"] = res;
-        }
-      });
+      const res = await resource.uploadToServer(image, `background/${sc["名字"]}`);
+      sc["背景"] = res;
     }
     onSaveScenario(sc);
   }

@@ -57,20 +57,18 @@ export default function GIF({ action, onSaveAction, onDeleteAction }) {
     }
   };
 
-  const onSave = () => {
+  const onSave = async () => {
     if (tmpImage != null) {
-      resource.uploadToServer(tmpImage, "action_gif").then((res) => {
-        console.log("res: ", res);
-        if (res != "") {
-          onSaveAction({
-            名称: "gif",
-            素材: res,
-            位置: pos,
-            比例: ratio,
-            度数: degree,
-          });
-        }
-      });
+      const res = await resource.uploadToServer(tmpImage, "action_gif");
+      if (res != "") {
+        onSaveAction({
+          名称: "gif",
+          素材: res,
+          位置: pos,
+          比例: ratio,
+          度数: degree,
+        });
+      }
     } else {
       onSaveAction({
         名称: "gif",

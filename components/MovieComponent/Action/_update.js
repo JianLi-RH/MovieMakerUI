@@ -41,15 +41,13 @@ export default function UpdateChar({
     setName(event.target.value);
   };
 
-  const uploadToClient = (event) => {
+  const uploadToClient = async (event) => {
     if (event.target.files && event.target.files[0]) {
       const i = event.target.files[0];
-      resource.uploadToServer(i, "action").then((res) => {
-        if (res != "") {
-          console.log("res: ", res);
-          setImage(res);
-        }
-      });
+      const res = await resource.uploadToServer(i, "action");
+      if (res != "") {
+        setImage(res);
+      }
     }
   };
 
@@ -108,9 +106,7 @@ export default function UpdateChar({
               </Button>
               <br></br>
               <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel>
-                  角色
-                </InputLabel>
+                <InputLabel>角色</InputLabel>
                 <Select
                   value={name}
                   onChange={(e) => handleChange(e)}
