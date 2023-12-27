@@ -27,6 +27,70 @@ export default function Action({ allActions, allChars, onSaveAction }) {
     onSaveAction(act);
   };
 
+  const handleAddAction = () => {
+    if (actionType === "--") {
+      return;
+    }
+    let act = [];
+    if (allActions != undefined) {
+      act = [...allActions];
+    }
+    let newAct = {};
+    if (actionType === "更新") {
+      newAct = {
+        名称: "更新",
+        角色: {
+          名字: "",
+          素材: "",
+        },
+      };
+    } else if (actionType === "显示") {
+      newAct = {
+        名称: "显示",
+        角色: "",
+      };
+    } else if (actionType === "消失") {
+      newAct = {
+        名称: "消失",
+        角色: "",
+      };
+    } else if (actionType === "镜头") {
+      newAct = {
+        名称: "镜头",
+        焦点: ["中心"],
+        变化: [1,1],
+      };
+    } else if (actionType === "行进") {
+      newAct = {
+        名称: "行进",
+        角色: "",
+        开始位置: null,
+        结束位置: null,
+        比例: [1, 1],
+        方式: "自然",
+      };
+    } else if (actionType === "转身") {
+      newAct = {
+        名称: "行进",
+        角色: "",
+        度数: "左右",
+      };
+    } else if (actionType === "gif") {
+      newAct = {
+        名称: "gif",
+        角色: "",
+        素材: "",
+        位置: ["中心"],
+        比例: 1,
+        度数: "左右",
+      };
+    } else {
+      console.log("未知动作");
+    }
+    act.push(newAct);
+    onSaveAction(act);
+  };
+
   const deleteAction = (id) => {
     let act = [];
     for (var i = 0; i < allActions.length; i++) {
@@ -57,7 +121,7 @@ export default function Action({ allActions, allChars, onSaveAction }) {
         <MenuItem value="转身">转身</MenuItem>
         <MenuItem value="gif">gif</MenuItem>
       </Select>
-      <Button>添加新动作</Button>
+      <Button onClick={() => handleAddAction()}>添加新动作</Button>
       {allActions &&
         allActions.map((action, i) => {
           const name = action["名称"];

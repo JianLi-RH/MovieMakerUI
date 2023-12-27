@@ -91,6 +91,7 @@ export default function Scenario({
       sc["背景"] = res;
     }
     onSaveScenario(sc);
+    setScenarioEditState(false);
   }
 
   function updateActivity(index, activity) {
