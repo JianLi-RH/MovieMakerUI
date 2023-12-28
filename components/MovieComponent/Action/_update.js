@@ -86,7 +86,7 @@ export default function UpdateChar({
         component="div"
         sx={{
           width: "90%",
-          height: 240,
+          height: (edit && 140) || 240,
           p: 1,
           m: "auto",
           alignItems: "flex-start",

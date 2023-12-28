@@ -9,6 +9,25 @@ import Button from "@mui/material/Button";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import Typography from "@mui/material/Typography";
+import { styled } from "@mui/material/styles";
+import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
+
+import jsUtil from "../../../lib/jsUtil";
+
+const HtmlTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} arrow classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: theme.palette.common.black,
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: "#f5f5f9",
+    color: "rgba(0, 0, 0, 0.87)",
+    maxWidth: 220,
+    fontSize: theme.typography.pxToRem(12),
+    border: "1px solid #dadde9",
+  },
+}));
 
 export default function Camera({ action, onSaveAction, onDeleteAction }) {
   const [focus, setFocus] = useState(action["焦点"]);
@@ -16,11 +35,12 @@ export default function Camera({ action, onSaveAction, onDeleteAction }) {
   const [edit, setEdit] = useState(false);
 
   const handleChange = (event) => {
+    const value = jsUtil.convertUserInputNumbers(event.target.value);
     if (event.target.name == "焦点") {
-      setFocus(event.target.value);
+      setFocus(value);
     }
     if (event.target.name == "变化") {
-      setChange(event.target.value);
+      setChange(value);
     }
   };
 
@@ -55,7 +75,7 @@ export default function Camera({ action, onSaveAction, onDeleteAction }) {
         component="div"
         sx={{
           width: "90%",
-          height: 120,
+          height: (edit && 160) || 120,
           p: 1,
           m: "auto",
           alignItems: "flex-start",
@@ -66,6 +86,23 @@ export default function Camera({ action, onSaveAction, onDeleteAction }) {
           {edit && (
             <>
               <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                <HtmlTooltip
+                  title={
+                    <React.Fragment>
+                      <Typography color="inherit">焦点的写法</Typography>
+                      <ol>
+                        <li>100:201,300:450</li>
+                        <li>0.2,0.7</li>
+                        <li>中心</li>
+                        <li>中心,底部</li>
+                      </ol>
+                    </React.Fragment>
+                  }
+                >
+                  <InputLabel>
+                    <b>焦点?</b>
+                  </InputLabel>
+                </HtmlTooltip>
                 <Input
                   name="焦点"
                   size="small"
@@ -74,6 +111,24 @@ export default function Camera({ action, onSaveAction, onDeleteAction }) {
                   onChange={(e) => handleChange(e)}
                   defaultValue={action["焦点"]}
                 />
+              </FormControl>
+              <br></br>
+              <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                <HtmlTooltip
+                  title={
+                    <React.Fragment>
+                      <Typography color="inherit">变化的写法</Typography>
+                      <ol>
+                        <li>100:201,300:450</li>
+                        <li>0.2,0.7</li>
+                      </ol>
+                    </React.Fragment>
+                  }
+                >
+                  <InputLabel>
+                    <b>变化?</b>
+                  </InputLabel>
+                </HtmlTooltip>
                 <Input
                   name="变化"
                   size="small"

@@ -12,7 +12,25 @@ import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
 import Input from "@mui/material/Input";
 
-import resource from "../../../lib/resource";
+import { styled } from "@mui/material/styles";
+import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
+
+import jsUtil from "../../../lib/jsUtil";
+
+const HtmlTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} arrow classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: theme.palette.common.black,
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: "#f5f5f9",
+    color: "rgba(0, 0, 0, 0.87)",
+    maxWidth: 220,
+    fontSize: theme.typography.pxToRem(12),
+    border: "1px solid #dadde9",
+  },
+}));
 
 export default function Walk({
   action,
@@ -28,20 +46,21 @@ export default function Walk({
   const [edit, setEdit] = useState(false);
 
   const handleChange = (event) => {
+    const value = jsUtil.convertUserInputNumbers(event.target.value);
     if (event.target.name == "角色") {
-      setName(event.target.value);
+      setName(value);
     }
     if (event.target.name == "开始位置") {
-      setStartPos(event.target.value);
+      setStartPos(value);
     }
     if (event.target.name == "结束位置") {
-      setEndPos(event.target.value);
+      setEndPos(value);
     }
     if (event.target.name == "比例") {
-      setRatio(event.target.value);
+      setRatio(value);
     }
     if (event.target.name == "方式") {
-      setMode(event.target.value);
+      setMode(value);
     }
   };
 
@@ -86,7 +105,7 @@ export default function Walk({
         component="div"
         sx={{
           width: "90%",
-          height: 360,
+          height: (edit && 360) || 260,
           p: 1,
           m: "auto",
         }}
@@ -118,26 +137,62 @@ export default function Walk({
               </FormControl>
               <br></br>
               <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel>开始位置</InputLabel>
+                <HtmlTooltip
+                  title={
+                    <React.Fragment>
+                      <Typography color="inherit">开始位置的写法</Typography>
+                      <ol>
+                        <li>100,201</li>
+                        <li>0.2,0.7</li>
+                        <li>中心</li>
+                        <li>中心,底部</li>
+                      </ol>
+                    </React.Fragment>
+                  }
+                >
+                  <InputLabel>
+                    <b>开始位置?</b>
+                  </InputLabel>
+                </HtmlTooltip>
                 <Input
                   name="开始位置"
                   size="small"
                   sx={{ width: "200px" }}
                   type="string"
                   onChange={(e) => handleChange(e)}
-                  defaultValue={action["开始位置"]}
+                  defaultValue={jsUtil.convertNumbersToString(
+                    action["开始位置"]
+                  )}
                 />
               </FormControl>
               <br></br>
               <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel>结束位置</InputLabel>
+                <HtmlTooltip
+                  title={
+                    <React.Fragment>
+                      <Typography color="inherit">结束位置的写法</Typography>
+                      <ol>
+                        <li>100,201</li>
+                        <li>0.2,0.7</li>
+                        <li>中心</li>
+                        <li>中心,底部</li>
+                      </ol>
+                    </React.Fragment>
+                  }
+                >
+                  <InputLabel>
+                    <b>结束位置?</b>
+                  </InputLabel>
+                </HtmlTooltip>
                 <Input
                   name="结束位置"
                   size="small"
                   sx={{ width: "200px" }}
                   type="string"
                   onChange={(e) => handleChange(e)}
-                  defaultValue={action["结束位置"]}
+                  defaultValue={jsUtil.convertNumbersToString(
+                    action["结束位置"]
+                  )}
                 />
               </FormControl>
               <br></br>
@@ -149,11 +204,7 @@ export default function Walk({
                   sx={{ width: "200px" }}
                   type="string"
                   onChange={(e) => handleChange(e)}
-                  defaultValue={
-                    (Array.isArray(action["比例"]) &&
-                      action["比例"][0] + " : " + action["比例"][1]) ||
-                    action["比例"]
-                  }
+                  defaultValue={jsUtil.convertNumbersToString(action["比例"])}
                 />
               </FormControl>
               <br></br>
@@ -209,30 +260,21 @@ export default function Walk({
                 sx={{ width: 200, p: 1, display: "inline-block" }}
                 component="div"
               >
-                开始位置:{" "}
-                {(Array.isArray(action["开始位置"]) &&
-                  action["开始位置"][0] + " : " + action["开始位置"][1]) ||
-                  action["开始位置"]}
+                开始位置: {jsUtil.convertNumbersToString(action["开始位置"])}
               </Typography>{" "}
               <br></br>
               <Typography
                 sx={{ width: 200, p: 1, display: "inline-block" }}
                 component="div"
               >
-                结束位置:{" "}
-                {(Array.isArray(action["结束位置"]) &&
-                  action["结束位置"][0] + " : " + action["结束位置"][1]) ||
-                  action["结束位置"]}
+                结束位置: {jsUtil.convertNumbersToString(action["结束位置"])}
               </Typography>{" "}
               <br></br>
               <Typography
                 sx={{ width: 200, p: 1, display: "inline-block" }}
                 component="div"
               >
-                比例:{" "}
-                {(Array.isArray(action["比例"]) &&
-                  action["比例"][0] + " : " + action["比例"][1]) ||
-                  action["比例"]}
+                比例: {jsUtil.convertNumbersToString(action["比例"])}
               </Typography>{" "}
               <br></br>
               <Typography

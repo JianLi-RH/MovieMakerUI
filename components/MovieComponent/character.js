@@ -8,7 +8,10 @@ import Typography from "@mui/material/Typography";
 import Input from "@mui/material/Input";
 import Switch from "@mui/material/Switch";
 import { styled } from "@mui/material/styles";
+import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
+
 import resource from "../../lib/resource";
+import jsUtil from "../../lib/jsUtil";
 
 const ariaLabel = { "aria-label": "description" };
 const VisuallyHiddenInput = styled("input")({
@@ -22,6 +25,21 @@ const VisuallyHiddenInput = styled("input")({
   whiteSpace: "nowrap",
   width: 1,
 });
+
+const HtmlTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} arrow classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: theme.palette.common.black,
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: "#f5f5f9",
+    color: "rgba(0, 0, 0, 0.87)",
+    maxWidth: 220,
+    fontSize: theme.typography.pxToRem(12),
+    border: "1px solid #dadde9",
+  },
+}));
 
 export default function Character(props) {
   const [edit, setEdit] = React.useState(false);
@@ -61,7 +79,7 @@ export default function Character(props) {
 
   const handleChange = (event) => {
     let c = { ...char };
-    c[event.target.name] = event.target.value;
+    c[event.target.name] = jsUtil.convertUserInputNumbers(event.target.value);
     setChar(c);
     setChanged(true);
   };
@@ -119,33 +137,55 @@ export default function Character(props) {
                 inputProps={ariaLabel}
               />
               <br></br>
-              位置：
+              <HtmlTooltip
+                title={
+                  <React.Fragment>
+                    <Typography color="inherit">位置的写法</Typography>
+                    <ol>
+                      <li>100:201,300:450</li>
+                      <li>0.2,0.7</li>
+                      <li>中心</li>
+                      <li>中心,底部</li>
+                    </ol>
+                  </React.Fragment>
+                }
+              >
+                <span>
+                  <b>位置?：</b>
+                </span>
+              </HtmlTooltip>
               <Input
                 name="位置"
                 size="small"
                 sx={{ width: "80px" }}
                 type="string"
                 onChange={(e) => handleChange(e)}
-                defaultValue={
-                  (Array.isArray(props.pos) &&
-                    props.pos[0] + " : " + props.pos[1]) ||
-                  props.pos
-                }
+                defaultValue={jsUtil.convertNumbersToString(props.pos)}
                 inputProps={ariaLabel}
               />
               <br></br>
-              大小：
+              <HtmlTooltip
+                title={
+                  <React.Fragment>
+                    <Typography color="inherit">大小的写法</Typography>
+                    <ol>
+                      <li>100,450</li>
+                      <li>0.2,0.7</li>
+                    </ol>
+                  </React.Fragment>
+                }
+              >
+                <span>
+                  <b>大小?：</b>
+                </span>
+              </HtmlTooltip>
               <Input
                 name="大小"
                 size="small"
                 sx={{ width: "80px" }}
                 type="string"
                 onChange={(e) => handleChange(e)}
-                defaultValue={
-                  (Array.isArray(props.size) &&
-                    props.size[0] + " : " + props.size[1]) ||
-                  props.size
-                }
+                defaultValue={jsUtil.convertNumbersToString(props.size)}
                 inputProps={ariaLabel}
               />
               <br></br>
@@ -207,14 +247,10 @@ export default function Character(props) {
               size="small"
             >
               位置：
-              {(Array.isArray(props.pos) &&
-                props.pos[0] + " : " + props.pos[1]) ||
-                props.pos}
+              {jsUtil.convertNumbersToString(props.pos)}
               <br></br>
               大小：
-              {(Array.isArray(props.size) &&
-                props.size[0] + " : " + props.size[1]) ||
-                props.size}
+              {jsUtil.convertNumbersToString(props.size)}
               <br></br>
               角度： {props.rotate} <br></br>
               图层： {props.index} <br></br>

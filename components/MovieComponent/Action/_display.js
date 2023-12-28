@@ -56,7 +56,7 @@ export default function Display({
         component="div"
         sx={{
           width: "90%",
-          height: 120,
+          height: (edit && 120) || 100,
           p: 1,
           m: "auto",
           alignItems: "flex-start",

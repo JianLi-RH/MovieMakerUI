@@ -71,7 +71,7 @@ export default function Action({ allActions, allChars, onSaveAction }) {
       };
     } else if (actionType === "转身") {
       newAct = {
-        名称: "行进",
+        名称: "转身",
         角色: "",
         度数: "左右",
       };

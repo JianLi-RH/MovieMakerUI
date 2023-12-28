@@ -12,7 +12,25 @@ import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
 import Input from "@mui/material/Input";
 
-import resource from "../../../lib/resource";
+import { styled } from "@mui/material/styles";
+import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
+
+import jsUtil from "../../../lib/jsUtil";
+
+const HtmlTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} arrow classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: theme.palette.common.black,
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: "#f5f5f9",
+    color: "rgba(0, 0, 0, 0.87)",
+    maxWidth: 220,
+    fontSize: theme.typography.pxToRem(12),
+    border: "1px solid #dadde9",
+  },
+}));
 
 export default function Turn({
   action,
@@ -64,7 +82,7 @@ export default function Turn({
         component="div"
         sx={{
           width: "90%",
-          height: 140,
+          height: (edit && 140) || 100,
           p: 1,
           m: "auto",
           alignItems: "flex-start",
@@ -95,6 +113,24 @@ export default function Turn({
                       );
                     })}
                 </Select>
+              </FormControl>
+              <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                <HtmlTooltip
+                  title={
+                    <React.Fragment>
+                      <Typography color="inherit">度数的写法</Typography>
+                      <ol>
+                        <li>左右</li>
+                        <li>上下</li>
+                        <li>45</li>
+                      </ol>
+                    </React.Fragment>
+                  }
+                >
+                  <InputLabel>
+                    <b>度数?</b>
+                  </InputLabel>
+                </HtmlTooltip>
                 <Input
                   name="度数"
                   size="small"
@@ -139,7 +175,6 @@ export default function Turn({
                   action["度数"][0] + " : " + action["度数"][1]) ||
                   action["度数"]}
               </Typography>{" "}
-              <br></br>
               <br></br>
               <Button
                 sx={{ m: 0, p: 1 }}

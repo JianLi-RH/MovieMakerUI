@@ -11,8 +11,10 @@ import FormControl from "@mui/material/FormControl";
 import Typography from "@mui/material/Typography";
 import Input from "@mui/material/Input";
 import { styled } from "@mui/material/styles";
+import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
 
 import resource from "../../../lib/resource";
+import jsUtil from "../../../lib/jsUtil";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -25,6 +27,21 @@ const VisuallyHiddenInput = styled("input")({
   whiteSpace: "nowrap",
   width: 1,
 });
+
+const HtmlTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} arrow classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: theme.palette.common.black,
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: "#f5f5f9",
+    color: "rgba(0, 0, 0, 0.87)",
+    maxWidth: 220,
+    fontSize: theme.typography.pxToRem(12),
+    border: "1px solid #dadde9",
+  },
+}));
 
 export default function GIF({ action, onSaveAction, onDeleteAction }) {
   const [image, setImage] = useState(action["素材"]);
@@ -43,17 +60,18 @@ export default function GIF({ action, onSaveAction, onDeleteAction }) {
   };
 
   const handleChange = (event) => {
+    const value = jsUtil.convertUserInputNumbers(event.target.value);
     if (event.target.name == "素材") {
-      setImage(event.target.value);
+      setImage(value);
     }
     if (event.target.name == "位置") {
-      setPos(event.target.value);
+      setPos(value);
     }
     if (event.target.name == "比例") {
-      setRatio(event.target.value);
+      setRatio(value);
     }
     if (event.target.name == "度数") {
-      setDegree(event.target.value);
+      setDegree(value);
     }
   };
 
@@ -109,7 +127,7 @@ export default function GIF({ action, onSaveAction, onDeleteAction }) {
         component="div"
         sx={{
           width: "90%",
-          height: 360,
+          height: (edit && 300) || 360,
           p: 1,
           m: "auto",
         }}
@@ -130,34 +148,54 @@ export default function GIF({ action, onSaveAction, onDeleteAction }) {
               </FormControl>
               <br></br>
               <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel>位置</InputLabel>
+                <HtmlTooltip
+                  title={
+                    <React.Fragment>
+                      <Typography color="inherit">位置的写法</Typography>
+                      <ol>
+                        <li>100:201,300:450</li>
+                        <li>0.2,0.7</li>
+                        <li>中心</li>
+                        <li>中心,底部</li>
+                      </ol>
+                    </React.Fragment>
+                  }
+                >
+                  <InputLabel>
+                    <b>位置?</b>
+                  </InputLabel>
+                </HtmlTooltip>
+
                 <Input
                   name="位置"
                   size="small"
                   sx={{ width: "200px" }}
                   type="string"
                   onChange={(e) => handleChange(e)}
-                  defaultValue={
-                    (Array.isArray(action["位置"]) &&
-                      action["位置"][0] + " : " + action["位置"][1]) ||
-                    action["位置"]
-                  }
+                  defaultValue={jsUtil.convertNumbersToString(action["位置"])}
                 />
               </FormControl>
               <br></br>
               <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel>比例</InputLabel>
+                <HtmlTooltip
+                  title={
+                    <React.Fragment>
+                      <Typography color="inherit">比例的写法</Typography>
+                      0到1之间的小数
+                    </React.Fragment>
+                  }
+                >
+                  <InputLabel>
+                    <b>比例?</b>
+                  </InputLabel>
+                </HtmlTooltip>
                 <Input
                   name="比例"
                   size="small"
                   sx={{ width: "200px" }}
                   type="string"
                   onChange={(e) => handleChange(e)}
-                  defaultValue={
-                    (Array.isArray(action["比例"]) &&
-                      action["比例"][0] + " : " + action["比例"][1]) ||
-                    action["比例"]
-                  }
+                  defaultValue={jsUtil.convertNumbersToString(action["比例"])}
                 />
               </FormControl>
               <br></br>
@@ -169,7 +207,7 @@ export default function GIF({ action, onSaveAction, onDeleteAction }) {
                   sx={{ width: "200px" }}
                   type="string"
                   onChange={(e) => handleChange(e)}
-                  defaultValue={action["度数"]}
+                  defaultValue={jsUtil.convertNumbersToString(action["度数"])}
                 />
               </FormControl>
               <CardActions sx={{ m: 0, p: 0 }}>
@@ -202,27 +240,21 @@ export default function GIF({ action, onSaveAction, onDeleteAction }) {
                 sx={{ width: 200, p: 1, display: "inline-block" }}
                 component="div"
               >
-                位置:{" "}
-                {(Array.isArray(action["位置"]) &&
-                  action["位置"][0] + " : " + action["位置"][1]) ||
-                  action["位置"]}
+                位置: {jsUtil.convertNumbersToString(action["位置"])}
               </Typography>{" "}
               <br></br>
               <Typography
                 sx={{ width: 200, p: 1, display: "inline-block" }}
                 component="div"
               >
-                比例:{" "}
-                {(Array.isArray(action["比例"]) &&
-                  action["比例"][0] + " : " + action["比例"][1]) ||
-                  action["比例"]}
+                比例: {jsUtil.convertNumbersToString(action["比例"])}
               </Typography>{" "}
               <br></br>
               <Typography
                 sx={{ width: 200, p: 1, display: "inline-block" }}
                 component="div"
               >
-                度数: {action["度数"]}
+                度数: {jsUtil.convertNumbersToString(action["度数"])}
               </Typography>
               <br></br>
               <Button
