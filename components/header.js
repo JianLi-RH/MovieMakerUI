@@ -4,11 +4,12 @@ import Typography from "@mui/material/Typography";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
 
-export default function Header() {
+export default function Header({ children }) {
   return (
     <AppBar position="fixed" sx={{ zIndex: 2000 }}>
       <title>MovieMaker - 最便捷的沙雕视频制作工具</title>
       <link rel="icon" href="public/favicon.ico" />
+      {children}
       <Toolbar sx={{ backgroundColor: "background.paper" }}>
         <DashboardIcon
           sx={{ color: "#444", mr: 2, transform: "translateY(-2px)" }}

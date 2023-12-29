@@ -34,6 +34,7 @@ import GlobalConifg from "../pages/app.config";
 import CustomizedDialogs from "../components/scriptdialog";
 import LoginForm from "./login/login-form";
 import LogoutForm from "./login/logout-form";
+import AccountBox from "./accountBox";
 const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
 
 export default function Menu({
@@ -41,6 +42,7 @@ export default function Menu({
   selectScript,
   updateMenuList,
   setting,
+  updateAlert,
 }) {
   const [openDeleteScript, setOpenDeleteScript] = useState(false);
   const [deleteScriptName, setDeleteScriptName] = useState("");
@@ -93,27 +95,6 @@ export default function Menu({
         method: "PUT",
         headers: { Authorization: sessionStorage.token },
       });
-      // .then((data) => {
-      //   return data.json();
-      // })
-      // .then((res) => {
-      //   return res;
-      // })
-      // .then(function (jsonStr) {
-      //   if (jsonStr.code === 200) {
-      //     return {
-      //       display: "flex",
-      //       severity: "success",
-      //       message: jsonStr.msg,
-      //     };
-      //   } else {
-      //     return {
-      //       display: "flex",
-      //       severity: "error",
-      //       message: jsonStr.msg,
-      //     };
-      //   }
-      // });
       setAlert(result);
     } else {
       setAlert({ display: "flex", severity: "error", message: "请先登录" });
@@ -230,32 +211,16 @@ export default function Menu({
           <Button onClick={handleAddNewSC}>保存</Button>
         </DialogActions>
       </Dialog>
-      <List sx={{ height: "10px" }}>
-        <ListItem>
-          {(login && (
-            <LogoutForm
-              updateList={() => updateMenuList()}
-              updateLogin={() => setLogin(false)}
-            ></LogoutForm>
-          )) || (
-            <LoginForm
-              updateList={() => updateMenuList()}
-              updateLogin={() => setLogin(true)}
-            />
-          )}
-        </ListItem>
-      </List>
-      <Divider sx={{ mt: "200px" }} />
+      <AccountBox
+        updateList={() => updateMenuList()}
+        updateLogin={(status) => setLogin(status)}
+        updateAlert={updateAlert}
+      />
       <List
         sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
         component="nav"
         aria-labelledby="nested-list-subheader"
       >
-        {!login && (
-          <ListItem>
-            <ListItemText primary="请先登录" />
-          </ListItem>
-        )}
         {scripts.length > 0 &&
           login &&
           scripts.map((script, i) => (

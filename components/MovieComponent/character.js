@@ -142,7 +142,7 @@ export default function Character(props) {
                   <React.Fragment>
                     <Typography color="inherit">位置的写法</Typography>
                     <ol>
-                      <li>100:201,300:450</li>
+                      <li>100,450</li>
                       <li>0.2,0.7</li>
                       <li>中心</li>
                       <li>中心,底部</li>

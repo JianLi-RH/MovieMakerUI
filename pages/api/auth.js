@@ -56,7 +56,7 @@ const prepareWorkspace = (username) => {
 };
 
 //登录
-const post = (req, res) => {
+const post = async (req, res) => {
   const form = formidable({});
   form.parse(req, function (err, fields, files) {
     let name = fields.username;
@@ -107,12 +107,10 @@ const get = (req, res) => {
   }
 };
 
-export default (req, res) => {
+export default async (req, res) => {
   req.method === "POST"
-    ? post(req, res)
-    : // : req.method === "PUT"
-    // ? console.log("PUT")
-    req.method === "DELETE"
+    ? await post(req, res)
+    : req.method === "DELETE"
     ? remove(req, res)
     : req.method === "GET"
     ? get(req, res)
