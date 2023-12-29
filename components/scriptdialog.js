@@ -36,13 +36,6 @@ const VisuallyHiddenInput = styled("input")({
 
 export default function CustomizedDialogs(props) {
   const [script, setScript] = useState(null);
-  const [createObjectURL, setCreateObjectURL] = useState(null);
-  const [alert, setAlert] = useState({
-    display: "none",
-    severity: "info",
-    message: "",
-  });
-
   const uploadToClient = (event) => {
     if (event.target.files && event.target.files[0]) {
       const i = event.target.files[0];
@@ -60,38 +53,27 @@ export default function CustomizedDialogs(props) {
     const body = new FormData();
     body.append("file", script);
     body.append("length", props.length);
-    const result = await fetch("/api/file", {
+    const response = await fetch("/api/file", {
       method: "POST",
       headers: { Authorization: sessionStorage.token },
       body,
-    })
-      .then((data) => {
-        return data.json();
-      })
-      .then((res) => {
-        return res;
-      })
-      .then(function (jsonStr) {
-        if (jsonStr.code === 200) {
-          return {
-            display: "flex",
-            severity: "success",
-            message: jsonStr.msg,
-          };
-        } else {
-          return {
-            display: "flex",
-            severity: "error",
-            message: jsonStr.msg,
-          };
-        }
+    });
+    const res = await response.json();
+    if (res.code === 200) {
+      props.updateAlert({
+        display: "flex",
+        severity: "success",
+        message: res.msg,
       });
-    setAlert(result);
-    setTimeout(() => {
-      setAlert({ display: "none", severity: "info", message: "" });
       props.close();
       props.updateList();
-    }, 1000);
+    } else {
+      props.updateAlert({
+        display: "flex",
+        severity: "error",
+        message: res.msg,
+      });
+    }
   };
 
   return (
@@ -100,12 +82,7 @@ export default function CustomizedDialogs(props) {
       aria-labelledby="customized-dialog-title"
       open={props.open}
     >
-      <Alert style={{ display: alert.display }} severity={alert.severity}>
-        {alert.message}
-      </Alert>
-      <DialogTitle sx={{ m: 0, p: 2 }}>
-        上传脚本文件
-      </DialogTitle>
+      <DialogTitle sx={{ m: 0, p: 2 }}>上传脚本文件</DialogTitle>
       <IconButton
         aria-label="close"
         onClick={() => props.close()}

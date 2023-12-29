@@ -32,8 +32,6 @@ import {
 
 import GlobalConifg from "../pages/app.config";
 import CustomizedDialogs from "../components/scriptdialog";
-import LoginForm from "./login/login-form";
-import LogoutForm from "./login/logout-form";
 import AccountBox from "./accountBox";
 const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
 
@@ -48,11 +46,6 @@ export default function Menu({
   const [deleteScriptName, setDeleteScriptName] = useState("");
   const [addSCDislogopen, setAddSCDislogopen] = React.useState(false);
   let ref = useRef();
-  const [alert, setAlert] = useState({
-    display: "none",
-    severity: "info",
-    message: "",
-  });
 
   const [openstate, setOpenstate] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -84,20 +77,33 @@ export default function Menu({
     setSelectedIndex(index);
   };
 
-  const handleAddNewSC = () => {
+  const handleAddNewSC = async () => {
     if (sessionStorage.token) {
       const name = ref.current.value;
       console.log("name: ", name);
       if (name == null || name == undefined) {
         return;
       }
-      const result = fetch("/api/file?name=" + name, {
+      const response = await fetch("/api/file?name=" + name, {
         method: "PUT",
         headers: { Authorization: sessionStorage.token },
       });
-      setAlert(result);
-    } else {
-      setAlert({ display: "flex", severity: "error", message: "请先登录" });
+      const res = await response.json();
+      if (res.code === 200) {
+        updateAlert({
+          display: "flex",
+          severity: "success",
+          message: res.msg,
+        });
+      } else {
+        updateAlert({
+          display: "flex",
+          severity: "error",
+          message: res.msg,
+        });
+      }
+      setAddSCDislogopen(false);
+      updateMenuList();
     }
   };
 
@@ -108,41 +114,27 @@ export default function Menu({
 
   const confirmDelete = async (name) => {
     if (sessionStorage.token) {
-      const result = await fetch("/api/file?file=" + name, {
+      const response = await fetch("/api/file?file=" + name, {
         method: "DELETE",
         headers: { Authorization: sessionStorage.token },
-      })
-        .then((data) => {
-          return data.json();
-        })
-        .then((res) => {
-          return res;
-        })
-        .then(function (jsonStr) {
-          if (jsonStr.code === 200) {
-            return {
-              display: "flex",
-              severity: "success",
-              message: jsonStr.msg,
-            };
-          } else {
-            return {
-              display: "flex",
-              severity: "error",
-              message: jsonStr.msg,
-            };
-          }
+      });
+      const res = await response.json();
+      if (res.code === 200) {
+        updateAlert({
+          display: "flex",
+          severity: "success",
+          message: res.msg,
         });
-      setAlert(result);
-    } else {
-      setAlert({ display: "flex", severity: "error", message: "请先登录" });
+      } else {
+        updateAlert({
+          display: "flex",
+          severity: "error",
+          message: res.msg,
+        });
+      }
     }
-
-    setTimeout(() => {
-      setAlert({ display: "none", severity: "info", message: "" });
-      setOpenDeleteScript(false);
-      updateMenuList();
-    }, 1000);
+    setOpenDeleteScript(false);
+    updateMenuList();
   };
 
   return (
@@ -166,9 +158,6 @@ export default function Menu({
         maxWidth="xs"
         open={openDeleteScript}
       >
-        <Alert style={{ display: alert.display }} severity={alert.severity}>
-          {alert.message}
-        </Alert>
         <DialogTitle>删除脚本 - {deleteScriptName.id}</DialogTitle>
         <DialogContent dividers>
           删除脚本将会清空全部视频内容，删除后无法恢复，确认要删除脚本吗？
@@ -182,11 +171,13 @@ export default function Menu({
           </Button>
         </DialogActions>
       </Dialog>
+      {/* 上传脚本 */}
       <CustomizedDialogs
         length={scripts.length}
         open={openstate}
         updateList={() => updateMenuList()}
         close={() => setOpenstate(false)}
+        updateAlert={updateAlert}
       ></CustomizedDialogs>
       <Dialog
         name="newscript"
@@ -208,7 +199,7 @@ export default function Menu({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setAddSCDislogopen(false)}>取消</Button>
-          <Button onClick={handleAddNewSC}>保存</Button>
+          <Button onClick={() => handleAddNewSC()}>保存</Button>
         </DialogActions>
       </Dialog>
       <AccountBox

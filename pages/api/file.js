@@ -148,7 +148,7 @@ const put = async (req, res) => {
   return res;
 };
 
-export default (req, res) => {
+export default async (req, res) => {
   // 上传文件时(POST)，表单需要两个参数： file和path, path是文件存放的目标路径
   // 下载文件时(get)， 表单需要一个参数：file
   req.method === "POST"

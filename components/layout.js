@@ -28,7 +28,7 @@ export default function Layout({
 
     setTimeout(() => {
       setAlert({ display: "none", severity: "info", message: "" });
-    }, 2000);
+    }, 1000);
   };
   return (
     <Box>
