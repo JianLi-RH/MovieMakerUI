@@ -2,6 +2,7 @@ import formidable, { errors as formidableErrors } from "formidable";
 import fs from "fs";
 
 import user from "../../lib/user";
+import sql from "../../lib/sql";
 
 const rootFolder = __dirname.split(".next")[0];
 
@@ -59,29 +60,26 @@ const prepareWorkspace = (username) => {
 const post = async (req, res) => {
   const form = formidable({});
   form.parse(req, function (err, fields, files) {
-    let name = fields.username;
-    let pwd = fields.password;
+    let name = fields.username[0];
+    let pwd = fields.password[0];
 
-    if (name == "admin" && pwd == "admin") {
-      if (prepareWorkspace(name)) {
-        let token = require("crypto").randomBytes(32).toString("hex");
-        user.saveUser(name, token);
+    sql.login(name, pwd).then((result) => {
+      if (result != undefined) {
+        user.saveUser(name, result.guid);
         return res.send({
           code: 200,
           status: "success",
           msg: "登录成功",
-          token: token,
+          token: result.guid,
         });
       } else {
-        return res.send({ code: 202, status: "fail", msg: "创建工作空间失败" });
+        return res.send({
+          code: 201,
+          status: "fail",
+          msg: "登录失败",
+        });
       }
-    } else {
-      return res.send({
-        code: 201,
-        status: "fail",
-        msg: "登录失败",
-      });
-    }
+    });
   });
 };
 

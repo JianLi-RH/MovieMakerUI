@@ -2,6 +2,7 @@
 resources
 workspaces
 public/admin/
+moviemaker.db
 SourceCode
 .next
 node_modules

@@ -150,7 +150,8 @@ export default function AccountBox({ updateList, updateLogin, updateAlert }) {
                     </HeaderContainer>}
                     {active === "signup" && <HeaderContainer>
                         <HeaderText>创建账号</HeaderText>
-                        <SmallText>创建账号继续使用MovieMaker!</SmallText>
+                        <SmallText>创建账号,</SmallText>
+                        <SmallText>以便继续使用MovieMaker!</SmallText>
                     </HeaderContainer>}
                 </TopContainer>
                 <InnerContainer>
@@ -159,7 +160,7 @@ export default function AccountBox({ updateList, updateLogin, updateAlert }) {
                         updateLogin(status)
                     }} updateAlert={updateAlert} />}
                     {active === "signout" && <LogoutForm updateList={updateList} updateLogin={updateLogin} updateAlert={updateAlert} />}
-                    {active === "signup" && <SignupForm />}
+                    {active === "signup" && <SignupForm updateAlert={updateAlert} />}
                 </InnerContainer>
             </BoxContainer>
         </AccountContext.Provider>

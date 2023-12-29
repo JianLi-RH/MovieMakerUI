@@ -31,6 +31,7 @@
     "react-use-downloader": "^1.2.4",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
+    "sqlite": "^5.1.1",
     "store": "^2.0.12",
     "styled-components": "^6.1.6",
     "use-immer": "^0.9.0",

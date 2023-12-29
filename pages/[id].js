@@ -1,7 +1,6 @@
 import { getAllHelpIds, getPostData } from "lib/help";
 
 export default function Help({ helpData }) {
-    console.log("helpData: ", helpData)
   return (
     <div className="md:container md:mx-auto">
       <article>
@@ -13,7 +12,6 @@ export default function Help({ helpData }) {
 
 export async function getStaticPaths() {
   const paths = getAllHelpIds();
-  console.log(paths);
   return {
     paths,
     fallback: false,
