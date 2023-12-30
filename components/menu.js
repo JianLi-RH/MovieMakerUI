@@ -207,6 +207,7 @@ export default function Menu({
         updateLogin={(status) => setLogin(status)}
         updateAlert={updateAlert}
       />
+      <Divider sx={{ mt: "10px" }} />
       <List
         sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
         component="nav"

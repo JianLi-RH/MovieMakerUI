@@ -1,7 +1,7 @@
 .DS_STORE
 resources
 workspaces
-public/admin/
+public
 moviemaker.db
 SourceCode
 .next

@@ -14,9 +14,10 @@ export const config = {
 };
 
 // 准备用户工作空间
-const prepareWorkspace = (username) => {
-  const workspace = `workspaces/${username}`;
-  const publicFolder = `public/${username}`;
+const prepareWorkspace = (name, token) => {
+  const workspace = `workspaces/${name}`;
+  const userID = user.getWorkspace(token);
+  const publicFolder = `public/${userID}`;
   // 创建工作区（python代码）
   if (!fs.existsSync(workspace)) {
     fs.mkdirSync(workspace, { recursive: true }, (err) => {
@@ -26,9 +27,16 @@ const prepareWorkspace = (username) => {
       }
       console.log("Workspace created successfully!");
     });
-    let sourcecode = `SourceCode/MovieMaker`;
+    const sourcecode = `SourceCode/MovieMaker`;
     fs.cpSync(sourcecode, workspace, { recursive: true }, (err) => {
       return false;
+    });
+    fs.mkdirSync(`${workspace}/script`, { recursive: true }, (err) => {
+      if (err) {
+        console.log("err: ", err);
+        return false;
+      }
+      console.log("Scrit folder created successfully!");
     });
   }
   // 创建资源存储区
@@ -42,9 +50,9 @@ const prepareWorkspace = (username) => {
   }
 
   // 更新全局配置
-  const config = `workspaces/${username}/global_config.yaml`;
+  const config = `${workspace}/global_config.yaml`;
   const settings = yaml.load(fs.readFileSync(config, "utf-8"));
-  settings.output_dir = `${rootFolder}workspaces/${username}/output`;
+  settings.output_dir = `${rootFolder}${workspace}/output`;
   settings.sucai_dir = `${rootFolder}public`;
 
   const yaml_string = yaml.dump(settings);
@@ -66,6 +74,13 @@ const post = async (req, res) => {
     sql.login(name, pwd).then((result) => {
       if (result != undefined) {
         user.saveUser(name, result.guid);
+        if (!prepareWorkspace(name, result.guid)) {
+          return res.send({
+            code: 201,
+            status: "fail",
+            msg: "创建工作空间失败",
+          });
+        }
         return res.send({
           code: 200,
           status: "success",

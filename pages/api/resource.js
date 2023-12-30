@@ -11,7 +11,7 @@ export const config = {
 };
 
 const post = async (req, res) => {
-  //上传角色图片
+  //上传资源文件
   const form = formidable({});
   form.parse(req, async function (err, fields, files) {
     let token = req.headers["authorization"];
@@ -19,8 +19,9 @@ const post = async (req, res) => {
     if (!username) {
       return await res.json({ code: 202, status: "fail", msg: "请先登录" });
     }
+    const workspace = user.getWorkspace(token);
     const subfolder = fields.subfolder
-    let scriptFolder = `public/${username}/${subfolder}`;
+    let scriptFolder = `public/${workspace}/${subfolder}`;
     if (!fs.existsSync(scriptFolder)) {
       let created = fs.mkdirSync(scriptFolder, { recursive: true }, (err) => {
         if (err) {
@@ -36,7 +37,7 @@ const post = async (req, res) => {
     }
     let result = await saveFile(files.file[0], fields, scriptFolder);
     if (result) {
-      return res.send({ code: 200, status: "success", msg: `${username}/${subfolder}/${files.file[0].originalFilename}` });
+      return res.send({ code: 200, status: "success", msg: `${workspace}/${subfolder}/${files.file[0].originalFilename}` });
     } else {
       return res.send({ code: 210, status: "fail", msg: "文件上传失败" });
     }

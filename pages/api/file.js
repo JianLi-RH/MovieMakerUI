@@ -11,14 +11,15 @@ export const config = {
 };
 
 const get = async (req, res) => {
-  let token = req.headers["authorization"];
+  const token = req.headers["authorization"];
 
-  let username = user.getUser(token);
+  const username = user.getUser(token);
   if (!username) {
     return await res.json({ code: 212, status: "fail", msg: "请先登录" });
   }
-  let scriptFolder = `workspaces/${username}/script`;
+  const scriptFolder = `workspaces/${username}/script`;
   if (req.query["file"] != undefined) {
+    // 获取脚本内容
     fs.readFile(
       `${scriptFolder}/${req.query["file"]}.yaml`,
       "utf-8",
@@ -29,13 +30,8 @@ const get = async (req, res) => {
         res.json({ code: 200, status: "success", msg: yaml.load(data) });
       }
     );
-  } else if (req.query["files"] != undefined) {
-    const fileNames = fs.readdirSync(scriptFolder);
-    let f = Array(fileNames.length);
-    for (var i = 0; i < fileNames.length; i++) {
-      f[i] = { id: fileNames[i].replace(/\.(yaml|yml)$/, "") };
-    }
-    res.json({ code: 200, status: "success", msg: f });
+  } else {
+    res.json({ code: 212, status: "fail", msg: "没有指定脚本名" });
   }
   return res;
 };
@@ -52,12 +48,12 @@ const post = async (req, res) => {
         msg: "普通用户只能创建3个视频",
       });
     }
-    let token = req.headers["authorization"];
-    let username = user.getUser(token);
+    const token = req.headers["authorization"];
+    const username = user.getUser(token);
     if (!username) {
       return await res.json({ code: 202, status: "fail", msg: "请先登录" });
     }
-    let scriptFolder = `workspaces/${username}/script`;
+    const scriptFolder = `workspaces/${username}/script`;
     if (!fs.existsSync(scriptFolder)) {
       fs.mkdirSync(scriptFolder, { recursive: true }, (err) => {
         if (err) {

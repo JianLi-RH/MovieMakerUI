@@ -46,7 +46,7 @@ export default function Home() {
   //更新脚本列表
   const updateMenuList = () => {
     if (sessionStorage.token) {
-      fetch("/api/file?files", {
+      fetch("/api/scriptlist", {
         headers: { Authorization: sessionStorage.token },
       })
         .then((r) => r.json())
@@ -132,7 +132,9 @@ export default function Home() {
 
   // 打开页面时展示菜单列表
   useEffect(() => {
-    updateMenuList();
+    if (sessionStorage.token) {
+      updateMenuList();
+    }
   }, []);
 
   // 添加新场景

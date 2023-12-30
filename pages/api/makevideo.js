@@ -10,15 +10,15 @@ export const config = {
 };
 
 const post = async (req, res) => {
-  let token = req.headers["authorization"];
-  let username = user.getUser(token);
+  const token = req.headers["authorization"];
+  const username = user.getUser(token);
   if (!username) {
     return await res.json({ code: 202, status: "fail", msg: "请先登录" });
   }
   //制作视频
   const form = formidable({});
   form.parse(req, async function (err, fields, files) {
-    let script = `script/${fields.script[0]}.yaml`;
+    const script = `script/${fields.script[0]}.yaml`;
     let scenario = "";
     let output = `${fields.script[0].split(".")[0]}.mp4`;
     if (fields.scenario[0] != '') {
@@ -54,8 +54,9 @@ const post = async (req, res) => {
           msg: "生成视频失败",
         });
       }
-      let video = `workspaces/${username}/output/${output}`;
-      let publicFolder = `public/${username}/${output}`;
+      const video = `workspaces/${username}/output/${output}`;
+      const workspace = user.getWorkspace(token);
+      const publicFolder = `public/${workspace}/${output}`;
       fs.mkdirSync(`public/${username}/`, { recursive: true }, (err) => {
         if (err) {
           return res.json({
