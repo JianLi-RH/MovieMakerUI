@@ -100,8 +100,7 @@ const post = async (req, res) => {
 
 //登出
 const remove = (req, res) => {
-  let token = req.headers["authorization"];
-  let username = user.getUser(token);
+  let username = user.getUser(req);
   if (!username) {
     return res.json({ code: 302, status: "fail", msg: "用户没有登录" });
   }
@@ -111,8 +110,7 @@ const remove = (req, res) => {
 
 //获取用户信息
 const get = (req, res) => {
-  let token = req.headers["authorization"];
-  let username = user.getUser(token);
+  let username = user.getUser(req);
   if (username != null) {
     return res.json({ code: 200, status: "success", msg: { name: username } });
   } else {

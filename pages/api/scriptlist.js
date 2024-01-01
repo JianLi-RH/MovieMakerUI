@@ -8,10 +8,7 @@ export const config = {
 };
 
 const get = async (req, res) => {
-  const token = req.headers["authorization"];
-
-  const username = user.getUser(token);
-  console.log("username: ", username);
+  const username = user.getUser(req);
   if (!username) {
     res.json({ code: 212, status: "fail", msg: "请先登录" });
   } else {

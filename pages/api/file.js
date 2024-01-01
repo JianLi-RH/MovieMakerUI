@@ -11,11 +11,9 @@ export const config = {
 };
 
 const get = async (req, res) => {
-  const token = req.headers["authorization"];
-
-  const username = user.getUser(token);
+  const username = user.getUser(req);
   if (!username) {
-    return await res.json({ code: 212, status: "fail", msg: "请先登录" });
+    return res.json({ code: 212, status: "fail", msg: "请先登录" });
   }
   const scriptFolder = `workspaces/${username}/script`;
   if (req.query["file"] != undefined) {
@@ -36,10 +34,10 @@ const get = async (req, res) => {
   return res;
 };
 
-const post = async (req, res) => {
+const post = (req, res) => {
   //上传脚本文件
   const form = formidable({});
-  form.parse(req, async function (err, fields, files) {
+  form.parse(req, function (err, fields, files) {
     if (fields.length > 2) {
       // 客户端显示已经有3个视频了
       return res.send({
@@ -48,10 +46,9 @@ const post = async (req, res) => {
         msg: "普通用户只能创建3个视频",
       });
     }
-    const token = req.headers["authorization"];
-    const username = user.getUser(token);
+    const username = user.getUser(req);
     if (!username) {
-      return await res.json({ code: 202, status: "fail", msg: "请先登录" });
+      return res.json({ code: 202, status: "fail", msg: "请先登录" });
     }
     const scriptFolder = `workspaces/${username}/script`;
     if (!fs.existsSync(scriptFolder)) {
@@ -75,7 +72,7 @@ const post = async (req, res) => {
         msg: "普通用户只能创建3个视频",
       });
     }
-    let result = await saveFile(files.file[0], fields, username);
+    let result = saveFile(files.file[0], fields, username);
     if (result) {
       return res.send({ code: 200, status: "success", msg: "文件上传成功" });
     } else {
@@ -84,11 +81,10 @@ const post = async (req, res) => {
   });
 };
 
-const remove = async (req, res) => {
-  let token = req.headers["authorization"];
-  let username = user.getUser(token);
+const remove = (req, res) => {
+  let username = user.getUser(req);
   if (!username) {
-    return await res.json({ code: 302, status: "fail", msg: "请先登录" });
+    return res.json({ code: 302, status: "fail", msg: "请先登录" });
   }
   if (req.query["file"] != undefined) {
     let filepath = `workspaces/${username}/script/${req.query["file"]}.yaml`;
@@ -102,7 +98,7 @@ const remove = async (req, res) => {
   }
 };
 
-const saveFile = async (file, fields, username) => {
+const saveFile = (file, fields, username) => {
   let fileNames = `workspaces/${username}/script`;
   fs.copyFile(
     file.filepath,
@@ -118,12 +114,10 @@ const saveFile = async (file, fields, username) => {
 };
 
 // 手动创建脚本文件（非上传）
-const put = async (req, res) => {
-  console.log("req.query: ", req.query["name"]);
-  let token = req.headers["authorization"];
-  let username = user.getUser(token);
+const put = (req, res) => {
+  const username = user.getUser(req);
   if (!username) {
-    return await res.json({ code: 302, status: "fail", msg: "请先登录" });
+    return res.json({ code: 302, status: "fail", msg: "请先登录" });
   }
   if (req.query["name"] != undefined) {
     const filepath = `workspaces/${username}/script/${req.query["name"]}.yaml`;

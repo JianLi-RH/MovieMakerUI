@@ -1,12 +1,11 @@
 const fs = require("fs");
 // const yaml = require("js-yaml");
-const yaml = require('yaml');
+const yaml = require("yaml");
 
 import user from "../../lib/user";
 
 export default function handler(req, res) {
-  let token = req.headers["authorization"];
-  let username = user.getUser(token);
+  let username = user.getUser(req);
   if (!username) {
     return res.json({ code: 202, status: "fail", msg: "请先登录" });
   }

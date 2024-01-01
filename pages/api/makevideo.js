@@ -10,8 +10,7 @@ export const config = {
 };
 
 const post = async (req, res) => {
-  const token = req.headers["authorization"];
-  const username = user.getUser(token);
+  const username = user.getUser(req);
   if (!username) {
     return await res.json({ code: 202, status: "fail", msg: "请先登录" });
   }
@@ -21,7 +20,7 @@ const post = async (req, res) => {
     const script = `script/${fields.script[0]}.yaml`;
     let scenario = "";
     let output = `${fields.script[0].split(".")[0]}.mp4`;
-    if (fields.scenario[0] != '') {
+    if (fields.scenario[0] != "") {
       scenario = fields.scenario[0];
       output = `${scenario}.mp4`;
     }

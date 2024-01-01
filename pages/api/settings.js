@@ -10,14 +10,18 @@ export const config = {
   },
 };
 
-const get = async (req, res) => {
-  let token = req.headers["authorization"];
-
-  let username = user.getUser(token);
+const getConfigFileName = (req, callback) => {
+  const username = user.getUser(req);
   if (!username) {
-    return await res.json({ code: 212, status: "fail", msg: "请先登录" });
+    callback();
   }
-  let config = `workspaces/${username}/config.yaml`;
+  return `workspaces/${username}/config.yaml`;
+};
+
+const get = async (req, res) => {
+  const config = getConfigFileName(req, () => {
+    return res.json({ code: 212, status: "fail", msg: "请先登录" });
+  });
   fs.readFile(config, "utf-8", (err, data) => {
     if (err) {
       res.json({ code: 211, status: "fail", msg: err.toString() });
@@ -31,12 +35,9 @@ const post = (req, res) => {
   // 更新配置
   const form = formidable({});
   form.parse(req, async function (err, fields, files) {
-    let token = req.headers["authorization"];
-    let username = user.getUser(token);
-    if (!username) {
-      return res.json({ code: 202, status: "fail", msg: "请先登录" });
-    }
-    let config = `workspaces/${username}/config.yaml`;
+    const config = getConfigFileName(req, () => {
+      return res.json({ code: 212, status: "fail", msg: "请先登录" });
+    });
     fs.readFile(config, "utf-8", (err, data) => {
       if (err) {
         res.json({ code: 211, status: "fail", msg: err.toString() });

@@ -14,8 +14,7 @@ const post = async (req, res) => {
   //上传资源文件
   const form = formidable({});
   form.parse(req, async function (err, fields, files) {
-    let token = req.headers["authorization"];
-    let username = user.getUser(token);
+    let username = user.getUser(req);
     if (!username) {
       return await res.json({ code: 202, status: "fail", msg: "请先登录" });
     }
