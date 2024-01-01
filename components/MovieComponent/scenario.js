@@ -75,7 +75,7 @@ export default function Scenario({
     setScenarioState(false);
     setScenarioEditState(false);
     setDownloadDisplay("none");
-  }, [scenario]);
+  }, [selectedScript]);
 
   function handleChange(e) {
     e.preventDefault();
@@ -336,12 +336,9 @@ export default function Scenario({
               width: "100%",
               p: 1,
               bgcolor: "#723342",
-              overflow: "visible",
-              display: "flex",
-              flexDirection: "flex-start",
-              alignItems: "flex-start",
-              justifyContent: "flex-start",
               flexWrap: "nowrap",
+              overflowX: "scroll",
+              overflowY: "hidden",
             }}
           >
             {scenario["角色"] &&
