@@ -7,7 +7,7 @@ import { GRID_STRING_COL_DEF, useGridApiContext } from "@mui/x-data-grid";
 
 import GridEditFileCell from "../fileColumn";
 
-export default function Activity({ activity, chars, onSave }) {
+export default function Activity({ activity, chars, onSave, onDeleteActivity }) {
   const [act, setAct] = useState([]);
   const [subtitles, setSubtitles] = useState(null);
   const cNames = chars.map((c) => c["名字"]); // 全部角色名
@@ -154,7 +154,7 @@ export default function Activity({ activity, chars, onSave }) {
   };
 
   return (
-    <CollapseComponent color="#ABC" title={activity["名字"]}>
+    <CollapseComponent color="#ABC" title={activity["名字"]} onDelete={onDeleteActivity}>
       <Table aria-label="simple table">
         <TableBody>
           <TableRow sx={{ "& > *": { border: 1, borderBottom: "unset" } }}>

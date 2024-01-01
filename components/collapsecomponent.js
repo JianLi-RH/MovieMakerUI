@@ -1,8 +1,13 @@
 import * as React from "react";
 import { List, ListItemButton, ListItemText, Collapse } from "@mui/material";
-import { ExpandLess, ExpandMore } from "@mui/icons-material/";
+import { Delete, ExpandLess, ExpandMore } from "@mui/icons-material/";
 
-export default function CollapseComponent({ title, color, children }) {
+export default function CollapseComponent({
+  title,
+  color,
+  onDelete,
+  children,
+}) {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -18,6 +23,12 @@ export default function CollapseComponent({ title, color, children }) {
         }}
         onClick={() => setOpen(!open)}
       >
+        {onDelete && (
+          <Delete
+            sx={{ width: 40 }}
+            onClick={onDelete}
+          ></Delete>
+        )}
         <ListItemText
           sx={{ textAlign: "center", fontSize: "0.875rem" }}
           primary={title}

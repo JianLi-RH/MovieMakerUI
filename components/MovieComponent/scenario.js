@@ -115,6 +115,18 @@ export default function Scenario({
     onSaveScenario(sc);
   }
 
+  const handleDeleteAvtivity = (index) => {
+    let newSC = [];
+    var l = sc["活动"].length;
+    for (var i = 0; i < l; i++) {
+      if (i !== index) {
+        newSC.push(sc["活动"][i]);
+      }
+    }
+    sc["活动"] = newSC;
+    onSaveScenario(sc);
+  };
+
   function addCharacter() {
     const c = {
       名字: "沙雕",
@@ -388,6 +400,7 @@ export default function Scenario({
                 activity={activity}
                 chars={scenario["角色"]}
                 onSave={(act) => updateActivity(i, act)}
+                onDeleteActivity={() => handleDeleteAvtivity(i)}
               ></Activity>
             ))}
         </CollapseComponent>
