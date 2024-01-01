@@ -63,7 +63,7 @@ export function LoginForm({ updateList, updateLogin, updateAlert }) {
                     value={formik.values.username} />
                 <Input id="password" type="password" placeholder="密码" onChange={formik.handleChange}
                     value={formik.values.password} />
-                <Marginer direction="vertical" margin={0} />
+                <Marginer direction="vertical" margin="0" />
                 {/* <MutedLink href="#">忘记密码？</MutedLink> */}
                 <Marginer direction="vertical" margin="1.6em" />
                 <SubmitButton type="submit">登录</SubmitButton>

@@ -1,18 +1,9 @@
 import React, { useContext } from "react";
 import {
-    BoldLink,
-    BoxContainer,
-    FormContainer,
-    Input,
-    LineText,
-    MutedLink,
     SubmitButton,
 } from "./common";
-import { useFormik } from "formik";
 import { useState, useEffect } from "react";
 
-
-import { Marginer } from "../marginer";
 import { AccountContext } from './accountContext';
 
 export function LogoutForm({ updateList, updateLogin, updateAlert }) {
@@ -20,11 +11,6 @@ export function LogoutForm({ updateList, updateLogin, updateAlert }) {
     const { switchToSignin } = useContext(AccountContext);
 
     const [user, setUser] = useState(null);
-    const [alert, setAlert] = useState({
-        display: "none",
-        severity: "info",
-        message: "",
-    });
 
     useEffect(() => {
         fetch("/api/auth", {
