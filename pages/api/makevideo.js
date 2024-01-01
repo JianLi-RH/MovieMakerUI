@@ -54,7 +54,7 @@ const post = async (req, res) => {
         });
       }
       const video = `workspaces/${username}/output/${output}`;
-      const workspace = user.getWorkspace(token);
+      const workspace = user.getWorkspaceByReq(req);
       const publicFolder = `public/${workspace}/${output}`;
       fs.mkdirSync(`public/${username}/`, { recursive: true }, (err) => {
         if (err) {

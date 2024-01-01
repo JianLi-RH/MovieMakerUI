@@ -16,7 +16,7 @@ export const config = {
 // 准备用户工作空间
 const prepareWorkspace = (name, token) => {
   const workspace = `workspaces/${name}`;
-  const userID = user.getWorkspace(token);
+  const userID = user.getWorkspaceByToken(token);
   const publicFolder = `public/${userID}`;
   // 创建工作区（python代码）
   if (!fs.existsSync(workspace)) {

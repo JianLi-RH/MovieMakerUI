@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import Button from "@mui/material/Button";
@@ -12,18 +12,93 @@ import Typography from "@mui/material/Typography";
 
 import GlobalConifg from "../pages/app.config";
 
-export default function Workspace({
-  scenarios,
-  selectedScript,
-  onAddScenario,
-  onDeleteScenario,
-  onSaveScenario,
-}) {
-  const [downloadDisplay, setDownloadDisplay] = React.useState("none");
+// 将更改保存到文件
+const callAPI = async (scenarios, selectedScript) => {
+  if (sessionStorage.token) {
+    const cc = [];
+    for (var i = 0; i < scenarios.length; i++) {
+      cc.push(scenarios[i]);
+    }
+    const res = fetch(`/api/script`, {
+      method: "POST",
+      headers: { Authorization: sessionStorage.token },
+      body: JSON.stringify({
+        script: { 场景: cc },
+        path: selectedScript,
+      }),
+    }).then((response) => {
+      return response.json();
+    });
+    return res;
+  }
+};
+
+export default function Workspace({ selectedScript }) {
+  const [scenarios, setScenarios] = useState([]); // 当前脚本的全部场景
+  const [downloadDisplay, setDownloadDisplay] = useState("none");
   const { size, elapsed, percentage, download, cancel, error, isInProgress } =
     useDownloader();
-  const [url, setUrl] = React.useState("");
-  const [circle, setCircle] = React.useState("none");
+  const [url, setUrl] = useState("");
+  const [circle, setCircle] = useState("none");
+
+  useEffect(() => {
+    if (sessionStorage.token) {
+      fetch(`/api/file?file=${selectedScript}`, {
+        headers: { Authorization: sessionStorage.token },
+      })
+        .then((data) => {
+          return data.json();
+        })
+        .then(function (jsonStr) {
+          if (jsonStr.code === 200) {
+            if (jsonStr.msg["场景"] instanceof Array) {
+              const sc = [...jsonStr.msg["场景"]];
+              setScenarios(sc); // 更新场景
+              return;
+            }
+          }
+          setScenarios([]);
+        });
+    }
+  }, [selectedScript]);
+
+  // 保存场景
+  const onSaveScenario = async (index, updatedScenario) => {
+    let final_sc = JSON.parse(JSON.stringify(scenarios));
+    final_sc[index] = updatedScenario;
+    const res = await callAPI(final_sc, selectedScript);
+    if (res.code === 200) {
+      setScenarios(final_sc);
+    }
+  };
+
+  // 添加新场景
+  const handleAddScenario = (e) => {
+    let sc = {
+      背景: "",
+      名字: "default" + scenarios.length,
+      焦点: "中心",
+      背景音乐: null,
+      比例: 1,
+      角色: null,
+      活动: null,
+    };
+    setScenarios([...scenarios, sc]);
+  };
+
+  // 删除指定顺序的场景
+  const handleDeleteScenario = (index) => {
+    const newScript = [];
+    for (var i = 0; i < scenarios.length; i++) {
+      if (i != index) {
+        newScript.push(scenarios[i]);
+      }
+    }
+    const res = callAPI(newScript, selectedScript);
+    if (data.code === 200) {
+      setScenarios(newScript);
+    }
+  };
 
   const makeVideo = async (scenario) => {
     if (sessionStorage.token) {
@@ -32,69 +107,60 @@ export default function Workspace({
       const body = new FormData();
       body.append("script", selectedScript);
       body.append("scenario", scenario || "");
-      await fetch("api/makevideo", {
+      const data = await fetch("api/makevideo", {
         method: "POST",
         body,
         headers: { Authorization: sessionStorage.token },
-      })
-        .then((response) => {
-          setCircle("none");
-          return response.json();
-        })
-        .then((data) => {
-          if (data.code === 200) {
-            setDownloadDisplay("inline");
-            setUrl(data.msg);
-          } else {
-            setDownloadDisplay("none");
-          }
-        });
+      });
+      if (data.code === 200) {
+        setDownloadDisplay("inline");
+        setUrl(data.msg);
+      } else {
+        setDownloadDisplay("none");
+      }
     }
   };
   return (
     <Container>
-      {scenarios.length > 0 && (
+      {selectedScript && (
         <Box>
-          <Box>
-            <Typography
-              variant="h5"
-              sx={{
-                textAlign: "center",
-              }}
-              component="div"
-            >
-              {selectedScript}
-            </Typography>
-            <Box>
-              <Button
-                onClick={() => {
-                  makeVideo();
-                }}
-              >
-                生成视频
-              </Button>
-              <CircularProgress size="1rem" sx={{ m: 1, display: circle }} />
-              <Button
-                sx={{ display: downloadDisplay }}
-                onClick={() => {
-                  download(url, `${selectedScript}.mp4`);
-                }}
-              >
-                下载视频
-              </Button>
-            </Box>
-          </Box>
-          {scenarios.map((scenario, i) => (
-            <Scenario
-              key={i}
-              selectedScript={selectedScript}
-              scenario={scenario}
-              onDeleteScenario={() => onDeleteScenario(i)}
-              onSaveScenario={(sc) => onSaveScenario(i, sc)}
-            ></Scenario>
-          ))}
+          <Typography
+            variant="h5"
+            sx={{
+              textAlign: "center",
+            }}
+            component="div"
+          >
+            {selectedScript}
+          </Typography>
+          <Button
+            onClick={() => {
+              makeVideo();
+            }}
+          >
+            生成视频
+          </Button>
+          <CircularProgress size="1rem" sx={{ m: 1, display: circle }} />
+          <Button
+            sx={{ display: downloadDisplay }}
+            onClick={() => {
+              download(url, `${selectedScript}.mp4`);
+            }}
+          >
+            下载视频
+          </Button>
         </Box>
       )}
+      {scenarios.length > 0 &&
+        scenarios.map((scenario, i) => (
+          <Scenario
+            key={i}
+            selectedScript={selectedScript}
+            scenario={scenario}
+            onDeleteScenario={() => handleDeleteScenario(i)}
+            onSaveScenario={(sc) => onSaveScenario(i, sc)}
+          ></Scenario>
+        ))}
       {/* 只有选中了脚本的时候才出现添加场景按钮 */}
       {selectedScript && (
         <Box
@@ -105,7 +171,7 @@ export default function Workspace({
           }}
         >
           <List>
-            <ListItemButton onClick={onAddScenario}>
+            <ListItemButton onClick={() => handleAddScenario()}>
               <ListItemText sx={{ textAlign: "center" }}>
                 <AddCircle></AddCircle>
               </ListItemText>

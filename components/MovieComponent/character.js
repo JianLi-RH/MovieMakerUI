@@ -65,7 +65,7 @@ export default function Character(props) {
         );
         c["素材"] = res;
       }
-      props.save(c);
+      props.onSave(c);
       setChar(c);
       setEdit(false);
     } else {

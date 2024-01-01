@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useEffect, useState } from "react";
 import { Table, TableBody, TableCell, TableRow } from "@mui/material";
 import Action from "./Action/action";
 import CollapseComponent from "../collapsecomponent";
@@ -8,7 +8,39 @@ import { GRID_STRING_COL_DEF, useGridApiContext } from "@mui/x-data-grid";
 import GridEditFileCell from "../fileColumn";
 
 export default function Activity({ activity, chars, onSave }) {
+  const [act, setAct] = useState([]);
+  const [subtitles, setSubtitles] = useState(null);
   const cNames = chars.map((c) => c["名字"]); // 全部角色名
+
+  useEffect(() => {
+    setAct(activity);
+    setSubtitles(null);
+    if (activity["字幕"] != null) {
+      const _subtitles = activity["字幕"].map((subtitleRow, i) => {
+        let v = {
+          id: i,
+          start: subtitleRow[0],
+          end: subtitleRow[1],
+          text: subtitleRow[2],
+          sound: "",
+          char: "",
+          action: "",
+        };
+
+        if (subtitleRow.length >= 4) {
+          v.sound = subtitleRow[3];
+        }
+        if (subtitleRow.length >= 5) {
+          v.char = subtitleRow[4];
+        }
+        if (subtitleRow.length >= 6) {
+          v.action = subtitleRow[5];
+        }
+        return v;
+      });
+      setSubtitles(_subtitles);
+    }
+  }, [activity]);
 
   const fileColumnType = {
     ...GRID_STRING_COL_DEF,
@@ -75,42 +107,17 @@ export default function Activity({ activity, chars, onSave }) {
     },
   ];
 
-  const subtitles =
-    activity["字幕"] &&
-    activity["字幕"].map((subtitleRow, i) => {
-      let v = {
-        id: i,
-        start: subtitleRow[0],
-        end: subtitleRow[1],
-        text: subtitleRow[2],
-        sound: "",
-        char: "",
-        action: "",
-      };
-
-      if (subtitleRow.length >= 4) {
-        v.sound = subtitleRow[3];
-      }
-      if (subtitleRow.length >= 5) {
-        v.char = subtitleRow[4];
-      }
-      if (subtitleRow.length >= 6) {
-        v.action = subtitleRow[5];
-      }
-      return v;
-    });
-
   // 字幕
   const saveSubtitle = (row) => {
     let newSubtitle = [];
     if (isNaN(row.id)) {
       // 添加一行新字幕
       newSubtitle = [
-        ...activity["字幕"],
+        ...act["字幕"],
         [row.start, row.end, row.text, row.sound, row.char, row.action],
       ];
     } else {
-      newSubtitle = activity["字幕"].map((subtitleRow, i) => {
+      newSubtitle = act["字幕"].map((subtitleRow, i) => {
         if (i === row.id) {
           return [
             row.start,
@@ -125,25 +132,25 @@ export default function Activity({ activity, chars, onSave }) {
       });
     }
 
-    activity["字幕"] = newSubtitle;
-    onSave(activity);
+    act["字幕"] = newSubtitle;
+    onSave(act);
   };
 
   const deleteSubtitle = (id) => {
     let newSubtitle = [];
-    for (var i = 0; i < activity["字幕"].length; i++) {
+    for (var i = 0; i < act["字幕"].length; i++) {
       if (i !== id) {
-        newSubtitle.push(activity["字幕"][i]);
+        newSubtitle.push(act["字幕"][i]);
       }
     }
-    activity["字幕"] = newSubtitle;
-    onSave(activity);
+    act["字幕"] = newSubtitle;
+    onSave(act);
   };
 
   // 保存动作的更新
   const onSaveAction = (actions) => {
-    activity["动作"] = actions;
-    onSave(activity);
+    act["动作"] = actions;
+    onSave(act);
   };
 
   return (

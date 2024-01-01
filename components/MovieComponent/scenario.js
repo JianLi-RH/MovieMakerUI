@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
@@ -55,20 +55,27 @@ export default function Scenario({
   onDeleteScenario,
   onSaveScenario,
 }) {
-  const [sc, setSc] = React.useState(scenario);
-  const [image, setImage] = React.useState(null); //背景图
-
+  const [sc, setSc] = useState([]);
+  const [image, setImage] = useState(null); //背景图
   // 场景是否展开
-  const [scenarioState, setScenarioState] = React.useState(false);
+  const [scenarioState, setScenarioState] = useState(false);
 
   // 场景是否处于编辑状态
-  const [scenarioEditState, setScenarioEditState] = React.useState(false);
+  const [scenarioEditState, setScenarioEditState] = useState(false);
 
-  const [downloadDisplay, setDownloadDisplay] = React.useState("none");
+  const [downloadDisplay, setDownloadDisplay] = useState("none");
   const { size, elapsed, percentage, download, cancel, error, isInProgress } =
     useDownloader();
-  const [url, setUrl] = React.useState("");
-  const [circle, setCircle] = React.useState("none");
+  const [url, setUrl] = useState("");
+  const [circle, setCircle] = useState("none");
+
+  useEffect(() => {
+    setSc(scenario);
+    setImage(null);
+    setScenarioState(false);
+    setScenarioEditState(false);
+    setDownloadDisplay("none");
+  }, [scenario]);
 
   function handleChange(e) {
     e.preventDefault();
@@ -87,7 +94,10 @@ export default function Scenario({
 
   async function handleSaveScenarioClick() {
     if (image != null) {
-      const res = await resource.uploadToServer(image, `background/${sc["名字"]}`);
+      const res = await resource.uploadToServer(
+        image,
+        `background/${sc["名字"]}`
+      );
       sc["背景"] = res;
     }
     onSaveScenario(sc);
@@ -130,6 +140,8 @@ export default function Scenario({
       return c;
     });
     sc["角色"] = newSC;
+
+    console.log("sc: ", sc);
     onSaveScenario(sc);
   }
 
@@ -211,7 +223,7 @@ export default function Scenario({
               sx={{ width: "200px" }}
               type="string"
               onChange={(e) => handleChange(e)}
-              defaultValue={sc["名字"]}
+              defaultValue={scenario["名字"]}
             />
           </>
         ) : (
@@ -226,7 +238,7 @@ export default function Scenario({
             ></Edit>
             <ListItemText
               sx={{ textAlign: "center" }}
-              primary={sc["名字"]}
+              primary={scenario["名字"]}
               onClick={(e) => {
                 e.preventDefault();
                 setScenarioState(!scenarioState);
@@ -255,7 +267,7 @@ export default function Scenario({
                   sx={{ width: "80px" }}
                   type="string"
                   onChange={(e) => handleChange(e)}
-                  defaultValue={sc["焦点"]}
+                  defaultValue={scenario["焦点"]}
                 />
                 <Divider></Divider>
                 <Typography gutterBottom variant="subtitle2" component="span">
@@ -267,7 +279,7 @@ export default function Scenario({
                   sx={{ width: "80px" }}
                   type="string"
                   onChange={(e) => handleChange(e)}
-                  defaultValue={sc["比例"]}
+                  defaultValue={scenario["比例"]}
                 />
               </Grid>
               <Grid xs={6}>
@@ -294,14 +306,14 @@ export default function Scenario({
                   <Typography gutterBottom variant="subtitle1" component="span">
                     焦点：
                   </Typography>
-                  {sc["焦点"]}
+                  {scenario["焦点"]}
                 </Box>
                 <Divider></Divider>
                 <Box>
                   <Typography gutterBottom variant="subtitle1" component="span">
                     比例：
                   </Typography>
-                  {sc["比例"]}
+                  {scenario["比例"]}
                 </Box>
               </Grid>
               <Grid xs={10}>
@@ -309,7 +321,7 @@ export default function Scenario({
                   component="img"
                   sx={{ width: "200px" }}
                   alt="背景"
-                  src={sc["背景"]}
+                  src={scenario["背景"]}
                 />
               </Grid>
             </>
@@ -332,8 +344,8 @@ export default function Scenario({
               flexWrap: "nowrap",
             }}
           >
-            {sc["角色"] &&
-              sc["角色"].map((char, i) => (
+            {scenario["角色"] &&
+              scenario["角色"].map((char, i) => (
                 <Character
                   key={i}
                   name={char["名字"]}
@@ -343,7 +355,7 @@ export default function Scenario({
                   rotate={char["角度"]}
                   display={char["显示"]}
                   index={char["图层"]}
-                  save={(char) => onSaveChar(i, char)}
+                  onSave={(char) => onSaveChar(i, char)}
                   remove={() => onRemoveChar(i)}
                 ></Character>
               ))}
@@ -372,12 +384,12 @@ export default function Scenario({
         </CollapseComponent>
 
         <CollapseComponent color="#ABC" title="活动">
-          {sc["活动"] &&
-            sc["活动"].map((activity, i) => (
+          {scenario["活动"] &&
+            scenario["活动"].map((activity, i) => (
               <Activity
                 key={i}
                 activity={activity}
-                chars={sc["角色"]}
+                chars={scenario["角色"]}
                 onSave={(act) => updateActivity(i, act)}
               ></Activity>
             ))}
@@ -388,7 +400,7 @@ export default function Scenario({
             <Button
               onClick={() => {
                 setCircle(circle == "none" ? "flex" : "none");
-                makeVideo(sc["名字"]);
+                makeVideo(scenario["名字"]);
               }}
             >
               生成视频
@@ -397,7 +409,7 @@ export default function Scenario({
             <Button
               sx={{ display: downloadDisplay }}
               onClick={() => {
-                download(url, `${sc["名字"]}.mp4`);
+                download(url, `${scenario["名字"]}.mp4`);
               }}
             >
               下载视频

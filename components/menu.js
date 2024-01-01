@@ -37,7 +37,7 @@ const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;
 
 export default function Menu({
   scripts,
-  selectScript,
+  onSelectScript,
   updateMenuList,
   setting,
   updateAlert,
@@ -114,7 +114,7 @@ export default function Menu({
 
   const confirmDelete = async (name) => {
     if (sessionStorage.token) {
-      const response = await fetch("/api/file?file=" + name, {
+      const response = await fetch(`/api/file?file=${name}`, {
         method: "DELETE",
         headers: { Authorization: sessionStorage.token },
       });
@@ -233,7 +233,7 @@ export default function Menu({
                 selected={selectedIndex === i}
                 onClick={(event) => {
                   handleListItemClick(event, i);
-                  selectScript(script.id);
+                  onSelectScript(script.id);
                 }}
               >
                 <ListItemIcon>

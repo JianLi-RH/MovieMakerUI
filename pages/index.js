@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { useImmer } from "use-immer";
 import Workspace from "components/workspace.js";
 import FullFeaturedCrudGrid from "components/grid.js";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -11,36 +10,12 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Layout from "../components/layout.js";
 
-import { deepCopy } from "../lib/jsUtil";
-
-// 将更改保存到文件
-const callAPI = (scenarios, selectedScript) => {
-  if (sessionStorage.token) {
-    const cc = [];
-    for (var i = 0; i < scenarios.length; i++) {
-      cc.push(scenarios[i]);
-    }
-    console.log("cc: ", cc);
-    let res = fetch(`/api/script`, {
-      method: "POST",
-      headers: { Authorization: sessionStorage.token },
-      body: JSON.stringify({
-        script: { 场景: cc },
-        path: selectedScript,
-      }),
-    }).then((response) => {
-      return response.json();
-    });
-    return res;
-  }
-};
 
 export default function Home() {
   const [allScriptNames, setAllScriptNames] = useState([]); //全部脚本名
   const [showSetting, setShowSetting] = useState(false);
   const [settings, setSettings] = useState({});
 
-  const [selectedScenarios, setSelectedScenarios] = useState([]); // 当前脚本的全部场景
   const [selectedScript, setSelectedScript] = useState(null); // 当前脚本名字
 
   //更新脚本列表
@@ -56,29 +31,6 @@ export default function Home() {
             setAllScriptNames(r.msg);
           } else {
             setAllScriptNames([]);
-            setSelectedScenarios([]);
-          }
-        });
-    }
-  };
-
-  //更新工作区
-  const getWorkingScript = (scriptName) => {
-    if (sessionStorage.token) {
-      fetch("/api/file?file=" + scriptName, {
-        headers: { Authorization: sessionStorage.token },
-      })
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          if (data.code === 200) {
-            setSelectedScript(scriptName); //更新当前选中的脚本
-            if (data.msg["场景"] instanceof Array) {
-              setSelectedScenarios(data.msg["场景"]); // 更新场景
-            } else {
-              setSelectedScenarios([]);
-            }
           }
         });
     }
@@ -137,51 +89,10 @@ export default function Home() {
     }
   }, []);
 
-  // 添加新场景
-  const handleAddScenario = (e) => {
-    let sc = {
-      背景: "",
-      名字: "default" + selectedScenarios.length,
-      焦点: "中心",
-      背景音乐: null,
-      比例: 1,
-      角色: null,
-      活动: null,
-    };
-    setSelectedScenarios([...selectedScenarios, sc]);
-  };
-
-  // 删除指定顺序的场景
-  const handleDeleteScenario = (index) => {
-    const newScript = [];
-    for (var i = 0; i < selectedScenarios.length; i++) {
-      if (i != index) {
-        newScript.push(selectedScenarios[i]);
-      }
-    }
-    const res = callAPI(newScript, selectedScript);
-    res.then((data) => {
-      if (data.code === 200) {
-        setSelectedScenarios(newScript);
-      }
-    });
-  };
-  // 保存场景
-  const onSaveScenario = (index, updatedScenario) => {
-    let final_sc = JSON.parse(JSON.stringify(selectedScenarios));
-    final_sc[index] = updatedScenario;
-    const res = callAPI(final_sc, selectedScript);
-    res.then((data) => {
-      if (data.code === 200) {
-        setSelectedScenarios(final_sc);
-      }
-    });
-  };
-
   return (
     <Layout
       scripts={allScriptNames}
-      selectScript={(scriptName) => getWorkingScript(scriptName)}
+      onSelectScript={(scriptName) => setSelectedScript(scriptName)}
       updateMenuList={() => updateMenuList()}
       setting={setting}
     >
@@ -232,11 +143,7 @@ export default function Home() {
       </Dialog>
 
       <Workspace
-        scenarios={selectedScenarios}
         selectedScript={selectedScript}
-        onAddScenario={() => handleAddScenario()}
-        onDeleteScenario={(index) => handleDeleteScenario(index)}
-        onSaveScenario={(index, sc) => onSaveScenario(index, sc)}
       ></Workspace>
     </Layout>
   );
