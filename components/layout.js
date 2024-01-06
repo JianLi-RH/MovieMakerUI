@@ -41,7 +41,7 @@ export default function Layout({
         <Menu
           scripts={scripts}
           onSelectScript={(scriptName) => onSelectScript(scriptName)}
-          updateMenuList={updateMenuList}
+          updateMenuList={() => updateMenuList()}
           setting={setting}
           updateAlert={(alert) => updateAlert(alert)}
         ></Menu>

@@ -104,7 +104,7 @@ const remove = (req, res) => {
   if (!username) {
     return res.json({ code: 302, status: "fail", msg: "用户没有登录" });
   }
-  user.delete(token);
+  user.delete(req);
   return res.json({ code: 200, status: "success", msg: "用户已登出" });
 };
 

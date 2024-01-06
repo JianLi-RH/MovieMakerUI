@@ -19,8 +19,9 @@ import {
   DialogContentText,
   DialogActions,
 } from "@mui/material";
-import Alert from "@mui/material/Alert";
 import Link from "next/link";
+import Typography from "@mui/material/Typography";
+import Input from "@mui/material/Input";
 
 import {
   Clear,
@@ -80,7 +81,6 @@ export default function Menu({
   const handleAddNewSC = async () => {
     if (sessionStorage.token) {
       const name = ref.current.value;
-      console.log("name: ", name);
       if (name == null || name == undefined) {
         return;
       }
@@ -107,6 +107,7 @@ export default function Menu({
     }
   };
 
+  // 删除脚本
   const deleteScript = (script) => {
     setDeleteScriptName(script);
     setOpenDeleteScript(true);
@@ -189,13 +190,22 @@ export default function Menu({
           <DialogContentText>
             脚本名将被用于展示在菜单列表中，且不能修改，请谨慎填写。
           </DialogContentText>
-          <input
-            name="name"
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            component="span"
             size="small"
-            sx={{ width: "200px" }}
-            type="string"
-            ref={ref}
-          />
+            sx={{ m: 0, p: 0 }}
+          >
+            脚本名：
+            <Input
+              name="name"
+              size="small"
+              sx={{ width: "200px" }}
+              type="string"
+              inputRef={ref}
+            />
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setAddSCDislogopen(false)}>取消</Button>

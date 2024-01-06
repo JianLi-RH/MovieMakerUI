@@ -10,7 +10,6 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Layout from "../components/layout.js";
 
-
 export default function Home() {
   const [allScriptNames, setAllScriptNames] = useState([]); //全部脚本名
   const [showSetting, setShowSetting] = useState(false);
@@ -32,6 +31,7 @@ export default function Home() {
           } else {
             setAllScriptNames([]);
           }
+          setSelectedScript(null);
         });
     }
   };
@@ -92,7 +92,11 @@ export default function Home() {
   return (
     <Layout
       scripts={allScriptNames}
-      onSelectScript={(scriptName) => setSelectedScript(scriptName)}
+      onSelectScript={(scriptName) => {
+        if (selectedScript != scriptName) {
+          setSelectedScript(scriptName);
+        }
+      }}
       updateMenuList={() => updateMenuList()}
       setting={setting}
     >
@@ -142,9 +146,7 @@ export default function Home() {
         </DialogContent>
       </Dialog>
 
-      <Workspace
-        selectedScript={selectedScript}
-      ></Workspace>
+      <Workspace selectedScript={selectedScript}></Workspace>
     </Layout>
   );
 }

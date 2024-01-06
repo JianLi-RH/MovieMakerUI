@@ -75,6 +75,8 @@ export default function Scenario({
     setScenarioState(false);
     setScenarioEditState(false);
     setDownloadDisplay("none");
+    setUrl("");
+    setCircle("none");
   }, [selectedScript]);
 
   function handleChange(e) {
@@ -137,10 +139,13 @@ export default function Scenario({
       图层: "0",
       角度: "",
     };
-    sc["角色"] = [...sc["角色"], c];
-    onSaveScenario(sc);
-    let _sc = {};
-    Object.assign(_sc, sc);
+    let juese = []
+    if (sc["角色"] != undefined){
+      juese = [...sc["角色"], c];
+    }
+    let _sc = {...sc, "角色": juese};
+    onSaveScenario(_sc);
+    // Object.assign(_sc, sc);
     setSc(_sc);
   }
 

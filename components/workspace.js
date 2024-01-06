@@ -38,7 +38,7 @@ export default function Workspace({ selectedScript }) {
   const [downloadDisplay, setDownloadDisplay] = useState("none");
   const { size, elapsed, percentage, download, cancel, error, isInProgress } =
     useDownloader();
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState(""); // 视频文件地址
   const [circle, setCircle] = useState("none");
 
   useEffect(() => {
