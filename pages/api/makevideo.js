@@ -26,7 +26,7 @@ const post = async (req, res) => {
     }
 
     const spawn = require("child_process").spawn;
-    const runPath = `workspaces/${username}/run.py`;
+    const runPath = `workspaces/${username}/run.py`; // 执行后台服务的路径
     let cmd = [runPath, "-o", output, "-s", script];
     if (scenario.length > 0) {
       cmd.push("-c");
@@ -55,8 +55,8 @@ const post = async (req, res) => {
       }
       const video = `workspaces/${username}/output/${output}`;
       const workspace = user.getWorkspaceByReq(req);
-      const publicFolder = `public/${workspace}/${output}`;
-      fs.mkdirSync(`public/${username}/`, { recursive: true }, (err) => {
+      const publicFolder = `public/${workspace}`;
+      fs.mkdirSync(publicFolder, { recursive: true }, (err) => {
         if (err) {
           return res.json({
             code: 500,
@@ -65,7 +65,7 @@ const post = async (req, res) => {
           });
         }
       });
-      fs.cpSync(video, publicFolder, { recursive: true }, (err) => {
+      fs.cpSync(video, `${publicFolder}/${output}`, { recursive: true }, (err) => {
         return res.json({
           code: 501,
           status: "fail",
@@ -76,7 +76,7 @@ const post = async (req, res) => {
       return res.json({
         code: 200,
         status: "fail",
-        msg: `${username}/${output}`,
+        msg: `${workspace}/${output}`,
       });
     });
   });

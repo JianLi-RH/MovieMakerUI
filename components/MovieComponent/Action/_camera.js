@@ -109,7 +109,7 @@ export default function Camera({ action, onSaveAction, onDeleteAction }) {
                   sx={{ width: "200px" }}
                   type="string"
                   onChange={(e) => handleChange(e)}
-                  defaultValue={action["焦点"]}
+                  defaultValue={jsUtil.convertNumbersToString(action["焦点"])}
                 />
               </FormControl>
               <br></br>
@@ -135,7 +135,7 @@ export default function Camera({ action, onSaveAction, onDeleteAction }) {
                   sx={{ width: "200px" }}
                   type="string"
                   onChange={(e) => handleChange(e)}
-                  defaultValue={action["变化"]}
+                  defaultValue={jsUtil.convertNumbersToString(action["变化"])}
                 />
               </FormControl>
               <CardActions sx={{ m: 0, p: 0 }}>
@@ -159,16 +159,10 @@ export default function Camera({ action, onSaveAction, onDeleteAction }) {
           {!edit && (
             <>
               <InputLabel>
-                焦点:{" "}
-                {(Array.isArray(action["焦点"]) &&
-                  action["焦点"][0] + " : " + action["焦点"][1]) ||
-                  action["焦点"]}
+                焦点: {jsUtil.convertNumbersToString(action["焦点"])}
               </InputLabel>
               <InputLabel>
-                变化:{" "}
-                {(Array.isArray(action["变化"]) &&
-                  action["变化"][0] + " : " + action["变化"][1]) ||
-                  action["变化"]}
+                变化: {jsUtil.convertNumbersToString(action["变化"])}
               </InputLabel>
               <br></br>
               <Button

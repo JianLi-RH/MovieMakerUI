@@ -57,7 +57,7 @@ export default function Action({ allActions, allChars, onSaveAction }) {
     } else if (actionType === "镜头") {
       newAct = {
         名称: "镜头",
-        焦点: ["中心"],
+        焦点: "中心",
         变化: [1,1],
       };
     } else if (actionType === "行进") {
@@ -80,7 +80,7 @@ export default function Action({ allActions, allChars, onSaveAction }) {
         名称: "gif",
         角色: "",
         素材: "",
-        位置: ["中心"],
+        位置: "中心",
         比例: 1,
         度数: "左右",
       };
