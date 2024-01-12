@@ -33,6 +33,20 @@ const callAPI = async (scenarios, selectedScript) => {
   }
 };
 
+const getScenarios = async (scriptName) => {
+  if (sessionStorage.token) {
+    let scenarios = await fetch(`/api/file?file=${scriptName}`, {
+      headers: { Authorization: sessionStorage.token },
+    });
+    let json = await scenarios.json();
+    if (json.code === 200) {
+      return json.msg["场景"];
+    }
+  }
+
+  return [];
+};
+
 export default function Workspace({ selectedScript }) {
   const [scenarios, setScenarios] = useState([]); // 当前脚本的全部场景
   const [downloadDisplay, setDownloadDisplay] = useState("none");
@@ -42,29 +56,21 @@ export default function Workspace({ selectedScript }) {
   const [circle, setCircle] = useState("none");
 
   useEffect(() => {
-    if (sessionStorage.token) {
-      fetch(`/api/file?file=${selectedScript}`, {
-        headers: { Authorization: sessionStorage.token },
-      })
-        .then((data) => {
-          return data.json();
-        })
-        .then(function (jsonStr) {
-          if (jsonStr.code === 200) {
-            if (jsonStr.msg["场景"] instanceof Array) {
-              const sc = [...jsonStr.msg["场景"]];
-              setScenarios(sc); // 更新场景
-              return;
-            }
-          }
-          setScenarios([]);
-        });
+    if (selectedScript == null) {
+      setScenarios([]);
+    } else {
+      async function test() {
+        const scenarios = await getScenarios(selectedScript);
+        setScenarios(scenarios);
+      }
+      test();
     }
   }, [selectedScript]);
 
   // 保存场景
   const onSaveScenario = async (index, updatedScenario) => {
-    let final_sc = JSON.parse(JSON.stringify(scenarios));
+    const newsc = await getScenarios(selectedScript);
+    let final_sc = JSON.parse(JSON.stringify(newsc));
     final_sc[index] = updatedScenario;
     const res = await callAPI(final_sc, selectedScript);
     if (res.code === 200) {

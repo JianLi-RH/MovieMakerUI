@@ -10,7 +10,7 @@ export const config = {
   },
 };
 
-const get = async (req, res) => {
+const get = (req, res) => {
   const username = user.getUser(req);
   if (!username) {
     return res.json({ code: 212, status: "fail", msg: "请先登录" });

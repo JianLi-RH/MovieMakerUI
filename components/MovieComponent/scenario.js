@@ -139,11 +139,11 @@ export default function Scenario({
       图层: "0",
       角度: "",
     };
-    let juese = []
-    if (sc["角色"] != undefined){
+    let juese = [];
+    if (sc["角色"] != undefined) {
       juese = [...sc["角色"], c];
     }
-    let _sc = {...sc, "角色": juese};
+    let _sc = { ...sc, 角色: juese };
     onSaveScenario(_sc);
     // Object.assign(_sc, sc);
     setSc(_sc);
@@ -235,7 +235,7 @@ export default function Scenario({
               }}
             ></Save>
             <Input
-              name="场景名"
+              name="名字"
               size="small"
               sx={{ width: "200px" }}
               type="string"
