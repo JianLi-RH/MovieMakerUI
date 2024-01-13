@@ -29,7 +29,7 @@ export default function GridEditFileCell({ id, field, value, colDef }) {
   };
 
   return (
-    <Button component="label" variant="contained">
+    <Button component="label" variant="text">
       上传文件
       <VisuallyHiddenInput name="文件" type="file" onChange={uploadToClient} />
     </Button>

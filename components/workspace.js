@@ -56,27 +56,16 @@ export default function Workspace({ selectedScript }) {
   const [circle, setCircle] = useState("none");
 
   useEffect(() => {
-    if (selectedScript == null) {
-      setScenarios([]);
-    } else {
-      async function test() {
+    async function test() {
+      if (selectedScript == null) {
+        setScenarios([]);
+      } else {
         const scenarios = await getScenarios(selectedScript);
         setScenarios(scenarios);
       }
-      test();
     }
+    test();
   }, [selectedScript]);
-
-  // 保存场景
-  const onSaveScenario = async (index, updatedScenario) => {
-    const newsc = await getScenarios(selectedScript);
-    let final_sc = JSON.parse(JSON.stringify(newsc));
-    final_sc[index] = updatedScenario;
-    const res = await callAPI(final_sc, selectedScript);
-    if (res.code === 200) {
-      setScenarios(final_sc);
-    }
-  };
 
   // 添加新场景
   const handleAddScenario = (e) => {
@@ -103,6 +92,25 @@ export default function Workspace({ selectedScript }) {
     const res = callAPI(newScript, selectedScript);
     if (data.code === 200) {
       setScenarios(newScript);
+    }
+  };
+
+  // 更新scenario状态
+  const handleUpdateScenario = (index, key, value, save = true) => {
+    let scenario = { ...scenarios[index] };
+    scenario[key] = value;
+
+    let newscenarios = [];
+    for (var i = 0; i < scenarios.length; i++) {
+      if (i === index) {
+        newscenarios.push(scenario);
+      } else {
+        newscenarios.push({ ...scenarios[index] });
+      }
+    }
+    setScenarios(newscenarios);
+    if (save) {
+      callAPI(newscenarios, selectedScript);
     }
   };
 
@@ -164,7 +172,10 @@ export default function Workspace({ selectedScript }) {
             selectedScript={selectedScript}
             scenario={scenario}
             onDeleteScenario={() => handleDeleteScenario(i)}
-            onSaveScenario={(sc) => onSaveScenario(i, sc)}
+            onSaveScenario={() => callAPI(scenarios, selectedScript)}
+            onUpdateScenario={(key, value, save = true) =>
+              handleUpdateScenario(i, key, value, save)
+            }
           ></Scenario>
         ))}
       {/* 只有选中了脚本的时候才出现添加场景按钮 */}

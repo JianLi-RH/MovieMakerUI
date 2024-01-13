@@ -7,14 +7,26 @@ import { GRID_STRING_COL_DEF, useGridApiContext } from "@mui/x-data-grid";
 
 import GridEditFileCell from "../fileColumn";
 
-export default function Activity({ activity, chars, onSave, onDeleteActivity }) {
+export default function Activity({
+  activity,
+  chars,
+  onSave,
+  onDeleteActivity,
+}) {
   const [act, setAct] = useState([]);
   const [subtitles, setSubtitles] = useState(null);
-  const cNames = chars.map((c) => c["名字"]); // 全部角色名
+  const [cNames, setCNames] = useState([]); // 全部角色名
 
   useEffect(() => {
     setAct(activity);
     setSubtitles(null);
+    let _chars = [""];
+    if (chars != undefined && chars != []) {
+      for (var i = 0; i < chars.length; i++) {
+        _chars.push(chars[i]["名字"]);
+      }
+    }
+    setCNames(_chars);
     if (activity["字幕"] != null) {
       const _subtitles = activity["字幕"].map((subtitleRow, i) => {
         let v = {
@@ -138,7 +150,11 @@ export default function Activity({ activity, chars, onSave, onDeleteActivity }) 
 
   const deleteSubtitle = (id) => {
     let newSubtitle = [];
-    for (var i = 0; i < act["字幕"].length; i++) {
+    let l = 0;
+    if (act["字幕"] != undefined) {
+      l = act["字幕"].length;
+    }
+    for (var i = 0; i < l; i++) {
       if (i !== id) {
         newSubtitle.push(act["字幕"][i]);
       }
@@ -154,7 +170,11 @@ export default function Activity({ activity, chars, onSave, onDeleteActivity }) 
   };
 
   return (
-    <CollapseComponent color="#ABC" title={activity["名字"]} onDelete={onDeleteActivity}>
+    <CollapseComponent
+      color="#ABC"
+      title={activity["名字"]}
+      onDelete={onDeleteActivity}
+    >
       <Table aria-label="simple table">
         <TableBody>
           <TableRow sx={{ "& > *": { border: 1, borderBottom: "unset" } }}>

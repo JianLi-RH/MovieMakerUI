@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import Input from "@mui/material/Input";
 import { List, ListItemButton, ListItemText, Collapse } from "@mui/material";
 import {
+  AddCircle,
   ExpandLess,
   ExpandMore,
   Edit,
@@ -54,8 +55,8 @@ export default function Scenario({
   selectedScript,
   onDeleteScenario,
   onSaveScenario,
+  onUpdateScenario,
 }) {
-  const [sc, setSc] = useState([]);
   const [image, setImage] = useState(null); //背景图
   // 场景是否展开
   const [scenarioState, setScenarioState] = useState(false);
@@ -70,7 +71,6 @@ export default function Scenario({
   const [circle, setCircle] = useState("none");
 
   useEffect(() => {
-    setSc(scenario);
     setImage(null);
     setScenarioState(false);
     setScenarioEditState(false);
@@ -81,10 +81,7 @@ export default function Scenario({
 
   function handleChange(e) {
     e.preventDefault();
-    let _sc = {};
-    Object.assign(_sc, sc);
-    _sc[e.target.name] = e.target.value;
-    setSc(_sc);
+    onUpdateScenario(e.target.name, e.target.value, false);
   }
 
   const uploadToClient = (event) => {
@@ -98,35 +95,53 @@ export default function Scenario({
     if (image != null) {
       const res = await resource.uploadToServer(
         image,
-        `background/${sc["名字"]}`
+        `background/${scenario["名字"]}`
       );
-      sc["背景"] = res;
+      onUpdateScenario("背景", res);
+    } else {
+      onSaveScenario();
     }
-    onSaveScenario(sc);
     setScenarioEditState(false);
   }
 
+  // 添加新活动
+  const handleAddActivity = () => {
+    let act = [];
+    if (scenario["活动"] != undefined) {
+      for (var i = 0; i < scenario["活动"].length; i++) {
+        act.push(scenario["活动"][i]);
+      }
+    }
+    act.push({
+      名字:
+        "新活动-" +
+        (scenario["活动"] != undefined ? scenario["活动"].length : 0),
+      描述: "",
+      背景音乐: "",
+      持续时间: 0,
+    });
+    onUpdateScenario("活动", act);
+  };
+
   function updateActivity(index, activity) {
-    let newSC = sc["活动"].map((act, i) => {
+    let newSC = scenario["活动"].map((act, i) => {
       if (i === index) {
         return activity;
       }
       return act;
     });
-    sc["活动"] = newSC;
-    onSaveScenario(sc);
+    onUpdateScenario("活动", newSC);
   }
 
   const handleDeleteAvtivity = (index) => {
     let newSC = [];
-    var l = sc["活动"].length;
+    var l = scenario["活动"].length;
     for (var i = 0; i < l; i++) {
       if (i !== index) {
-        newSC.push(sc["活动"][i]);
+        newSC.push(scenario["活动"][i]);
       }
     }
-    sc["活动"] = newSC;
-    onSaveScenario(sc);
+    onUpdateScenario("活动", newSC);
   };
 
   function addCharacter() {
@@ -140,38 +155,34 @@ export default function Scenario({
       角度: "",
     };
     let juese = [];
-    if (sc["角色"] != undefined) {
-      juese = [...sc["角色"], c];
+    if (scenario["角色"] != undefined) {
+      for (var i = 0; i < scenario["角色"].length; i++) {
+        juese.push({ ...scenario["角色"][i] });
+      }
     }
-    let _sc = { ...sc, 角色: juese };
-    onSaveScenario(_sc);
-    // Object.assign(_sc, sc);
-    setSc(_sc);
+    juese.push(c);
+    onUpdateScenario("角色", juese);
   }
 
   function onSaveChar(index, char) {
-    let newSC = sc["角色"].map((c, i) => {
+    let newSC = scenario["角色"].map((c, i) => {
       if (i === index) {
         return char;
       }
       return c;
     });
-    sc["角色"] = newSC;
-
-    console.log("sc: ", sc);
-    onSaveScenario(sc);
+    onUpdateScenario("角色", newSC);
   }
 
   function onRemoveChar(index) {
     let newSC = [];
-    var l = sc["角色"].length;
+    var l = scenario["角色"].length;
     for (var i = 0; i < l; i++) {
       if (i !== index) {
-        newSC.push(sc["角色"][i]);
+        newSC.push(scenario["角色"][i]);
       }
     }
-    sc["角色"] = newSC;
-    onSaveScenario(sc);
+    onUpdateScenario("角色", newSC);
   }
 
   const makeVideo = async (scenario) => {
@@ -223,7 +234,6 @@ export default function Scenario({
               sx={{ width: 40 }}
               onClick={(e) => {
                 e.preventDefault();
-                setSc(scenario);
                 setScenarioEditState(false);
               }}
             ></Cancel>
@@ -408,6 +418,21 @@ export default function Scenario({
                 onDeleteActivity={() => handleDeleteAvtivity(i)}
               ></Activity>
             ))}
+          <Box
+            sx={{
+              width: 1,
+              marginRight: 0.5,
+              my: 1,
+            }}
+          >
+            <List>
+              <ListItemButton onClick={() => handleAddActivity()}>
+                <ListItemText sx={{ textAlign: "center" }}>
+                  <AddCircle></AddCircle>
+                </ListItemText>
+              </ListItemButton>
+            </List>
+          </Box>
         </CollapseComponent>
 
         <Box sx={{ p: 0 }}>

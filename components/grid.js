@@ -22,27 +22,6 @@ import {
 import { grey, red } from "@mui/material/colors";
 import resource from "../lib/resource";
 
-function EditToolbar(props) {
-  const { setRows, setRowModesModel } = props;
-
-  const handleClick = () => {
-    const id = randomId();
-    setRows((oldRows) => [...oldRows, { id, key: "", value: "", isNew: true }]);
-    setRowModesModel((oldModel) => ({
-      ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: "value" },
-    }));
-  };
-
-  return (
-    <GridToolbarContainer>
-      <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-        添加
-      </Button>
-    </GridToolbarContainer>
-  );
-}
-
 export default function FullFeaturedCrudGrid({
   folder,
   columns,
@@ -55,6 +34,31 @@ export default function FullFeaturedCrudGrid({
 }) {
   const [rows, setRows] = React.useState(data);
   const [rowModesModel, setRowModesModel] = React.useState({});
+
+  function EditToolbar(props) {
+    const { setRows, setRowModesModel } = props;
+
+    const handleClick = () => {
+      const id = randomId();
+      let values = { id, isNew: true }; //key: "", value: "", char: "",
+      for (var i = 0; i < columns.length; i++) {
+        values[columns[i]["field"]] = "";
+      }
+      setRows((oldRows) => [...oldRows, values]);
+      setRowModesModel((oldModel) => ({
+        ...oldModel,
+        [id]: { mode: GridRowModes.Edit, fieldToFocus: "value" },
+      }));
+    };
+
+    return (
+      <GridToolbarContainer>
+        <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
+          添加
+        </Button>
+      </GridToolbarContainer>
+    );
+  }
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
