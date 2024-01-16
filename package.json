@@ -1,6 +1,6 @@
 {
   "private": true,
-  "homepage": "https://JianLi-RH.github.com/MovieMakerUI",
+  "homepage": "https://JianLi-RH.github.io/MovieMakerUI",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
