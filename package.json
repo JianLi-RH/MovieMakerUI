@@ -1,9 +1,12 @@
 {
   "private": true,
+  "homepage": "https://JianLi-RH.github.com/MovieMakerUI",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "start": "next start"
+    "start": "next start",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "@emotion/cache": "latest",
@@ -49,6 +52,7 @@
   "devDependencies": {
     "@types/node": "20.8.8",
     "@types/react": "18.2.31",
+    "gh-pages": "^6.1.1",
     "react-app-rewire-yaml": "^1.1.0",
     "typescript": "5.2.2"
   }
