@@ -5,6 +5,7 @@ public
 moviemaker.db
 SourceCode
 .next
+out
 node_modules
 scripts/flow/*/.flowconfig
 .flowconfig
