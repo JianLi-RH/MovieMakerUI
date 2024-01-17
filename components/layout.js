@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import ThemeRegistry from "./ThemeRegistry/ThemeRegistry";
-import GlobalConifg from "../pages/app.config";
+import GlobalConifg from "lib/app.config.js";
 import Header from "./header";
 import Menu from "./menu";
 

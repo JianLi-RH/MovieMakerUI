@@ -31,7 +31,7 @@ import {
   VideoFile,
 } from "@mui/icons-material";
 
-import GlobalConifg from "../pages/app.config";
+import GlobalConifg from "lib/app.config.js";
 import CustomizedDialogs from "../components/scriptdialog";
 import AccountBox from "./accountBox";
 const DRAWER_WIDTH = GlobalConifg.DRAWER_WIDTH;

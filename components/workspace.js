@@ -10,8 +10,6 @@ import { AddCircle } from "@mui/icons-material/";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 
-import GlobalConifg from "../pages/app.config";
-
 // 将更改保存到文件
 const callAPI = async (scenarios, selectedScript) => {
   if (sessionStorage.token) {
